@@ -1,19 +1,23 @@
 <template>
-  <div id="app">
-    <Header />,
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <div id="app"><Header /></div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-import Header from "./views/Header.vue";
+import Header from "./views/CommonHeader.vue";
+
+import Vue from "vue";
+import { BootstrapVue, IconsPlugin, TabsPlugin } from "bootstrap-vue";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
+Vue.use(TabsPlugin);
 
 export default {
-  name: "App",
+  name: "bi_solution",
   components: {
-    HelloWorld,
+    Header,
   },
 };
 </script>
@@ -25,6 +29,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
