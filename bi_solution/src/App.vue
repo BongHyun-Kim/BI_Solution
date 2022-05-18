@@ -1,9 +1,15 @@
 <template>
-  <div id="app"><Header /></div>
+  <div id="app">
+    <Header />
+    <Content />
+    <Footer />
+  </div>
 </template>
 
 <script>
 import Header from "./views/CommonHeader.vue";
+import Content from "./views/DefauldScreen.vue";
+import Footer from "./views/CommonFooter.vue";
 
 import Vue from "vue";
 import { BootstrapVue, IconsPlugin, TabsPlugin } from "bootstrap-vue";
@@ -18,6 +24,8 @@ export default {
   name: "bi_solution",
   components: {
     Header,
+    Content,
+    Footer,
   },
 };
 </script>
