@@ -1,0 +1,37 @@
+/* 헤더 컨테이너 */
+#head_container {
+  min-width: 100%;
+  background-color: black;
+  margin: 0;
+  padding: 10px;
+  height: 75px;
+}
+
+/* 헤더 */
+#header {
+  width: 25%;
+}
+
+/* 헤더 로고 이미지 */
+#header_img {
+  width: 60%;
+  float: left;
+}
+
+/* 헤더 이미지와 검색 부분 나누는 박스 */
+#row_box {
+  align-items: center;
+  width: 80%;
+  margin: auto;
+}
+
+/* 검색 */
+#search_button {
+  background-color: black;
+  border-right: 0;
+  border-color: white;
+}
+#search_area {
+  float: right;
+  width: 50%;
+}

@@ -1,0 +1,86 @@
+#content {
+  margin: 20px;
+  margin-bottom: 50px;
+}
+/* 지역 선택 컨테이너 */
+.city_box {
+  margin: auto;
+}
+.city_name {
+  margin-bottom: 0;
+  text-align: left;
+}
+
+/* 지역 선택 버튼 */
+.region_select:active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* 차트 제목 */
+.chart_title {
+  margin-bottom: -10px;
+  font-weight: bold;
+  padding-left: 15%;
+}
+
+/* 그래프 기간 설정 버튼 */
+.option_check_l {
+  height: 30px;
+  background-color: gray;
+  border: 1px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  color: white;
+}
+.option_check_l:hover {
+  background-color: rgb(85, 85, 85);
+}
+.option_check_l:visited {
+  background-color: rgb(85, 85, 85);
+}
+.option_check {
+  height: 30px;
+  background-color: gray;
+  border: 1px;
+  color: white;
+}
+.option_check:hover {
+  background-color: rgb(85, 85, 85);
+}
+.option_check_r {
+  height: 30px;
+  background-color: gray;
+  border: 1px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: white;
+}
+.option_check_r:hover {
+  background-color: rgb(85, 85, 85);
+}
+.set_year {
+  margin-bottom: 10px;
+}
+
+/* 하단 아파트 거래량 및 기본 지표  */
+#etc_info {
+  margin-top: 20px;
+  padding: 0;
+}
+.etc_title {
+  text-align: left;
+  text-indent: 2.7em;
+  font-weight: bold;
+}
+.etc_content {
+  font-size: 15px;
+}
+
+/* 아파트 거래량 및 기본지표 값 글자 색상 */
+#trade {
+  color: red;
+}
+#charter {
+  color: red;
+}

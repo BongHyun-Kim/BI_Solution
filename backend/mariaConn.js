@@ -1,11 +1,20 @@
-var mysql = require('mysql');
+var mysql = require("mysql");
+
+//  Connection 객체 생성
 var connection = mysql.createConnection({
-    host: '13.209.26.252',
-    user :'user',
-    password :'1234',
-    database:'bi_solution'
+  host: "52.78.126.198",
+  user: "user",
+  password: "1234",
+  database: "bi_solution",
 });
 
-connection.connect();
+// Connect
+connection.connect(function (err) {
+  if (err) {
+    console.error("mariadb connection error");
+    consolr.error(err);
+    throw err;
+  }
+});
 
 module.exports = connection;

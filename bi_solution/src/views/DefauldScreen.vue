@@ -15,41 +15,16 @@
 
               <b-card-body class="text-center">
                 <b-list-group>
-                  <b-list-group-item button>
+                  <b-list-group-item
+                    button
+                    class="region_select"
+                    v-for="regions in regionlist"
+                    v-bind:key="regions"
+                  >
                     <b-row class="city_box">
-                      <b-col> <p class="city_name">서울특별시</p></b-col>
-                      <b-col style="text-align: right">
-                        <b-icon icon="chevron-compact-right"></b-icon>
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
-                  <b-list-group-item button>
-                    <b-row class="city_box">
-                      <b-col> <p class="city_name">서울특별시</p></b-col>
-                      <b-col style="text-align: right">
-                        <b-icon icon="chevron-compact-right"></b-icon>
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
-                  <b-list-group-item button>
-                    <b-row class="city_box">
-                      <b-col> <p class="city_name">서울특별시</p></b-col>
-                      <b-col style="text-align: right">
-                        <b-icon icon="chevron-compact-right"></b-icon>
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
-                  <b-list-group-item button>
-                    <b-row class="city_box">
-                      <b-col> <p class="city_name">서울특별시</p></b-col>
-                      <b-col style="text-align: right">
-                        <b-icon icon="chevron-compact-right"></b-icon>
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
-                  <b-list-group-item button>
-                    <b-row class="city_box">
-                      <b-col> <p class="city_name">서울특별시</p></b-col>
+                      <b-col>
+                        <p class="city_name">{{ regions }}</p></b-col
+                      >
                       <b-col style="text-align: right">
                         <b-icon icon="chevron-compact-right"></b-icon>
                       </b-col>
@@ -289,6 +264,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
 
 import {
@@ -349,6 +325,8 @@ export default {
   },
   data() {
     return {
+      regionlist: [],
+      trade_amount: [],
       chartData: {
         labels: [
           "2015년",
@@ -415,80 +393,76 @@ export default {
       },
     };
   },
+  created() {
+    this.getRegionList();
+    this.getTrade_amount();
+  },
+  methods: {
+    getRegionList() {
+      axios
+        .get("http://localhost:3000/select")
+        .then((res) => {
+          for (var i = 0; i < res.data.length; i++) {
+            this.regionlist.push(res.data[i].sido_nm);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    getTrade_amount() {
+      axios.get("http://localhost:3000/getapi").then((res) => {
+        console.log(res.data);
+      });
+    },
+
+    getTrade() {
+      var xhr = new XMLHttpRequest();
+      var url =
+        "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev"; /*URL*/
+      var queryParams =
+        "?" +
+        encodeURIComponent("serviceKey") +
+        "=" +
+        "bt1l9ZZf/Pw1gog7Dab2RM16AgkVkn07K/bieKxpMVvm7mh5AEES+zYFsPB/fE58AScqIo1cuJLXOS6XGIONcg=="; /*Service Key*/
+      queryParams +=
+        "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1"); /**/
+      queryParams +=
+        "&" +
+        encodeURIComponent("numOfRows") +
+        "=" +
+        encodeURIComponent("10"); /**/
+      queryParams +=
+        "&" +
+        encodeURIComponent("LAWD_CD") +
+        "=" +
+        encodeURIComponent("11110"); /**/
+      queryParams +=
+        "&" +
+        encodeURIComponent("DEAL_YMD") +
+        "=" +
+        encodeURIComponent("201512"); /**/
+      xhr.open("GET", url + queryParams);
+      xhr.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          alert(
+            "Status: " +
+              this.status +
+              "nHeaders: " +
+              JSON.stringify(this.getAllResponseHeaders()) +
+              "nBody: " +
+              this.responseText
+          );
+        }
+      };
+
+      xhr.send("");
+    },
+  },
 };
 </script>
 
 <style>
-#content {
-  margin: 20px;
-}
-.city_box {
-  margin: auto;
-}
-.city_name {
-  margin-bottom: 0;
-  text-align: left;
-}
-.chart_title {
-  margin-bottom: -10px;
-  font-weight: bold;
-  padding-left: 15%;
-}
-#etc_info {
-  margin-top: 20px;
-  padding: 0;
-}
-.etc_title {
-  text-align: left;
-  text-indent: 2.7em;
-  font-weight: bold;
-}
-.etc_content {
-  font-size: 15px;
-}
-
-/* 그래프 기간 설정 버튼 */
-.option_check_l {
-  height: 30px;
-  background-color: gray;
-  border: 1px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  color: white;
-}
-.option_check_l:hover {
-  background-color: rgb(85, 85, 85);
-}
-.option_check_l:visited {
-  background-color: rgb(85, 85, 85);
-}
-.option_check {
-  height: 30px;
-  background-color: gray;
-  border: 1px;
-  color: white;
-}
-.option_check:hover {
-  background-color: rgb(85, 85, 85);
-}
-.option_check_r {
-  height: 30px;
-  background-color: gray;
-  border: 1px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  color: white;
-}
-.option_check_r:hover {
-  background-color: rgb(85, 85, 85);
-}
-.set_year {
-  margin-bottom: 10px;
-}
-#trade {
-  color: red;
-}
-#charter {
-  color: red;
-}
+@import "../assets/css/common.css";
 </style>
