@@ -412,52 +412,9 @@ export default {
     },
 
     getTrade_amount() {
-      axios.get("http://localhost:3000/getapi").then((res) => {
+      axios.get("http://localhost:3000/getTotaltrade").then((res) => {
         console.log(res.data);
       });
-    },
-
-    getTrade() {
-      var xhr = new XMLHttpRequest();
-      var url =
-        "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev"; /*URL*/
-      var queryParams =
-        "?" +
-        encodeURIComponent("serviceKey") +
-        "=" +
-        "bt1l9ZZf/Pw1gog7Dab2RM16AgkVkn07K/bieKxpMVvm7mh5AEES+zYFsPB/fE58AScqIo1cuJLXOS6XGIONcg=="; /*Service Key*/
-      queryParams +=
-        "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1"); /**/
-      queryParams +=
-        "&" +
-        encodeURIComponent("numOfRows") +
-        "=" +
-        encodeURIComponent("10"); /**/
-      queryParams +=
-        "&" +
-        encodeURIComponent("LAWD_CD") +
-        "=" +
-        encodeURIComponent("11110"); /**/
-      queryParams +=
-        "&" +
-        encodeURIComponent("DEAL_YMD") +
-        "=" +
-        encodeURIComponent("201512"); /**/
-      xhr.open("GET", url + queryParams);
-      xhr.onreadystatechange = function () {
-        if (this.readyState == 4) {
-          alert(
-            "Status: " +
-              this.status +
-              "nHeaders: " +
-              JSON.stringify(this.getAllResponseHeaders()) +
-              "nBody: " +
-              this.responseText
-          );
-        }
-      };
-
-      xhr.send("");
     },
   },
 };
