@@ -27,27 +27,29 @@ router.get("/select", function (req, res) {
     }
   );
 });
+// 지역코드 담을 배열
+var addr_cod = [];
+var total_trade = 0;
+// 쿼리문 결과 배열에 추가
+var pushResults = function (rows) {
+  for (var i = 0; i < rows.length; i++) {
+    addr_cod.push(rows[i].addr_cd);
+  }
+};
 
 router.get("/getTotaltrade", function (req, res) {
-  var addr_cod = [];
-  var total_trade = 0;
-
-  var pushResults = function (rows) {
-    for (var i = 0; i < rows.length; i++) {
-      addr_cod.push(rows[i].addr_cd);
-    }
-  };
   maria.query(
     "select addr_cd from sm_address_code",
     function (err, rows, field) {
       if (!err) {
         pushResults(rows);
+        // console.log(addr_cod);
       } else {
         console.log(err);
       }
     }
   );
-  console.log(addr_cod);
+  // console.log(addr_cod);
 
   for (var j = 0; j < addr_cod.length; j++) {
     var url =
@@ -90,10 +92,12 @@ router.get("/getTotaltrade", function (req, res) {
               spaces: 4,
             });
             var json = JSON.parse(xmlToJson);
-            // console.log(json);
-            console.log(Object.values(json.response.body.totalCount)[0]);
-            // total_trade += Object.values(json.response.body.totalCount)[j];
-            // console.log(total_trade);
+            console.log(json);
+            // console.log(typeof Object.values(json.response.body.totalCount)[0]);
+            count = parseInt(Object.values(json.response.body.totalCount)[j]);
+            console.log(typeof count);
+            total_trade += count;
+            console.log(total_trade);
           }
         } else {
           console.log(err);
@@ -101,6 +105,7 @@ router.get("/getTotaltrade", function (req, res) {
       }
     );
   }
+  // console.log(total_trade);
 });
 
 module.exports = router;
