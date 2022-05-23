@@ -84,3 +84,8 @@
 #charter {
   color: red;
 }
+
+/* 랭크시스템 */
+#rank_sys h5 {
+  text-align: left;
+}

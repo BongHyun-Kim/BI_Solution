@@ -31,13 +31,17 @@ router.get("/select", function (req, res) {
 router.get("/getTotaltrade", function (req, res) {
   var addr_cod = [];
   var total_trade = 0;
+
+  var pushResults = function (rows) {
+    for (var i = 0; i < rows.length; i++) {
+      addr_cod.push(rows[i].addr_cd);
+    }
+  };
   maria.query(
     "select addr_cd from sm_address_code",
     function (err, rows, field) {
       if (!err) {
-        for (var i = 0; i < rows.length; i++) {
-          addr_cod.push(rows[i].addr_cd);
-        }
+        pushResults(rows);
       } else {
         console.log(err);
       }

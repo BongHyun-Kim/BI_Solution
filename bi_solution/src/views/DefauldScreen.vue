@@ -216,6 +216,14 @@
                     />
                   </b-card>
                 </b-row>
+                <br />
+                <b-row>
+                  <b-card>
+                    <b-row>
+                      <h5 class="rank_title">전국 아파트 Rank</h5>
+                    </b-row>
+                  </b-card>
+                </b-row>
               </b-container>
             </b-card>
           </div>
