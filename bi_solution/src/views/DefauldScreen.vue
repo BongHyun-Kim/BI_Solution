@@ -408,7 +408,7 @@ export default {
   methods: {
     getRegionList() {
       axios
-        .get("http://15.164.213.27:3000/select")
+        .get("http://{ip_address}/select")
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.regionlist.push(res.data[i].sido_nm);
@@ -420,7 +420,7 @@ export default {
     },
 
     getTrade_amount() {
-      axios.get("http://15.164.213.27/getTotaltrade").then((res) => {
+      axios.get("http://{ip_address}}/getTotaltrade").then((res) => {
         console.log(res.data);
       });
     },
