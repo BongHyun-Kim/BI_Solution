@@ -7,9 +7,9 @@
             <b-card title="Card Title" no-body>
               <b-card-header header-tag="nav">
                 <b-nav card-header tabs>
-                  <b-nav-item active>시 / 도</b-nav-item>
-                  <b-nav-item>시 / 군 / 구</b-nav-item>
-                  <b-nav-item>읍 / 면 / 동</b-nav-item>
+                  <b-nav-item active id="regionFirst" @click="show_Sigungu(1)">시 / 도</b-nav-item>
+                  <b-nav-item id="regionSecond" @click="show_Sigungu(2)">시 / 군 / 구</b-nav-item>
+                  <b-nav-item id="regionThird" @click="show_Sigungu(3)">읍 / 면 / 동</b-nav-item>
                 </b-nav>
               </b-card-header>
 
@@ -18,12 +18,47 @@
                   <b-list-group-item
                     button
                     class="region_select"
-                    v-for="regions in regionlist"
-                    v-bind:key="regions"
+                    v-for="region in regionlist"
+                    v-bind:key="region"
+                    v-show="regionChk1"
+                  >
+                    <b-row class="city_box" @click="search_Sigungu(region)">
+                      <b-col>
+                        <p class="city_name">{{ region }}</p></b-col
+                      >
+                      <b-col style="text-align: right">
+                        <b-icon icon="chevron-compact-right"></b-icon>
+                      </b-col>
+                    </b-row>
+                  </b-list-group-item>
+
+                  <b-list-group-item
+                    button
+                    class="region_select"
+                    v-for="sigungu in sigunguList"
+                    v-bind:key="sigungu"
+                    v-show="regionChk2"
+                  >
+                    <b-row class="city_box" @click="search_dong(sigungu)">
+                      <b-col>
+                        <p class="city_name">{{ sigungu }}</p></b-col
+                      >
+                      <b-col style="text-align: right">
+                        <b-icon icon="chevron-compact-right"></b-icon>
+                      </b-col>
+                    </b-row>
+                  </b-list-group-item>
+
+                  <b-list-group-item
+                    button
+                    class="region_select"
+                    v-for="dong in dongList"
+                    v-bind:key="dong"
+                    v-show="regionChk3"
                   >
                     <b-row class="city_box">
                       <b-col>
-                        <p class="city_name">{{ regions }}</p></b-col
+                        <p class="city_name" @click="search_tmp(dong)">{{ dong }}</p></b-col
                       >
                       <b-col style="text-align: right">
                         <b-icon icon="chevron-compact-right"></b-icon>
@@ -333,8 +368,15 @@ export default {
   },
   data() {
     return {
-      regionlist: [],
+      regionlist: [],       // 시/도 리스트
+      sigunguList: [],      // 시/군/구 리스트
+      dongList: [],         // 읍/면/동 리스트
       trade_amount: [],
+      regionChk1: true,     // 시/도 
+      regionChk2: false,    // 시/군/구
+      regionChk3: false,    // 읍/면/동
+      sidoName: '',         // 시도 이름(클릭한)  
+      sigunguName: '',      // 시군구 이름(클릭한)
       chartData: {
         labels: [
           "2015년",
@@ -403,12 +445,12 @@ export default {
   },
   created() {
     this.getRegionList();
-    this.getTrade_amount();
+    //this.getTrade_amount();
   },
   methods: {
     getRegionList() {
       axios
-        .get("http://{ip_address}/select")
+        .get("http://localhost:3000/select")
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.regionlist.push(res.data[i].sido_nm);
@@ -420,9 +462,67 @@ export default {
     },
 
     getTrade_amount() {
-      axios.get("http://{ip_address}}/getTotaltrade").then((res) => {
+      axios.get("http://localhost:3000/getTotaltrade").then((res) => {
         console.log(res.data);
       });
+    },
+    search_Sigungu(region){
+      this.sigunguList = [];
+      this.sidoName = region;
+      this.regionChk1 = false;
+      this.regionChk2 = true;
+      axios.get('http://localhost:3000/searchSigungu?' + 'regionName=' + region).then((res) =>{  
+        for(var i = 1; i < res.data.length; i++){
+          this.sigunguList.push(res.data[i].city_nm);
+          
+          document.getElementById('regionFirst').firstChild.classList.remove('active');
+          document.getElementById('regionSecond').firstChild.classList.add('active');
+        }
+      })
+    },
+
+    search_dong(sigungu){
+      this.dongList = [];
+      this.regionChk1 = false;
+      this.regionChk2 = false;
+      this.regionChk3 = true;
+      axios.get('http://localhost:3000/searchDong?' + 'sigunguName=' + sigungu + '&sidoName=' + this.sidoName).then((res) => {
+        for(var i = 0; i < res.data.length; i++){
+          this.dongList.push(res.data[i].dong);
+        }
+        document.getElementById('regionSecond').firstChild.classList.remove('active');
+        document.getElementById('regionThird').firstChild.classList.add('active');
+      })
+    },
+    show_Sigungu(step){
+      if(this.sigunguList.length == 0 && step ==2){
+        alert('시/도를 선택해야 읍/면/동을 확인하실 수 있습니다');
+        return ;
+      }else if(this.dongList.length == 0 && step ==3){
+        alert('시/군/구를 선택해야 읍/면/동을 확인하실 수 있습니다')
+        return ;
+      }
+
+      if(step == 1){          
+        this.dongList = [];
+        this.sigunguList = [];
+        this.regionChk1 = true;
+        this.regionChk2 = false;
+        this.regionChk3 = false;
+        document.getElementById('regionSecond').firstChild.classList.remove('active');
+        document.getElementById('regionFirst').firstChild.classList.add('active');
+      }else if(step == 2){    
+        this.dongList = [];
+        this.regionChk1 = false;
+        this.regionChk2 = true;
+        this.regionChk3 = false;
+        document.getElementById('regionThird').firstChild.classList.remove('active');
+        document.getElementById('regionSecond').firstChild.classList.add('active');
+      }
+      
+    },
+    search_tmp(dong){
+      console.log("temp : " + dong);
     },
   },
 };

@@ -109,4 +109,36 @@ router.get("/getTotaltrade", function (req, res) {
   // console.log(total_trade);
 });
 
+// 읍/면/동
+router.get("/searchDong", function(req, res) {
+  console.log('backend sidoName : ' + req.query.sidoName);
+  maria.query("SELECT DISTINCT dong FROM addr_list WHERE city_nm = ? and sido_nm = ? AND detailed IS NULL", [req.query.sigunguName, req.query.sidoName], function(err, rows, fields){
+    res.send(rows);
+  })
+})
+
+// 시/군/구
+router.get("/searchSigungu", function(req, res) {
+  console.log(req.query.regionName);
+   maria.query("SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ?", req.query.regionName, function(err, rows, fields){
+     console.log("query result : " + rows);
+     res.send(rows);
+   })
+})
+
+// 시/도
+router.get("/select", function (req, res) {
+  maria.query(
+    "select distinct sido_nm from addr_list",
+    function (err, rows, fields) {
+      if (!err) {
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
 module.exports = router;
