@@ -17,6 +17,13 @@
   text-decoration: underline;
 }
 
+/* 그래프 전환 버튼 */
+#graph_switch {
+  text-align: right;
+  align-items: center;
+  font-size: 13px;
+}
+
 /* 차트 제목 */
 .chart_title {
   margin-bottom: -10px;

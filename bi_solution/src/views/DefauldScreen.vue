@@ -6,7 +6,7 @@
           <b-card>
             <div>
               <b-tabs content-class="mt-3" justified>
-                <b-tab title="시 / 도" active id="regionFirst">
+                <b-tab title="시 / 도" active class="regionFirst">
                   <b-list-group-item
                     button
                     class="region_select"
@@ -23,7 +23,7 @@
                       </b-col>
                     </b-row> </b-list-group-item
                 ></b-tab>
-                <b-tab title="시 / 군 / 구" id="regionSecond"
+                <b-tab title="시 / 군 / 구" class="regionSecond"
                   ><b-list-group-item
                     button
                     class="region_select"
@@ -40,7 +40,7 @@
                       </b-col>
                     </b-row> </b-list-group-item
                 ></b-tab>
-                <b-tab title="읍 / 면 / 동" id="regionThird"
+                <b-tab title="읍 / 면 / 동" class="regionThird"
                   ><b-list-group-item
                     button
                     class="region_select"
@@ -64,16 +64,20 @@
           </b-card>
         </b-col>
         <b-col cols="8">
-          <div>
-            <b-form-checkbox
-              v-model="checked"
-              name="check-button"
-              switch
-              id="graph_type"
-            >
-              그래프 전환 <b>(거래방식: {{ method }})</b>
-            </b-form-checkbox>
-          </div>
+          <b-row>
+            <div id="graph_switch">
+              <b-form-checkbox
+                v-model="method"
+                name="check-button"
+                value="매매"
+                unchecked-value="전,월세"
+                switch
+                id="graph_type"
+              >
+                그래프 전환 <b>(거래방식: {{ method }})</b>
+              </b-form-checkbox>
+            </div>
+          </b-row>
           <div>
             <b-card>
               <b-container>
@@ -311,6 +315,7 @@
 
 <script>
 import axios from "axios";
+import $ from "jquery";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
 
 import {
@@ -481,9 +486,14 @@ export default {
           for (var i = 1; i < res.data.length; i++) {
             this.sigunguList.push(res.data[i].city_nm);
 
-            document.getElementById("regionFirst").classList.remove("active");
-            console.log("asdf");
-            document.getElementById("regionSecond").classList.add("active");
+            // document.getElementById("regionFirst").classList.remove("active");
+            // //console.log("asdf");
+            // document.getElementById("regionSecond").classList.add("active");
+            $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
+            $(".tab-content>div:nth-child(1)").removeClass("active");
+            $(".nav-tabs>li:nth-child(2)>a").addClass("active");
+            $(".tab-content>div:nth-child(2)").addClass("active");
+            $(".tab-content>div:nth-child(2)").css("display", "block");
           }
         });
     },
@@ -505,8 +515,13 @@ export default {
           for (var i = 0; i < res.data.length; i++) {
             this.dongList.push(res.data[i].dong);
           }
-          document.getElementById("regionSecond").classList.remove("active");
-          document.getElementById("regionThird").classList.add("active");
+          // document.getElementById("regionSecond").classList.remove("active");
+          // document.getElementById("regionThird").classList.add("active");
+          $(".nav-tabs>li:nth-child(2)>a").removeClass("active");
+          $(".tab-content>div:nth-child(2)").removeClass("active");
+          $(".nav-tabs>li:nth-child(3)>a").addClass("active");
+          $(".tab-content>div:nth-child(3)").addClass("active");
+          $(".tab-content>div:nth-child(3)").css("display", "block");
         });
     },
     show_Sigungu(step) {
@@ -524,8 +539,10 @@ export default {
         this.regionChk1 = true;
         this.regionChk2 = false;
         this.regionChk3 = false;
-        document.getElementById("regionSecond").classList.remove("active");
-        document.getElementById("regionFirst").classList.add("active");
+        // document.getElementById("regionSecond").classList.remove("active");
+        // document.getElementById("regionFirst").classList.add("active");
+        $(".regionFirst").removeClass("active");
+        $(".regionSecond").addClass("active");
       } else if (step == 2) {
         this.dongList = [];
         this.regionChk1 = false;
@@ -540,8 +557,7 @@ export default {
     },
   },
 };
-
-// console.log(document.getElementById("graph_type").value());
+console.log($("#graph_type").value);
 </script>
 
 <style>
