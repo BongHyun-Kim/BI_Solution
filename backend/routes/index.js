@@ -6,11 +6,6 @@ var router = express.Router();
 
 const maria = require("../mariaConn");
 
-// /* GET home page. */
-// router.get('/', function(req, res, next) {
-//   res.render('index', { title: 'Express' });
-// });
-
 router.get("/", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
@@ -120,7 +115,7 @@ router.get("/searchDong", function(req, res) {
 // 시/군/구
 router.get("/searchSigungu", function(req, res) {
   console.log(req.query.regionName);
-   maria.query("SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ?", req.query.regionName, function(err, rows, fields){
+   maria.query("SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ? AND detailed IS NULL", req.query.regionName, function(err, rows, fields){
      console.log("query result : " + rows);
      res.send(rows);
    })

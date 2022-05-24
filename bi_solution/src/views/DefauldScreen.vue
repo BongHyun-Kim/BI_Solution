@@ -14,59 +14,115 @@
               </b-card-header>
 
               <b-card-body class="text-center">
-                <b-list-group>
-                  <b-list-group-item
-                    button
-                    class="region_select"
-                    v-for="region in regionlist"
-                    v-bind:key="region"
-                    v-show="regionChk1"
-                  >
-                    <b-row class="city_box" @click="search_Sigungu(region)">
-                      <b-col>
-                        <p class="city_name">{{ region }}</p></b-col
-                      >
-                      <b-col style="text-align: right">
+                <b-list-group
+                button
+                class="region_select"
+                v-for="(region, i) in regionlist"
+                v-bind:key="region"
+                v-show="regionChk1"
+                >
+                  <div v-if="i < 15">
+                    <b-list-group-item>
+                      <b-row  class="city_box" @click="search_Sigungu(region)">
+                        <b-col>
+                        <p class="city_name">{{ region }}</p>
+                        </b-col>
+                        <b-col style="text-align: right">
                         <b-icon icon="chevron-compact-right"></b-icon>
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
-
-                  <b-list-group-item
-                    button
-                    class="region_select"
-                    v-for="sigungu in sigunguList"
-                    v-bind:key="sigungu"
-                    v-show="regionChk2"
-                  >
-                    <b-row class="city_box" @click="search_dong(sigungu)">
-                      <b-col>
-                        <p class="city_name">{{ sigungu }}</p></b-col
-                      >
-                      <b-col style="text-align: right">
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <button v-show="!showMore1" v-if="i == 14 && regionlist.length > 14" @click="showMore1 = !showMore1">더보기</button>
+                  </div>
+                  <div v-else v-show="showMore1">
+                    <b-list-group-item>
+                      <b-row  class="city_box" @click="search_Sigungu(region)">
+                        <b-col>
+                        <p class="city_name">{{ region }}</p>
+                        </b-col>
+                        <b-col style="text-align: right">
                         <b-icon icon="chevron-compact-right"></b-icon>
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
-
-                  <b-list-group-item
-                    button
-                    class="region_select"
-                    v-for="dong in dongList"
-                    v-bind:key="dong"
-                    v-show="regionChk3"
-                  >
-                    <b-row class="city_box">
-                      <b-col>
-                        <p class="city_name" @click="search_tmp(dong)">{{ dong }}</p></b-col
-                      >
-                      <b-col style="text-align: right">
-                        <b-icon icon="chevron-compact-right"></b-icon>
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <button v-if="i == regionlist.length -1" @click="showMore1 = !showMore1" v-show="showMore1">- 접기</button>
+                  </div>
                 </b-list-group>
+                
+                <b-list-group
+                button
+                class="region_select"
+                v-for="(sigungu, i) in sigunguList"
+                v-bind:key="sigungu"
+                v-show="regionChk2"
+                >
+                  <div v-if="i < 15">
+                    <b-list-group-item>
+                      <b-row class="city_box" @click="search_dong(sigungu)">
+                        <b-col>
+                        <p class="city_name">{{ sigungu }}</p></b-col
+                        >
+                        <b-col style="text-align: right">
+                        <b-icon icon="chevron-compact-right"></b-icon>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <button v-show="!showMore2" v-if="i == 14 && sigunguList.length > 14" @click="showMore2 = !showMore2">더보기</button>
+                  </div>
+                  <div v-else v-show="showMore2">
+                    <b-list-group-item>
+                      <b-row class="city_box" @click="search_dong(sigungu)">
+                        <b-col>
+                        <p class="city_name">{{ sigungu }}</p></b-col
+                        >
+                        <b-col style="text-align: right">
+                        <b-icon icon="chevron-compact-right"></b-icon>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <button v-if="i == sigunguList.length -1" @click="showMore2 = !showMore2" v-show="showMore2">- 접기</button>
+                  </div>
+                </b-list-group>
+
+                <b-list-group
+                button
+                class="region_select"
+                v-for="(dong, i) in dongList"
+                v-bind:key="dong"
+                v-show="regionChk3"
+                >
+                  <div v-if="i < 15">
+                    <b-list-group-item>
+                      <b-row class="city_box">
+                        <b-col>
+                        <p class="city_name" @click="search_tmp(dong)">{{ dong }}</p></b-col
+                        >
+                        <b-col style="text-align: right">
+                        <b-icon icon="chevron-compact-right"></b-icon>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <button v-show="!showMore3" v-if="i == 14 && dongList.length > 15" @click="showMore3 = !showMore3">더보기</button>
+                  </div>
+                  <div v-else v-show="showMore3">
+                    <b-list-group-item>
+                      <b-row class="city_box">
+                        <b-col>
+                        <p class="city_name" @click="search_tmp(dong)">{{ dong }}</p></b-col
+                        >
+                        <b-col style="text-align: right">
+                        <b-icon icon="chevron-compact-right"></b-icon>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <button v-if="i == dongList.length -1 && dongList.length > 15" @click="showMore3 = !showMore3" v-show="showMore3">- 접기</button>
+                  </div>
+                </b-list-group>
+
+                
+
               </b-card-body>
+
             </b-card>
           </div>
         </b-col>
@@ -377,6 +433,9 @@ export default {
       regionChk3: false,    // 읍/면/동
       sidoName: '',         // 시도 이름(클릭한)  
       sigunguName: '',      // 시군구 이름(클릭한)
+      showMore1: false,     // 시/도 더보기 버튼
+      showMore2: false,     // 시/군/구 더보기 버튼
+      showMore3: false,     // 읍/면/동 더보기 버튼
       chartData: {
         labels: [
           "2015년",
@@ -472,7 +531,7 @@ export default {
       this.regionChk1 = false;
       this.regionChk2 = true;
       axios.get('http://localhost:3000/searchSigungu?' + 'regionName=' + region).then((res) =>{  
-        for(var i = 1; i < res.data.length; i++){
+        for(var i = 0; i < res.data.length; i++){
           this.sigunguList.push(res.data[i].city_nm);
           
           document.getElementById('regionFirst').firstChild.classList.remove('active');
@@ -519,13 +578,24 @@ export default {
         document.getElementById('regionThird').firstChild.classList.remove('active');
         document.getElementById('regionSecond').firstChild.classList.add('active');
       }
+
+      this.showMore1 = false;
+      this.showMore2 = false;
+      this.showMore3 = false;
       
     },
     search_tmp(dong){
       console.log("temp : " + dong);
     },
+    show_More(){
+      console.log('show_More clicked');
+    }
   },
 };
+//eslint-disable-next-line
+function show_Region(numb){
+  console.log('show_Region : ' + numb);
+}
 </script>
 
 <style>
