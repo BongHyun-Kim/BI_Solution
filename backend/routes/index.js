@@ -6,11 +6,6 @@ var router = express.Router();
 
 const maria = require("../mariaConn");
 
-// /* GET home page. */
-// router.get('/', function(req, res, next) {
-//   res.render('index', { title: 'Express' });
-// });
-
 router.get("/", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
