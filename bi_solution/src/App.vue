@@ -12,13 +12,19 @@ import Content from "./views/DefauldScreen.vue";
 import Footer from "./views/CommonFooter.vue";
 
 import Vue from "vue";
-import { BootstrapVue, IconsPlugin, TabsPlugin } from "bootstrap-vue";
+import {
+  BootstrapVue,
+  IconsPlugin,
+  TabsPlugin,
+  FormCheckboxPlugin,
+} from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(TabsPlugin);
+Vue.use(FormCheckboxPlugin);
 
 export default {
   name: "bi_solution",
