@@ -538,6 +538,9 @@ export default {
     search_tmp(dong) {
       console.log("temp : " + dong);
     },
+    show_More() {
+      console.log("show_More clicked");
+    },
   },
 };
 
