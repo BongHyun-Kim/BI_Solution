@@ -73,6 +73,7 @@
                 unchecked-value="전,월세"
                 switch
                 id="graph_type"
+                @change="destroy_chart"
               >
                 그래프 전환 <b>(거래방식: {{ method }})</b>
               </b-form-checkbox>
@@ -90,12 +91,14 @@
                       <b-col cols="1">
                         <b-button
                           size="sm"
-                          v-b-popover.bottom.hover.html="
+                          v-b-popover.bottom.click.html="
                             '<div class=' +
                             'set_year' +
                             '>' +
                             '<button class=' +
-                            'option_check_l' +
+                            'option_check_l ' +
+                            'onclick=' +
+                            'testFunction()' +
                             '> 전체 </button>' +
                             '<button class=' +
                             'option_check' +
@@ -156,6 +159,7 @@
                       </b-col>
                     </b-row>
                     <LineChartGenerator
+                      id="top_graph"
                       :chart-options="chartOptions"
                       :chart-data="chartData"
                       :chart-id="chartId"
@@ -246,6 +250,7 @@
                       </b-col>
                     </b-row>
                     <LineChartGenerator
+                      id="bottom_graph"
                       :chart-options="chartOptions1"
                       :chart-data="chartData1"
                       :chart-id="chartId"
@@ -262,7 +267,23 @@
                 <b-row>
                   <b-card>
                     <b-row>
-                      <h5 class="rank_title">전국 아파트 Rank</h5>
+                      <h5 id="rank_title">전국 시도별 아파트 랭킹</h5>
+                    </b-row>
+                    <b-row>
+                      <h6 id="rank_sub_title1">
+                        전국 아파트 매매 가격 변동률 Top 5
+                      </h6>
+                      <b-col
+                        class="rank1_content"
+                        v-for="(item, i) in rankData"
+                        v-bind:key="item"
+                        cols="4"
+                      >
+                        <p>
+                          {{ i + 1 }}위 : {{ item.region }} :
+                          {{ item.CHANGERATE * 100 }}%
+                        </p></b-col
+                      >
                     </b-row>
                   </b-card>
                 </b-row>
@@ -386,6 +407,7 @@ export default {
       regionChk3: false, // 읍/면/동
       sidoName: "", // 시도 이름(클릭한)
       sigunguName: "", // 시군구 이름(클릭한)
+      rankData: [],
       chartData: {
         labels: [
           "2015년",
@@ -454,9 +476,15 @@ export default {
   },
   created() {
     this.getRegionList();
+    this.getRank();
     //this.getTrade_amount();
   },
   methods: {
+    destroy_chart() {
+      console.log("change");
+      console.log($("#graph_type").val());
+      // $("#top_graph").destory();
+    },
     getRegionList() {
       axios
         .get("http://localhost:3000/select")
@@ -555,9 +583,19 @@ export default {
     search_tmp(dong) {
       console.log("temp : " + dong);
     },
+    getRank() {
+      axios.get("http://localhost:3000/getRank").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.rankData.push(res.data[i]);
+        }
+      });
+    },
   },
 };
-console.log($("#graph_type").value);
+// console.log($(".custom-control-input").value);
+// function testFunction() {
+//   console.log("asdfasdfasdfasdf");
+// }
 </script>
 
 <style>

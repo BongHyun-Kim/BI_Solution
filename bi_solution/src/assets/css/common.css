@@ -93,6 +93,19 @@
 }
 
 /* 랭크시스템 */
-#rank_sys h5 {
+#rank_title {
+  font-weight: bold;
+}
+
+#rank_sub_title1 {
   text-align: left;
+}
+
+.rank1_content {
+  font-size: 15px;
+  padding: 0;
+}
+
+.rank1_content p {
+  margin-bottom: 0;
 }
