@@ -276,7 +276,7 @@
                       <b-col
                         class="rank1_content"
                         v-for="(item, i) in rankData"
-                        v-bind:key="item"
+                        v-bind:key="i"
                         cols="4"
                       >
                         <p>
