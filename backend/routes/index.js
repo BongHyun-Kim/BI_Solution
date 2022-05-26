@@ -144,9 +144,19 @@ router.get("/select", function (req, res) {
   );
 });
 
-router.get("/getRank", function (req, res) {
+router.get("/getRank_trade", function (req, res) {
   maria.query(
-    "SELECT  region , ROUND(SUM(rate)/86, 2) AS CHANGERATE FROM change_rate GROUP BY region ORDER BY CHANGERATE DESC LIMIT 5",
+    "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM trade_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
+    function (err, rows, field) {
+      console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+router.get("/getRank_charter", function (req, res) {
+  maria.query(
+    "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM charter_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
     function (err, rows, field) {
       console.log(rows);
       res.send(rows);

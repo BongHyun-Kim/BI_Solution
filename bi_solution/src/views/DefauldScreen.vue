@@ -6,7 +6,12 @@
           <b-card>
             <div>
               <b-tabs content-class="mt-3" justified>
-                <b-tab title="시 / 도" active class="regionFirst">
+                <b-tab
+                  title="시 / 도"
+                  active
+                  class="regionFirst"
+                  @click="show_Sigungu(1)"
+                >
                   <b-list-group-item
                     button
                     class="region_select"
@@ -23,7 +28,10 @@
                       </b-col>
                     </b-row> </b-list-group-item
                 ></b-tab>
-                <b-tab title="시 / 군 / 구" class="regionSecond"
+                <b-tab
+                  title="시 / 군 / 구"
+                  class="regionSecond"
+                  @click="show_Sigungu(2)"
                   ><b-list-group-item
                     button
                     class="region_select"
@@ -40,7 +48,10 @@
                       </b-col>
                     </b-row> </b-list-group-item
                 ></b-tab>
-                <b-tab title="읍 / 면 / 동" class="regionThird"
+                <b-tab
+                  title="읍 / 면 / 동"
+                  class="regionThird"
+                  @click="show_Sigungu(3)"
                   ><b-list-group-item
                     button
                     class="region_select"
@@ -159,9 +170,9 @@
                       </b-col>
                     </b-row>
                     <LineChartGenerator
-                      id="top_graph_td"
+                      id="top_graph"
                       :chart-options="chartOptions"
-                      :chart-data="chartData_trade_indice"
+                      :chart-data="top_chart"
                       :chart-id="chartId"
                       :dataset-id-key="datasetIdKey"
                       :plugins="plugins"
@@ -169,19 +180,6 @@
                       :styles="styles"
                       :width="width"
                       :height="height"
-                    />
-                    <LineChartGenerator
-                      id="top_graph_chr"
-                      :chart-options="chartOptions"
-                      :chart-data="chartData_charter_indice"
-                      :chart-id="chartId"
-                      :dataset-id-key="datasetIdKey"
-                      :plugins="plugins"
-                      :css-classes="cssClasses"
-                      :styles="styles"
-                      :width="width"
-                      :height="height"
-                      style="display: none"
                     />
                   </b-card>
                 </b-row>
@@ -263,9 +261,9 @@
                       </b-col>
                     </b-row>
                     <LineChartGenerator
-                      id="bottom_graph_tdr"
+                      id="bottom_graph"
                       :chart-options="chartOptions1"
-                      :chart-data="chartData_trade_rate"
+                      :chart-data="bottom_chart"
                       :chart-id="chartId"
                       :dataset-id-key="datasetIdKey"
                       :plugins="plugins"
@@ -273,19 +271,6 @@
                       :styles="styles"
                       :width="width"
                       :height="height"
-                    />
-                    <LineChartGenerator
-                      id="bottom_graph_chr"
-                      :chart-options="chartOptions"
-                      :chart-data="chartData_charter_rate"
-                      :chart-id="chartId"
-                      :dataset-id-key="datasetIdKey"
-                      :plugins="plugins"
-                      :css-classes="cssClasses"
-                      :styles="styles"
-                      :width="width"
-                      :height="height"
-                      style="display: none"
                     />
                   </b-card>
                 </b-row>
@@ -301,13 +286,30 @@
                       </h6>
                       <b-col
                         class="rank1_content"
-                        v-for="(item, i) in rankData"
+                        v-for="(trade, i) in rankData_trade"
                         v-bind:key="i"
                         cols="4"
                       >
                         <p>
-                          {{ i + 1 }}위 : {{ item.region }} :
-                          {{ item.CHANGERATE * 100 }}%
+                          {{ i + 1 }}위 : {{ trade.region }} :
+                          {{ trade.avg_rate }}%
+                        </p></b-col
+                      >
+                    </b-row>
+                    <br />
+                    <b-row>
+                      <h6 id="rank_sub_title1">
+                        전국 아파트 매매 가격 변동률 Top 5
+                      </h6>
+                      <b-col
+                        class="rank1_content"
+                        v-for="(charter, j) in rankData_charter"
+                        v-bind:key="j"
+                        cols="4"
+                      >
+                        <p>
+                          {{ j + 1 }}위 : {{ charter.region }} :
+                          {{ charter.avg_rate }}%
                         </p></b-col
                       >
                     </b-row>
@@ -433,8 +435,9 @@ export default {
       regionChk3: false, // 읍/면/동
       sidoName: "", // 시도 이름(클릭한)
       sigunguName: "", // 시군구 이름(클릭한)
-      rankData: [],
-      chartData_trade_indice: {
+      rankData_trade: [],
+      rankData_charter: [],
+      top_chart: {
         labels: [
           "2015년",
           "2016년",
@@ -452,7 +455,7 @@ export default {
           },
         ],
       },
-      chartData_trade_rate: {
+      bottom_chart: {
         labels: [
           "2015년",
           "2016년",
@@ -467,42 +470,6 @@ export default {
             label: "매매 가격 변동률",
             backgroundColor: "rgb(118, 118, 118)",
             data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
-          },
-        ],
-      },
-      chartData_charter_indice: {
-        labels: [
-          "2015년",
-          "2016년",
-          "2017년",
-          "2018년",
-          "2019년",
-          "2020년",
-          "2021년",
-        ],
-        datasets: [
-          {
-            label: "전,월세 통합 지수",
-            backgroundColor: "rgb(118, 118, 118)",
-            data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
-          },
-        ],
-      },
-      chartData_charter_rate: {
-        labels: [
-          "2015년",
-          "2016년",
-          "2017년",
-          "2018년",
-          "2019년",
-          "2020년",
-          "2021년",
-        ],
-        datasets: [
-          {
-            label: "전,월세 통합 변동률",
-            backgroundColor: "rgb(118, 118, 118)",
-            data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
           },
         ],
       },
@@ -538,27 +505,48 @@ export default {
   },
   created() {
     this.getRegionList();
-    this.getRank();
+    this.getRank_trade();
+    this.getRank_charter();
     //this.getTrade_amount();
   },
   methods: {
     destroy_chart() {
       if ($("#graph_switch>div>label>b").text() == "(거래방식: 매매)") {
-        $("#top_graph_td").css("display", "block");
-        $("#bottom_graph_tdr").css("display", "block");
-        $("#top_graph_chr").css("display", "none");
-        $("#bottom_graph_chr").css("display", "none");
         $(".chart_title:first").text("전국 아파트 매매 가격 지수");
         $(".chart_title:last").text("전국 아파트 매매 가격 변동률");
+        (this.top_chart.datasets = [
+          {
+            label: "매매 가격 지수",
+            backgroundColor: "rgb(118, 118, 118)",
+            data: [84.26, 86.28, 87.2, 87.88, 86.44, 89.55, 100.52],
+          },
+        ]),
+          (this.bottom_chart.datasets = [
+            {
+              label: "매매 가격 변동률",
+              backgroundColor: "rgb(118, 118, 118)",
+              data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
+            },
+          ]);
       } else if (
         $("#graph_switch>div>label>b").text() == "(거래방식: 전,월세)"
       ) {
-        $("#top_graph_td").css("display", "none");
-        $("#bottom_graph_tdr").css("display", "none");
-        $("#top_graph_chr").css("display", "block");
-        $("#bottom_graph_chr").css("display", "block");
         $(".chart_title:first").text("전국 아파트 전,월세 통합 지수");
         $(".chart_title:last").text("전국 아파트 전,월세 통합 변동률");
+        (this.top_chart.datasets = [
+          {
+            label: "전,월세 통합 지수",
+            backgroundColor: "rgb(118, 118, 118)",
+            data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
+          },
+        ]),
+          (this.bottom_chart.datasets = [
+            {
+              label: "전,월세 통합 변동률",
+              backgroundColor: "rgb(118, 118, 118)",
+              data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
+            },
+          ]);
       }
     },
     getRegionList() {
@@ -630,7 +618,17 @@ export default {
     },
     show_Sigungu(step) {
       if (this.sigunguList.length == 0 && step == 2) {
-        alert("시/도를 선택해야 읍/면/동을 확인하실 수 있습니다");
+        alert("시/도를 선택해야 시/군/구를 확인하실 수 있습니다");
+        this.$nextTick(() => {
+          $(".tab-content>div:nth-child(1)").removeAttr("style");
+          $(".tab-content>div:nth-child(2)").css("display", "none");
+          this.$nextTick(() => {
+            $(".nav-tabs>li:nth-child(2)>a").removeClass("active");
+            $(".tab-content>div:nth-child(2)").removeClass("active");
+            $(".nav-tabs>li:nth-child(1)>a").addClass("active");
+            $(".tab-content>div:nth-child(1)").addClass("active");
+          });
+        });
         return;
       } else if (this.dongList.length == 0 && step == 3) {
         alert("시/군/구를 선택해야 읍/면/동을 확인하실 수 있습니다");
@@ -643,26 +641,36 @@ export default {
         this.regionChk1 = true;
         this.regionChk2 = false;
         this.regionChk3 = false;
+        $(".nav-tabs>li:nth-child(2)").addClass("disabled");
+        $(".nav-tabs>li:nth-child(3)").addClass("disabled");
         // document.getElementById("regionSecond").classList.remove("active");
         // document.getElementById("regionFirst").classList.add("active");
-        $(".regionFirst").removeClass("active");
-        $(".regionSecond").addClass("active");
+        // $(".regionFirst").removeClass("active");
+        // $(".regionSecond").addClass("active");
       } else if (step == 2) {
         this.dongList = [];
         this.regionChk1 = false;
         this.regionChk2 = true;
         this.regionChk3 = false;
-        document.getElementById("regionThird").classList.remove("active");
-        document.getElementById("regionSecond").classList.add("active");
+        // document.getElementById("regionThird").classList.remove("active");
+        // document.getElementById("regionSecond").classList.add("active");
+        $(".nav-tabs>li:nth-child(3)>a").removeClass("active");
       }
     },
     search_tmp(dong) {
       console.log("temp : " + dong);
     },
-    getRank() {
-      axios.get("http://localhost:3000/getRank").then((res) => {
+    getRank_trade() {
+      axios.get("http://localhost:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
-          this.rankData.push(res.data[i]);
+          this.rankData_trade.push(res.data[i]);
+        }
+      });
+    },
+    getRank_charter() {
+      axios.get("http://localhost:3000/getRank_charter").then((res) => {
+        for (var j = 0; j < res.data.length; j++) {
+          this.rankData_charter.push(res.data[j]);
         }
       });
     },
