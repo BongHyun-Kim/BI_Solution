@@ -73,6 +73,7 @@
                 unchecked-value="전,월세"
                 switch
                 id="graph_type"
+                @change="destroy_chart()"
               >
                 그래프 전환 <b>(거래방식: {{ method }})</b>
               </b-form-checkbox>
@@ -90,12 +91,14 @@
                       <b-col cols="1">
                         <b-button
                           size="sm"
-                          v-b-popover.bottom.hover.html="
+                          v-b-popover.bottom.click.html="
                             '<div class=' +
                             'set_year' +
                             '>' +
                             '<button class=' +
-                            'option_check_l' +
+                            'option_check_l ' +
+                            'onclick=' +
+                            'testFunction()' +
                             '> 전체 </button>' +
                             '<button class=' +
                             'option_check' +
@@ -156,8 +159,9 @@
                       </b-col>
                     </b-row>
                     <LineChartGenerator
+                      id="top_graph_td"
                       :chart-options="chartOptions"
-                      :chart-data="chartData"
+                      :chart-data="chartData_trade_indice"
                       :chart-id="chartId"
                       :dataset-id-key="datasetIdKey"
                       :plugins="plugins"
@@ -165,6 +169,19 @@
                       :styles="styles"
                       :width="width"
                       :height="height"
+                    />
+                    <LineChartGenerator
+                      id="top_graph_chr"
+                      :chart-options="chartOptions"
+                      :chart-data="chartData_charter_indice"
+                      :chart-id="chartId"
+                      :dataset-id-key="datasetIdKey"
+                      :plugins="plugins"
+                      :css-classes="cssClasses"
+                      :styles="styles"
+                      :width="width"
+                      :height="height"
+                      style="display: none"
                     />
                   </b-card>
                 </b-row>
@@ -246,8 +263,9 @@
                       </b-col>
                     </b-row>
                     <LineChartGenerator
+                      id="bottom_graph_tdr"
                       :chart-options="chartOptions1"
-                      :chart-data="chartData1"
+                      :chart-data="chartData_trade_rate"
                       :chart-id="chartId"
                       :dataset-id-key="datasetIdKey"
                       :plugins="plugins"
@@ -256,13 +274,42 @@
                       :width="width"
                       :height="height"
                     />
+                    <LineChartGenerator
+                      id="bottom_graph_chr"
+                      :chart-options="chartOptions"
+                      :chart-data="chartData_charter_rate"
+                      :chart-id="chartId"
+                      :dataset-id-key="datasetIdKey"
+                      :plugins="plugins"
+                      :css-classes="cssClasses"
+                      :styles="styles"
+                      :width="width"
+                      :height="height"
+                      style="display: none"
+                    />
                   </b-card>
                 </b-row>
                 <br />
                 <b-row>
                   <b-card>
                     <b-row>
-                      <h5 class="rank_title">전국 아파트 Rank</h5>
+                      <h5 id="rank_title">전국 시도별 아파트 랭킹</h5>
+                    </b-row>
+                    <b-row>
+                      <h6 id="rank_sub_title1">
+                        전국 아파트 매매 가격 변동률 Top 5
+                      </h6>
+                      <b-col
+                        class="rank1_content"
+                        v-for="(item, i) in rankData"
+                        v-bind:key="i"
+                        cols="4"
+                      >
+                        <p>
+                          {{ i + 1 }}위 : {{ item.region }} :
+                          {{ item.CHANGERATE * 100 }}%
+                        </p></b-col
+                      >
                     </b-row>
                   </b-card>
                 </b-row>
@@ -386,7 +433,8 @@ export default {
       regionChk3: false, // 읍/면/동
       sidoName: "", // 시도 이름(클릭한)
       sigunguName: "", // 시군구 이름(클릭한)
-      chartData: {
+      rankData: [],
+      chartData_trade_indice: {
         labels: [
           "2015년",
           "2016년",
@@ -404,7 +452,7 @@ export default {
           },
         ],
       },
-      chartData1: {
+      chartData_trade_rate: {
         labels: [
           "2015년",
           "2016년",
@@ -419,6 +467,42 @@ export default {
             label: "매매 가격 변동률",
             backgroundColor: "rgb(118, 118, 118)",
             data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
+          },
+        ],
+      },
+      chartData_charter_indice: {
+        labels: [
+          "2015년",
+          "2016년",
+          "2017년",
+          "2018년",
+          "2019년",
+          "2020년",
+          "2021년",
+        ],
+        datasets: [
+          {
+            label: "전,월세 통합 지수",
+            backgroundColor: "rgb(118, 118, 118)",
+            data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
+          },
+        ],
+      },
+      chartData_charter_rate: {
+        labels: [
+          "2015년",
+          "2016년",
+          "2017년",
+          "2018년",
+          "2019년",
+          "2020년",
+          "2021년",
+        ],
+        datasets: [
+          {
+            label: "전,월세 통합 변동률",
+            backgroundColor: "rgb(118, 118, 118)",
+            data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
           },
         ],
       },
@@ -454,9 +538,29 @@ export default {
   },
   created() {
     this.getRegionList();
+    this.getRank();
     //this.getTrade_amount();
   },
   methods: {
+    destroy_chart() {
+      if ($("#graph_switch>div>label>b").text() == "(거래방식: 매매)") {
+        $("#top_graph_td").css("display", "block");
+        $("#bottom_graph_tdr").css("display", "block");
+        $("#top_graph_chr").css("display", "none");
+        $("#bottom_graph_chr").css("display", "none");
+        $(".chart_title:first").text("전국 아파트 매매 가격 지수");
+        $(".chart_title:last").text("전국 아파트 매매 가격 변동률");
+      } else if (
+        $("#graph_switch>div>label>b").text() == "(거래방식: 전,월세)"
+      ) {
+        $("#top_graph_td").css("display", "none");
+        $("#bottom_graph_tdr").css("display", "none");
+        $("#top_graph_chr").css("display", "block");
+        $("#bottom_graph_chr").css("display", "block");
+        $(".chart_title:first").text("전국 아파트 전,월세 통합 지수");
+        $(".chart_title:last").text("전국 아파트 전,월세 통합 변동률");
+      }
+    },
     getRegionList() {
       axios
         .get("http://localhost:3000/select")
@@ -555,9 +659,19 @@ export default {
     search_tmp(dong) {
       console.log("temp : " + dong);
     },
+    getRank() {
+      axios.get("http://localhost:3000/getRank").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.rankData.push(res.data[i]);
+        }
+      });
+    },
   },
 };
-console.log($("#graph_type").value);
+// console.log($(".custom-control-input").value);
+// function testFunction() {
+//   console.log("asdfasdfasdfasdf");
+// }
 </script>
 
 <style>

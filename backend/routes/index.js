@@ -144,4 +144,14 @@ router.get("/select", function (req, res) {
   );
 });
 
+router.get("/getRank", function (req, res) {
+  maria.query(
+    "SELECT  region , ROUND(SUM(rate)/86, 2) AS CHANGERATE FROM change_rate GROUP BY region ORDER BY CHANGERATE DESC LIMIT 5",
+    function (err, rows, field) {
+      console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
 module.exports = router;
