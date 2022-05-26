@@ -120,7 +120,7 @@ router.get("/searchDong", function (req, res) {
 router.get("/searchSigungu", function (req, res) {
   console.log(req.query.regionName);
   maria.query(
-    "SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ?",
+    "SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ? AND detailed IS NULL",
     req.query.regionName,
     function (err, rows, fields) {
       console.log("query result : " + rows);
