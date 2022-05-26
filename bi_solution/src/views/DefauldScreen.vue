@@ -347,10 +347,10 @@
                 </b-row>
                 <b-row>
                   <b-col class="etc_content">
-                    <span>기준금리 : 1.5%</span>
+                    <span>기준금리 : {{ baseMoney.rate }}%</span>
                   </b-col>
                   <b-col class="etc_content">
-                    <span>최저시급 : 9,160원</span>
+                    <span>최저시급 : {{ minimumWage.wage }}원</span>
                   </b-col>
                 </b-row>
               </b-col>
@@ -437,6 +437,8 @@ export default {
       sigunguName: "", // 시군구 이름(클릭한)
       rankData_trade: [],
       rankData_charter: [],
+      baseMoney: { rate: null },
+      minimumWage: { wage: null },
       top_chart: {
         labels: [
           "2015년",
@@ -507,6 +509,8 @@ export default {
     this.getRegionList();
     this.getRank_trade();
     this.getRank_charter();
+    this.getBaseMoney();
+    this.getMinimun_wage();
     //this.getTrade_amount();
   },
   methods: {
@@ -674,12 +678,18 @@ export default {
         }
       });
     },
+    getBaseMoney() {
+      axios.get("http://localhost:3000/getBaseMoney").then((res) => {
+        this.baseMoney = res.data[0];
+      });
+    },
+    getMinimun_wage() {
+      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
+        this.minimumWage = res.data[0];
+      });
+    },
   },
 };
-// console.log($(".custom-control-input").value);
-// function testFunction() {
-//   console.log("asdfasdfasdfasdf");
-// }
 </script>
 
 <style>

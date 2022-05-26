@@ -164,4 +164,24 @@ router.get("/getRank_charter", function (req, res) {
   );
 });
 
+router.get("/getBasemoney", function (req, res) {
+  maria.query(
+    "SELECT rate FROM basemoney_rate ORDER BY idx DESC LIMIT 1",
+    function (err, rows, field) {
+      console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+router.get("/getMinimunWage", function (req, res) {
+  maria.query(
+    "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1",
+    function (err, rows, field) {
+      console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
 module.exports = router;
