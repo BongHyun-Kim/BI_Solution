@@ -171,7 +171,7 @@
                     </b-row>
                     <LineChartGenerator
                       id="top_graph"
-                      :chart-options="chartOptions"
+                      :chart-options="chartOptions_top"
                       :chart-data="top_chart"
                       :chart-id="chartId"
                       :dataset-id-key="datasetIdKey"
@@ -262,15 +262,15 @@
                     </b-row>
                     <LineChartGenerator
                       id="bottom_graph"
-                      :chart-options="chartOptions1"
+                      :chart-options="chartOptions_bottom"
                       :chart-data="bottom_chart"
                       :chart-id="chartId"
                       :dataset-id-key="datasetIdKey"
                       :plugins="plugins"
                       :css-classes="cssClasses"
                       :styles="styles"
-                      :width="width"
-                      :height="height"
+                      :width="100"
+                      :height="400"
                     />
                   </b-card>
                 </b-row>
@@ -284,7 +284,7 @@
                       <h6 id="rank_sub_title1">
                         전국 아파트 매매 가격 변동률 Top 5
                       </h6>
-                      <b-col
+                      <!-- <b-col
                         class="rank1_content"
                         v-for="(trade, i) in rankData_trade"
                         v-bind:key="i"
@@ -294,24 +294,24 @@
                           {{ i + 1 }}위 : {{ trade.region }} :
                           {{ trade.avg_rate }}%
                         </p></b-col
-                      >
+                      > -->
+                      <Doughnut
+                        :chart-options="chartOptions_Rank1"
+                        :chart-data="rankGraph_l"
+                        :chart-id="chartId"
+                        :dataset-id-key="datasetIdKey"
+                        :plugins="plugins"
+                        :css-classes="cssClasses"
+                        :styles="styles"
+                        :width="300"
+                        :height="150"
+                      />
                     </b-row>
                     <br />
                     <b-row>
                       <h6 id="rank_sub_title1">
                         전국 아파트 매매 가격 변동률 Top 5
                       </h6>
-                      <b-col
-                        class="rank1_content"
-                        v-for="(charter, j) in rankData_charter"
-                        v-bind:key="j"
-                        cols="4"
-                      >
-                        <p>
-                          {{ j + 1 }}위 : {{ charter.region }} :
-                          {{ charter.avg_rate }}%
-                        </p></b-col
-                      >
                     </b-row>
                   </b-card>
                 </b-row>
@@ -366,12 +366,14 @@
 import axios from "axios";
 import $ from "jquery";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
+import { Doughnut } from "vue-chartjs/legacy";
 
 import {
   Chart as ChartJS,
   Title,
   Tooltip,
   Legend,
+  ArcElement,
   LineElement,
   LinearScale,
   CategoryScale,
@@ -382,6 +384,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  ArcElement,
   LineElement,
   LinearScale,
   CategoryScale,
@@ -392,11 +395,12 @@ export default {
   name: "LineChart",
   components: {
     LineChartGenerator,
+    Doughnut,
   },
   props: {
     chartId: {
       type: String,
-      default: "line-chart",
+      default: "data_chart",
     },
     datasetIdKey: {
       type: String,
@@ -439,6 +443,18 @@ export default {
       rankData_charter: [],
       baseMoney: { rate: null },
       minimumWage: { wage: null },
+      rankGraph_l: {
+        labels: [],
+        datasets: [{ label: null, backgroundColor: [], data: [] }],
+      },
+      chartOptions_Rank1: {
+        plugins: {
+          legend: { display: true, position: null },
+          title: { display: true, align: "", text: "" },
+        },
+        resposive: null,
+        maintainAspectRatio: null,
+      },
       top_chart: {
         labels: [
           "2015년",
@@ -475,7 +491,7 @@ export default {
           },
         ],
       },
-      chartOptions: {
+      chartOptions_top: {
         plugins: {
           legend: {
             display: false,
@@ -489,7 +505,7 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
       },
-      chartOptions1: {
+      chartOptions_bottom: {
         plugins: {
           legend: {
             display: false,
@@ -509,8 +525,7 @@ export default {
     this.getRegionList();
     this.getRank_trade();
     this.getRank_charter();
-    this.getBaseMoney();
-    this.getMinimun_wage();
+    this.getGraph_data();
     //this.getTrade_amount();
   },
   methods: {
@@ -664,6 +679,69 @@ export default {
     search_tmp(dong) {
       console.log("temp : " + dong);
     },
+    getBaseMoney() {
+      axios.get("http://localhost:3000/getBaseMoney").then((res) => {
+        this.baseMoney = res.data[0];
+      });
+    },
+    getMinimun_wage() {
+      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
+        this.minimumWage = res.data[0];
+      });
+    },
+
+    getRank_dataL() {
+      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.rankGraph_l.labels.push(res.data[i].region);
+          this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
+          this.rankGraph_l.datasets[0].backgroundColor = [
+            "#41B883",
+            "#E46651",
+            "#00D8FF",
+            "#DD1B16",
+            "#F3FF00",
+          ];
+          this.rankGraph_l.datasets[0].data.push(res.data[i].avg_rate);
+        }
+      });
+      console.log(this.chartOptions_Rank1.title);
+
+      this.chartOptions_Rank1.plugins.legend.position = "left";
+      this.chartOptions_Rank1.plugins.title.align = "end";
+      this.chartOptions_Rank1.plugins.title.text = "기준월(2016.06=100)";
+      this.chartOptions_Rank1.resposive = true;
+      this.chartOptions_Rank1.maintainAspectRatio = false;
+
+      console.log(this.chartOptions_Rank1.title);
+    },
+
+    getRank_dataR() {
+      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.rankGraph_l.labels.push(res.data[i].region);
+          this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
+          this.rankGraph_l.datasets[0].backgroundColor = [
+            "#41B883",
+            "#E46651",
+            "#00D8FF",
+            "#DD1B16",
+            "#F3FF00",
+          ];
+          this.rankGraph_l.datasets[0].data.push(res.data[i].avg_rate);
+        }
+      });
+      console.log(this.chartOptions_Rank1.title);
+
+      this.chartOptions_Rank1.plugins.legend.position = "left";
+      this.chartOptions_Rank1.plugins.title.align = "end";
+      this.chartOptions_Rank1.plugins.title.text = "기준월(2016.06=100)";
+      this.chartOptions_Rank1.resposive = true;
+      this.chartOptions_Rank1.maintainAspectRatio = false;
+
+      console.log(this.chartOptions_Rank1.title);
+    },
+
     getRank_trade() {
       axios.get("http://localhost:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
@@ -676,16 +754,6 @@ export default {
         for (var j = 0; j < res.data.length; j++) {
           this.rankData_charter.push(res.data[j]);
         }
-      });
-    },
-    getBaseMoney() {
-      axios.get("http://localhost:3000/getBaseMoney").then((res) => {
-        this.baseMoney = res.data[0];
-      });
-    },
-    getMinimun_wage() {
-      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
-        this.minimumWage = res.data[0];
       });
     },
   },

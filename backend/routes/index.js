@@ -164,6 +164,16 @@ router.get("/getRank_charter", function (req, res) {
   );
 });
 
+router.get("/getTrade_rate", function (req, res) {
+  maria.query(
+    "SELECT region, round(AVG(rate),2) FROM trade_change_rate WHERE region = '전국' GROUP BY region, LEFT(period,4);",
+    function (err, rows, field) {
+      console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
 router.get("/getBasemoney", function (req, res) {
   maria.query(
     "SELECT rate FROM basemoney_rate ORDER BY idx DESC LIMIT 1",
