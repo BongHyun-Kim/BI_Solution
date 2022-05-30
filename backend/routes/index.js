@@ -174,11 +174,11 @@ router.get("/getTrade_rate", function (req, res) {
   );
 });
 
-router.get("/getBasemoney", function (req, res) {
+router.get("/getBasemoney_rank", function (req, res) {
   maria.query(
     "SELECT rate FROM basemoney_rate ORDER BY idx DESC LIMIT 1",
     function (err, rows, field) {
-      console.log(rows);
+      // console.log(rows);
       res.send(rows);
     }
   );
@@ -188,7 +188,7 @@ router.get("/getMinimunWage", function (req, res) {
   maria.query(
     "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1",
     function (err, rows, field) {
-      console.log(rows);
+      // console.log(rows);
       res.send(rows);
     }
   );
@@ -196,7 +196,17 @@ router.get("/getMinimunWage", function (req, res) {
 
 router.get("/getWages", function (req, res) {
   maria.query(
-    "SELECT idx, period, wage FROM minimum_wage WHERE period BETWEEN 2015 AND 2022",
+    "SELECT idx, period, wage FROM minimum_wage WHERE period BETWEEN 2015 AND 2021",
+    function (err, rows, field) {
+      // console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+router.get("/getBasemoney_chart", function (req, res) {
+  maria.query(
+    "SELECT YEAR(period), ROUND(AVG(rate),1) FROM basemoney_rate WHERE YEAR(period) BETWEEN 2012 AND 2021 GROUP BY YEAR(period)",
     function (err, rows, field) {
       console.log(rows);
       res.send(rows);

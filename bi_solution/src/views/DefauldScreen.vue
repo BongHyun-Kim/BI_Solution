@@ -76,7 +76,7 @@
                 unchecked-value="전,월세"
                 switch
                 id="graph_type"
-                @change="destroy_chart()"
+                @change="trans_chart()"
               >
                 그래프 전환 <b>(거래방식: {{ method }})</b>
               </b-form-checkbox>
@@ -103,11 +103,15 @@
                             <b-form-checkbox
                               v-model="graph_set"
                               value="기준금리"
+                              id="rate_ck"
+                              @change="compare_top_rate"
                               >기준금리</b-form-checkbox
                             >
                             <b-form-checkbox
                               v-model="graph_set"
                               value="최저시급"
+                              id="wage_ck"
+                              @change="compare_top_wage"
                               >최저시급</b-form-checkbox
                             >
                             <b-dropdown-divider></b-dropdown-divider>
@@ -150,22 +154,46 @@
                         <div>
                           <b-dropdown id="" text="" class="m-md-2">
                             <b-dropdown-group>
-                              <b-dropdown-item @click="graphPeriod('all')">전체</b-dropdown-item>
-                              <b-dropdown-item @click="graphPeriod('1')" >1개월</b-dropdown-item>
-                              <b-dropdown-item @click="graphPeriod('3')" >3개월</b-dropdown-item>
-                              <b-dropdown-item @click="graphPeriod('6')" >6개월</b-dropdown-item>
+                              <b-dropdown-item @click="graphPeriod('all')"
+                                >전체</b-dropdown-item
+                              >
+                              <b-dropdown-item @click="graphPeriod('1')"
+                                >1개월</b-dropdown-item
+                              >
+                              <b-dropdown-item @click="graphPeriod('3')"
+                                >3개월</b-dropdown-item
+                              >
+                              <b-dropdown-item @click="graphPeriod('6')"
+                                >6개월</b-dropdown-item
+                              >
                             </b-dropdown-group>
                             <b-dropdown-divider></b-dropdown-divider>
                             <b-dropdown-group>
                               <b-check-group>
-                                <b-checkbox v-model="chkDataArr" value="standard">기준금리</b-checkbox>
-                                <b-checkbox v-model="chkDataArr" value="minimum">최저시급</b-checkbox>
+                                <b-checkbox
+                                  v-model="chkDataArr"
+                                  value="standard"
+                                  >기준금리</b-checkbox
+                                >
+                                <b-checkbox v-model="chkDataArr" value="minimum"
+                                  >최저시급</b-checkbox
+                                >
                               </b-check-group>
-                              {{chkDataArr}}
-                              {{clickPeriod}}
-                              <b-card v-for="chkData in chkDataArr" :key="chkData" tag="li" class="mt-1 mr-1" body-class="py-1 pr-2 text-nowrap">
-                                <strong>{{chkData}}</strong>
-                                <b-button @click="removeTag(chkData)" variant="lint" size="sm">
+                              {{ chkDataArr }}
+                              {{ clickPeriod }}
+                              <b-card
+                                v-for="chkData in chkDataArr"
+                                :key="chkData"
+                                tag="li"
+                                class="mt-1 mr-1"
+                                body-class="py-1 pr-2 text-nowrap"
+                              >
+                                <strong>{{ chkData }}</strong>
+                                <b-button
+                                  @click="removeTag(chkData)"
+                                  variant="lint"
+                                  size="sm"
+                                >
                                   remove
                                 </b-button>
                               </b-card>
@@ -369,8 +397,9 @@ export default {
       baseMoney: { rate: null }, // 기본지표 (기준금리)
       minimumWage: { wage: null }, // 기본지표 (최저시급)
       wageList: [], // 년도별 시급
-      chkDataArr:[],                // 그래프설정 체크박스 
-      clickPeriod: '',              // 그래프설정 기간
+      chkDataArr: [], // 그래프설정 체크박스
+      clickPeriod: "", // 그래프설정 기간
+      basemoney_list: [], // 메인그래프 기준금리 리스트
       rankGraph_l: {
         // 왼쪽 랭크 그래프 데이터 설정
         labels: [],
@@ -400,6 +429,7 @@ export default {
         maintainAspectRatio: null,
       },
       graph_set: [], // 그래프 설정 버튼
+
       top_chart: {
         labels: [
           "2015년",
@@ -412,8 +442,10 @@ export default {
         ],
         datasets: [
           {
+            yAxisID: "trade",
             label: "매매 가격 지수",
-            backgroundColor: "rgb(118, 118, 118)",
+            backgroundColor: "rgb(255, 0, 0)",
+            borderColor: "rgb(255, 0, 0)",
             data: [84.26, 86.28, 87.2, 87.88, 86.44, 89.55, 100.52],
           },
         ],
@@ -472,12 +504,13 @@ export default {
     this.getRank_charter();
     this.getRank_dataL();
     this.getRank_dataR();
-    this.getBaseMoney();
+    this.getBaseMoney_rank();
+    this.getBaseMoney_chart();
     this.getMinimun_wage();
     this.getWage();
   },
   methods: {
-    destroy_chart() {
+    trans_chart() {
       if ($("#graph_switch>div>label>b").text() == "(거래방식: 매매)") {
         $(".chart_title:first").text("전국 아파트 매매 가격 지수");
         $(".chart_title:last").text("전국 아파트 매매 가격 변동률");
@@ -637,10 +670,9 @@ export default {
     search_tmp(dong) {
       console.log("temp : " + dong);
     },
-    getBaseMoney() {
-      axios.get("http://localhost:3000/getBaseMoney").then((res) => {
+    getBaseMoney_rank() {
+      axios.get("http://localhost:3000/getBaseMoney_rank").then((res) => {
         this.baseMoney = res.data[0];
-        console.log(res.data[0]);
       });
     },
     getMinimun_wage() {
@@ -664,7 +696,6 @@ export default {
           this.rankGraph_l.datasets[0].data.push(res.data[i].avg_rate);
         }
       });
-      console.log(this.chartOptions_Rank1.title);
 
       this.chartOptions_Rank1.plugins.legend.position = "left";
       this.chartOptions_Rank1.plugins.title.align = "end";
@@ -688,7 +719,6 @@ export default {
           this.rankGraph_r.datasets[0].data.push(res.data[i].avg_rate);
         }
       });
-      console.log(this.chartOptions_Rank1.title);
 
       this.chartOptions_Rank2.plugins.legend.position = "left";
       this.chartOptions_Rank2.plugins.title.align = "end";
@@ -717,19 +747,83 @@ export default {
         }
       });
     },
-    graphPeriod(value){
+    getBaseMoney_chart() {
+      axios.get("http://localhost:3000/getBasemoney_chart").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.basemoney_list.push(res.data[i]);
+        }
+      });
+    },
+    graphPeriod(value) {
       this.clickPeriod = value;
     },
-    removeTag(tag){
-      this.chkDataArr.splice()
-      for(var i = 0; i < this.chkDataArr.length; i++){
-        if(this.chkDataArr[i] == tag){
-          this.chkDataArr.splice(i,1);
+    removeTag(tag) {
+      this.chkDataArr.splice();
+      for (var i = 0; i < this.chkDataArr.length; i++) {
+        if (this.chkDataArr[i] == tag) {
+          this.chkDataArr.splice(i, 1);
         }
+      }
+    },
+    compare_top_rate() {
+      if ($("#rate_ck").is(":checked")) {
+        this.top_chart.datasets.push({
+          yAxisID: "rate",
+          label: "기준금리",
+          backgroundColor: "rgb(255, 128, 0)",
+          borderColor: "rgb(255, 128, 0)",
+          data: [2.9, 2.5, 2.1, 1.6, 1.2, 1.5, 1.8, 1.4, 0.6, 0.9],
+        });
+        this.chartOptions_top.scales = {
+          trade: {
+            type: "linear",
+            position: "left",
+          },
+          rate: {
+            type: "linear",
+            position: "right",
+            grid: {
+              drawOnChartArea: false,
+            },
+          },
+        };
+      } else {
+        this.top_chart.datasets.pop();
+        delete this.chartOptions_top.scales;
+      }
+    },
+    compare_top_wage() {
+      if ($("#wage_ck").is(":checked")) {
+        this.top_chart.datasets.push({
+          yAxisID: "wage",
+          label: "최저시급",
+          backgroundColor: "rgb(255, 255, 0)",
+          borderColor: "rgb(255, 255, 0)",
+          data: [5580, 6030, 6470, 7530, 8350, 8590, 8720],
+        });
+        this.chartOptions_top.scales = {
+          trade: {
+            type: "linear",
+            position: "left",
+          },
+          wage: {
+            type: "linear",
+            position: "right",
+            grid: {
+              drawOnChartArea: false,
+            },
+          },
+        };
+      } else {
+        this.top_chart.datasets.pop();
+        delete this.chartOptions_top.scales;
       }
     },
   },
 };
+// $("#wage_ck").onchange = function () {
+//   console.log("12342134213");
+// };
 </script>
 
 <style>
