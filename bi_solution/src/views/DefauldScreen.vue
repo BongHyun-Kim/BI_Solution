@@ -100,73 +100,35 @@
                         <h5 class="chart_title">전국 아파트 매매 가격 지수</h5>
                       </b-col>
                       <b-col cols="1">
-                        <b-button
-                          size="sm"
-                          v-b-popover.bottom.click.html="
-                            '<div class=' +
-                            'set_year' +
-                            '>' +
-                            '<button class=' +
-                            'option_check_l ' +
-                            'onclick=' +
-                            'testFunction()' +
-                            '> 전체 </button>' +
-                            '<button class=' +
-                            'option_check' +
-                            '> 1개월 </button>' +
-                            '<button class=' +
-                            'option_check' +
-                            '> 3개월 </button>' +
-                            '<button class=' +
-                            'option_check_r' +
-                            '> 6개월 </button>' +
-                            '</div>' +
-                            '<div class=' +
-                            'set_item' +
-                            '>' +
-                            '<div class=' +
-                            'form-check' +
-                            '>' +
-                            '<input class=' +
-                            'form-check-input ' +
-                            'type=' +
-                            'checkbox ' +
-                            'id=' +
-                            'option1 ' +
-                            'value=' +
-                            '  ' +
-                            '>' +
-                            '<label class=' +
-                            'form-check-label ' +
-                            'for=' +
-                            'option1' +
-                            '> 기준금리' +
-                            '</label>' +
-                            '</div>' +
-                            '<div class=' +
-                            'form-check' +
-                            '>' +
-                            '<input class=' +
-                            'form-check-input ' +
-                            'type=' +
-                            'checkbox ' +
-                            'id=' +
-                            'option2 ' +
-                            'value=' +
-                            '  ' +
-                            '>' +
-                            '<label class=' +
-                            'form-check-label ' +
-                            'for=' +
-                            'option2' +
-                            '> 최저시급' +
-                            '</label>' +
-                            '</div>' +
-                            '</div>'
-                          "
-                          title="그래프 설정"
-                          ><b-icon icon="gear-fill" font-scale="0.8"></b-icon
-                        ></b-button>
+                        <b-dropdown id="dropdown-right" right class="m-2">
+                          <b-dropdown-form>
+                            <b-button-group>
+                              <b-button>전체</b-button>
+                              <b-button>1 개월</b-button>
+                              <b-button>3 개월</b-button>
+                              <b-button>6 개월</b-button>
+                            </b-button-group>
+                            <b-form-checkbox
+                              v-model="graph_set"
+                              value="기준금리"
+                              >기준금리</b-form-checkbox
+                            >
+                            <b-form-checkbox
+                              v-model="graph_set"
+                              value="최저시급"
+                              >최저시급</b-form-checkbox
+                            >
+                            <b-dropdown-divider></b-dropdown-divider>
+                            <b-form-tags
+                              id="tags-component-select"
+                              v-model="graph_set"
+                              size="sm"
+                              placeholder=""
+                              add-on-change
+                              no-outer-focus
+                            ></b-form-tags>
+                          </b-dropdown-form>
+                        </b-dropdown>
                       </b-col>
                     </b-row>
                     <LineChartGenerator
@@ -269,8 +231,8 @@
                       :plugins="plugins"
                       :css-classes="cssClasses"
                       :styles="styles"
-                      :width="100"
-                      :height="400"
+                      :width="width"
+                      :height="height"
                     />
                   </b-card>
                 </b-row>
@@ -310,8 +272,19 @@
                     <br />
                     <b-row>
                       <h6 id="rank_sub_title1">
-                        전국 아파트 매매 가격 변동률 Top 5
+                        전국 아파트 전,월세 변동률 Top 5
                       </h6>
+                      <Doughnut
+                        :chart-options="chartOptions_Rank2"
+                        :chart-data="rankGraph_r"
+                        :chart-id="chartId"
+                        :dataset-id-key="datasetIdKey"
+                        :plugins="plugins"
+                        :css-classes="cssClasses"
+                        :styles="styles"
+                        :width="300"
+                        :height="150"
+                      />
                     </b-row>
                   </b-card>
                 </b-row>
@@ -437,17 +410,25 @@ export default {
       regionChk1: true, // 시/도
       regionChk2: false, // 시/군/구
       regionChk3: false, // 읍/면/동
-      sidoName: "", // 시도 이름(클릭한)
-      sigunguName: "", // 시군구 이름(클릭한)
-      rankData_trade: [],
-      rankData_charter: [],
-      baseMoney: { rate: null },
-      minimumWage: { wage: null },
+      sidoName: "", // 시도 이름 (클릭한)
+      sigunguName: "", // 시군구 이름 (클릭한)
+      rankData_trade: [], // 랭크 데이터 (매매)
+      rankData_charter: [], // 랭크 데이터 (전,월세)
+      baseMoney: { rate: null }, // 기본지표 (기준금리)
+      minimumWage: { wage: null }, // 기본지표 (최저시급)
+      wageList: [], // 년도별 시급
       rankGraph_l: {
+        // 왼쪽 랭크 그래프 데이터 설정
+        labels: [],
+        datasets: [{ label: null, backgroundColor: [], data: [] }],
+      },
+      rankGraph_r: {
+        // 오른쪽 랭크 그래프 데이터 설정
         labels: [],
         datasets: [{ label: null, backgroundColor: [], data: [] }],
       },
       chartOptions_Rank1: {
+        // 왼쪽 랭크 옵션 설정
         plugins: {
           legend: { display: true, position: null },
           title: { display: true, align: "", text: "" },
@@ -455,6 +436,16 @@ export default {
         resposive: null,
         maintainAspectRatio: null,
       },
+      chartOptions_Rank2: {
+        // 오른쪽 랭크 옵션 설정
+        plugins: {
+          legend: { display: true, position: null },
+          title: { display: true, align: "", text: "" },
+        },
+        resposive: null,
+        maintainAspectRatio: null,
+      },
+      graph_set: [], // 그래프 설정 버튼
       top_chart: {
         labels: [
           "2015년",
@@ -525,8 +516,11 @@ export default {
     this.getRegionList();
     this.getRank_trade();
     this.getRank_charter();
-    this.getGraph_data();
-    //this.getTrade_amount();
+    this.getRank_dataL();
+    this.getRank_dataR();
+    this.getBaseMoney();
+    this.getMinimun_wage();
+    this.getWage();
   },
   methods: {
     destroy_chart() {
@@ -682,6 +676,7 @@ export default {
     getBaseMoney() {
       axios.get("http://localhost:3000/getBaseMoney").then((res) => {
         this.baseMoney = res.data[0];
+        console.log(res.data[0]);
       });
     },
     getMinimun_wage() {
@@ -712,34 +707,30 @@ export default {
       this.chartOptions_Rank1.plugins.title.text = "기준월(2016.06=100)";
       this.chartOptions_Rank1.resposive = true;
       this.chartOptions_Rank1.maintainAspectRatio = false;
-
-      console.log(this.chartOptions_Rank1.title);
     },
 
     getRank_dataR() {
-      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+      axios.get("http://localhost:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
-          this.rankGraph_l.labels.push(res.data[i].region);
-          this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
-          this.rankGraph_l.datasets[0].backgroundColor = [
+          this.rankGraph_r.labels.push(res.data[i].region);
+          this.rankGraph_r.datasets[0].label = "전국 전,월세 변동률 Top 5";
+          this.rankGraph_r.datasets[0].backgroundColor = [
             "#41B883",
             "#E46651",
             "#00D8FF",
             "#DD1B16",
             "#F3FF00",
           ];
-          this.rankGraph_l.datasets[0].data.push(res.data[i].avg_rate);
+          this.rankGraph_r.datasets[0].data.push(res.data[i].avg_rate);
         }
       });
       console.log(this.chartOptions_Rank1.title);
 
-      this.chartOptions_Rank1.plugins.legend.position = "left";
-      this.chartOptions_Rank1.plugins.title.align = "end";
-      this.chartOptions_Rank1.plugins.title.text = "기준월(2016.06=100)";
-      this.chartOptions_Rank1.resposive = true;
-      this.chartOptions_Rank1.maintainAspectRatio = false;
-
-      console.log(this.chartOptions_Rank1.title);
+      this.chartOptions_Rank2.plugins.legend.position = "left";
+      this.chartOptions_Rank2.plugins.title.align = "end";
+      this.chartOptions_Rank2.plugins.title.text = "기준월(2016.06=100)";
+      this.chartOptions_Rank2.resposive = true;
+      this.chartOptions_Rank2.maintainAspectRatio = false;
     },
 
     getRank_trade() {
@@ -751,8 +742,15 @@ export default {
     },
     getRank_charter() {
       axios.get("http://localhost:3000/getRank_charter").then((res) => {
-        for (var j = 0; j < res.data.length; j++) {
-          this.rankData_charter.push(res.data[j]);
+        for (var i = 0; i < res.data.length; i++) {
+          this.rankData_charter.push(res.data[i]);
+        }
+      });
+    },
+    getWage() {
+      axios.get("http://localhost:3000/getWages").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.wageList.push(res.data[i]);
         }
       });
     },

@@ -109,3 +109,12 @@
 .rank1_content p {
   margin-bottom: 0;
 }
+
+/* 그래프설정(태그) css 수정 부분 */
+
+/* #tags-component-select___input__ {
+  display: none;
+}
+#tags-component-select {
+  border: 0;
+} */

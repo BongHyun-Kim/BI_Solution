@@ -148,7 +148,7 @@ router.get("/getRank_trade", function (req, res) {
   maria.query(
     "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM trade_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
     function (err, rows, field) {
-      console.log(rows);
+      // console.log(rows);
       res.send(rows);
     }
   );
@@ -158,7 +158,7 @@ router.get("/getRank_charter", function (req, res) {
   maria.query(
     "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM charter_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
     function (err, rows, field) {
-      console.log(rows);
+      // console.log(rows);
       res.send(rows);
     }
   );
@@ -168,7 +168,7 @@ router.get("/getTrade_rate", function (req, res) {
   maria.query(
     "SELECT region, round(AVG(rate),2) FROM trade_change_rate WHERE region = '전국' GROUP BY region, LEFT(period,4);",
     function (err, rows, field) {
-      console.log(rows);
+      // console.log(rows);
       res.send(rows);
     }
   );
@@ -187,6 +187,16 @@ router.get("/getBasemoney", function (req, res) {
 router.get("/getMinimunWage", function (req, res) {
   maria.query(
     "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1",
+    function (err, rows, field) {
+      console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+router.get("/getWages", function (req, res) {
+  maria.query(
+    "SELECT idx, period, wage FROM minimum_wage WHERE period BETWEEN 2015 AND 2022",
     function (err, rows, field) {
       console.log(rows);
       res.send(rows);
