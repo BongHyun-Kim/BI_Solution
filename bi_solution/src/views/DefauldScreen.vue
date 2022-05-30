@@ -147,71 +147,31 @@
                         </h5>
                       </b-col>
                       <b-col cols="1">
-                        <b-button
-                          size="sm"
-                          v-b-popover.bottom.hover.html="
-                            '<div class=' +
-                            'set_year' +
-                            '>' +
-                            '<button class=' +
-                            'option_check_l' +
-                            '> 전체 </button>' +
-                            '<button class=' +
-                            'option_check' +
-                            '> 1개월 </button>' +
-                            '<button class=' +
-                            'option_check' +
-                            '> 3개월 </button>' +
-                            '<button class=' +
-                            'option_check_r' +
-                            '> 6개월 </button>' +
-                            '</div>' +
-                            '<div class=' +
-                            'set_item' +
-                            '>' +
-                            '<div class=' +
-                            'form-check' +
-                            '>' +
-                            '<input class=' +
-                            'form-check-input ' +
-                            'type=' +
-                            'checkbox ' +
-                            'id=' +
-                            'option1 ' +
-                            'value=' +
-                            '  ' +
-                            '>' +
-                            '<label class=' +
-                            'form-check-label ' +
-                            'for=' +
-                            'option1' +
-                            '> 기준금리' +
-                            '</label>' +
-                            '</div>' +
-                            '<div class=' +
-                            'form-check' +
-                            '>' +
-                            '<input class=' +
-                            'form-check-input ' +
-                            'type=' +
-                            'checkbox ' +
-                            'id=' +
-                            'option2 ' +
-                            'value=' +
-                            '  ' +
-                            '>' +
-                            '<label class=' +
-                            'form-check-label ' +
-                            'for=' +
-                            'option2' +
-                            '> 최저시급' +
-                            '</label>' +
-                            '</div>' +
-                            '</div>'
-                          "
-                          title="그래프 설정"
-                          ><b-icon icon="gear-fill" font-scale="0.8"></b-icon
-                        ></b-button>
+                        <div>
+                          <b-dropdown id="" text="" class="m-md-2">
+                            <b-dropdown-group>
+                              <b-dropdown-item @click="graphPeriod('all')">전체</b-dropdown-item>
+                              <b-dropdown-item @click="graphPeriod('1')" >1개월</b-dropdown-item>
+                              <b-dropdown-item @click="graphPeriod('3')" >3개월</b-dropdown-item>
+                              <b-dropdown-item @click="graphPeriod('6')" >6개월</b-dropdown-item>
+                            </b-dropdown-group>
+                            <b-dropdown-divider></b-dropdown-divider>
+                            <b-dropdown-group>
+                              <b-check-group>
+                                <b-checkbox v-model="chkDataArr" value="standard">기준금리</b-checkbox>
+                                <b-checkbox v-model="chkDataArr" value="minimum">최저시급</b-checkbox>
+                              </b-check-group>
+                              {{chkDataArr}}
+                              {{clickPeriod}}
+                              <b-card v-for="chkData in chkDataArr" :key="chkData" tag="li" class="mt-1 mr-1" body-class="py-1 pr-2 text-nowrap">
+                                <strong>{{chkData}}</strong>
+                                <b-button @click="removeTag(chkData)" variant="lint" size="sm">
+                                  remove
+                                </b-button>
+                              </b-card>
+                            </b-dropdown-group>
+                          </b-dropdown>
+                        </div>
                       </b-col>
                     </b-row>
                     <LineChartGenerator
@@ -409,6 +369,8 @@ export default {
       baseMoney: { rate: null }, // 기본지표 (기준금리)
       minimumWage: { wage: null }, // 기본지표 (최저시급)
       wageList: [], // 년도별 시급
+      chkDataArr:[],                // 그래프설정 체크박스 
+      clickPeriod: '',              // 그래프설정 기간
       rankGraph_l: {
         // 왼쪽 랭크 그래프 데이터 설정
         labels: [],
@@ -754,6 +716,17 @@ export default {
           this.wageList.push(res.data[i]);
         }
       });
+    },
+    graphPeriod(value){
+      this.clickPeriod = value;
+    },
+    removeTag(tag){
+      this.chkDataArr.splice()
+      for(var i = 0; i < this.chkDataArr.length; i++){
+        if(this.chkDataArr[i] == tag){
+          this.chkDataArr.splice(i,1);
+        }
+      }
     },
   },
 };
