@@ -9,12 +9,10 @@
                 <b-tab
                   title="시 / 도"
                   active
-                  class="regionFirst"
-                  @click="show_Sigungu(1)"
+                  @click="moveTabs(1)"
                 >
                   <b-list-group-item
                     button
-                    class="region_select"
                     v-for="region in regionlist"
                     v-bind:key="region"
                     v-show="regionChk1"
@@ -30,11 +28,10 @@
                 ></b-tab>
                 <b-tab
                   title="시 / 군 / 구"
-                  class="regionSecond"
-                  @click="show_Sigungu(2)"
+                  @click="moveTabs(2)"
+                  :disabled="!regionChk2"
                   ><b-list-group-item
                     button
-                    class="region_select"
                     v-for="sigungu in sigunguList"
                     v-bind:key="sigungu"
                     v-show="regionChk2"
@@ -50,11 +47,10 @@
                 ></b-tab>
                 <b-tab
                   title="읍 / 면 / 동"
-                  class="regionThird"
-                  @click="show_Sigungu(3)"
+                  @click="moveTabs(3)"
+                  :disabled="!regionChk3"
                   ><b-list-group-item
                     button
-                    class="region_select"
                     v-for="dong in dongList"
                     v-bind:key="dong"
                     v-show="regionChk3"
@@ -525,7 +521,8 @@ export default {
     this.getRegionList();
     this.getRank_trade();
     this.getRank_charter();
-    this.getGraph_data();
+    this.getBaseMoney();
+    this.getMinimun_wage();
     //this.getTrade_amount();
   },
   methods: {
@@ -586,6 +583,19 @@ export default {
         console.log(res.data);
       });
     },
+    // eslint-disable-next-line
+    moveRegion(region){           // 시/도, 시/군/구, 읍/면/동 리스트 클릭시
+      if(this.regionChk1){        // 최초 진입시, 나머지 regionChk2와 regionChk3를 false로...
+        this.regionChk2 = false;
+        this.regionChk3 = false;
+      }else if(this.regionChk2){  // 시/군/구
+        this.sigunguList = [];    // 시/군/구 리스트 초기화
+        this.regionChk3 = false;  // 읍/면/동 false로 disabled
+
+      }else if(this.regionChk3){  // 읍/면/동
+      this.dongList = [];         // 읍/면/동 리스트 초기화
+      }
+    },
     search_Sigungu(region) {
       this.sigunguList = [];
       this.sidoName = region;
@@ -596,23 +606,19 @@ export default {
         .then((res) => {
           for (var i = 1; i < res.data.length; i++) {
             this.sigunguList.push(res.data[i].city_nm);
-
-            // document.getElementById("regionFirst").classList.remove("active");
-            // //console.log("asdf");
-            // document.getElementById("regionSecond").classList.add("active");
-            $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
-            $(".tab-content>div:nth-child(1)").removeClass("active");
-            $(".nav-tabs>li:nth-child(2)>a").addClass("active");
-            $(".tab-content>div:nth-child(2)").addClass("active");
-            $(".tab-content>div:nth-child(2)").css("display", "block");
           }
+          $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
+          $(".tab-content>div:nth-child(1)").removeClass("active");
+          $(".nav-tabs>li:nth-child(2)>a").addClass("active");
+          $(".tab-content>div:nth-child(2)").addClass("active");
+          $(".tab-content>div:nth-child(2)").css("display", "block");
         });
     },
 
     search_dong(sigungu) {
       this.dongList = [];
-      this.regionChk1 = false;
-      this.regionChk2 = false;
+      this.regionChk1 = true;
+      this.regionChk2 = true;
       this.regionChk3 = true;
       axios
         .get(
@@ -626,16 +632,17 @@ export default {
           for (var i = 0; i < res.data.length; i++) {
             this.dongList.push(res.data[i].dong);
           }
-          // document.getElementById("regionSecond").classList.remove("active");
-          // document.getElementById("regionThird").classList.add("active");
           $(".nav-tabs>li:nth-child(2)>a").removeClass("active");
           $(".tab-content>div:nth-child(2)").removeClass("active");
+          $(".tab-content>div:nth-child(2)").css("display", "none");
           $(".nav-tabs>li:nth-child(3)>a").addClass("active");
           $(".tab-content>div:nth-child(3)").addClass("active");
           $(".tab-content>div:nth-child(3)").css("display", "block");
         });
     },
-    show_Sigungu(step) {
+        // eslint-disable-next-line
+    moveTabs(step) {
+
       if (this.sigunguList.length == 0 && step == 2) {
         alert("시/도를 선택해야 시/군/구를 확인하실 수 있습니다");
         this.$nextTick(() => {
@@ -655,6 +662,7 @@ export default {
       }
 
       if (step == 1) {
+        console.log('시/도 클릭');
         this.dongList = [];
         this.sigunguList = [];
         this.regionChk1 = true;
@@ -662,17 +670,14 @@ export default {
         this.regionChk3 = false;
         $(".nav-tabs>li:nth-child(2)").addClass("disabled");
         $(".nav-tabs>li:nth-child(3)").addClass("disabled");
-        // document.getElementById("regionSecond").classList.remove("active");
-        // document.getElementById("regionFirst").classList.add("active");
-        // $(".regionFirst").removeClass("active");
-        // $(".regionSecond").addClass("active");
+        $(".nav-tabs>li:nth-child(1)>a").addClass("active");
+        $(".tab-content>div:nth-child(1)").addClass("active");
+        $(".tab-content>div:nth-child(1)").css("display", "block");
       } else if (step == 2) {
         this.dongList = [];
         this.regionChk1 = false;
         this.regionChk2 = true;
         this.regionChk3 = false;
-        // document.getElementById("regionThird").classList.remove("active");
-        // document.getElementById("regionSecond").classList.add("active");
         $(".nav-tabs>li:nth-child(3)>a").removeClass("active");
       }
     },
@@ -741,7 +746,6 @@ export default {
 
       console.log(this.chartOptions_Rank1.title);
     },
-
     getRank_trade() {
       axios.get("http://localhost:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
@@ -754,6 +758,16 @@ export default {
         for (var j = 0; j < res.data.length; j++) {
           this.rankData_charter.push(res.data[j]);
         }
+      });
+    },
+    getBaseMoney() {
+      axios.get("http://localhost:3000/getBaseMoney").then((res) => {
+        this.baseMoney = res.data[0];
+      });
+    },
+    getMinimun_wage() {
+      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
+        this.minimumWage = res.data[0];
       });
     },
   },
