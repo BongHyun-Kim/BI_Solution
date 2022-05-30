@@ -226,7 +226,7 @@
                       <h6 id="rank_sub_title1">
                         전국 아파트 매매 가격 변동률 Top 5
                       </h6>
-                      <!-- <b-col
+                      <b-col
                         class="rank1_content"
                         v-for="(trade, i) in rankData_trade"
                         v-bind:key="i"
@@ -236,8 +236,8 @@
                           {{ i + 1 }}위 : {{ trade.region }} :
                           {{ trade.avg_rate }}%
                         </p></b-col
-                      > -->
-                      <Doughnut
+                      >
+                      <!-- <Doughnut
                         :chart-options="chartOptions_Rank1"
                         :chart-data="rankGraph_l"
                         :chart-id="chartId"
@@ -247,14 +247,14 @@
                         :styles="styles"
                         :width="300"
                         :height="150"
-                      />
+                      /> -->
                     </b-row>
                     <br />
                     <b-row>
                       <h6 id="rank_sub_title1">
                         전국 아파트 전,월세 변동률 Top 5
                       </h6>
-                      <Doughnut
+                      <!-- <Doughnut
                         :chart-options="chartOptions_Rank2"
                         :chart-data="rankGraph_r"
                         :chart-id="chartId"
@@ -264,7 +264,18 @@
                         :styles="styles"
                         :width="300"
                         :height="150"
-                      />
+                      /> -->
+                      <b-col
+                        class="rank1_content"
+                        v-for="(charter, i) in rankData_charter"
+                        v-bind:key="i"
+                        cols="4"
+                      >
+                        <p>
+                          {{ i + 1 }}위 : {{ charter.region }} :
+                          {{ charter.avg_rate }}%
+                        </p></b-col
+                      >
                     </b-row>
                   </b-card>
                 </b-row>
@@ -319,7 +330,7 @@
 import axios from "axios";
 import $ from "jquery";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
-import { Doughnut } from "vue-chartjs/legacy";
+// import { Doughnut } from "vue-chartjs/legacy";
 
 import {
   Chart as ChartJS,
@@ -348,7 +359,7 @@ export default {
   name: "LineChart",
   components: {
     LineChartGenerator,
-    Doughnut,
+    // Doughnut,
   },
   props: {
     chartId: {
@@ -687,11 +698,11 @@ export default {
           this.rankGraph_l.labels.push(res.data[i].region);
           this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
           this.rankGraph_l.datasets[0].backgroundColor = [
-            "#41B883",
-            "#E46651",
-            "#00D8FF",
-            "#DD1B16",
-            "#F3FF00",
+            "#ffcc00",
+            "#754100",
+            "#7bcabf",
+            "#586fab",
+            "#444c57",
           ];
           this.rankGraph_l.datasets[0].data.push(res.data[i].avg_rate);
         }
@@ -710,11 +721,11 @@ export default {
           this.rankGraph_r.labels.push(res.data[i].region);
           this.rankGraph_r.datasets[0].label = "전국 전,월세 변동률 Top 5";
           this.rankGraph_r.datasets[0].backgroundColor = [
-            "#41B883",
-            "#E46651",
-            "#00D8FF",
-            "#DD1B16",
-            "#F3FF00",
+            "#93b3b7",
+            "#eaa18a",
+            "#f55354",
+            "#518d7d",
+            "#b6d1d4",
           ];
           this.rankGraph_r.datasets[0].data.push(res.data[i].avg_rate);
         }
