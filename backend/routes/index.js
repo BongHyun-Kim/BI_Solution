@@ -144,6 +144,7 @@ router.get("/select", function (req, res) {
   );
 });
 
+// 랭크(매매)
 router.get("/getRank_trade", function (req, res) {
   maria.query(
     "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM trade_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
@@ -154,6 +155,7 @@ router.get("/getRank_trade", function (req, res) {
   );
 });
 
+// 랭크(전,월세)
 router.get("/getRank_charter", function (req, res) {
   maria.query(
     "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM charter_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
@@ -164,6 +166,7 @@ router.get("/getRank_charter", function (req, res) {
   );
 });
 
+// 매매 변동률
 router.get("/getTrade_rate", function (req, res) {
   maria.query(
     "SELECT region, round(AVG(rate),2) FROM trade_change_rate WHERE region = '전국' GROUP BY region, LEFT(period,4);",
@@ -174,6 +177,7 @@ router.get("/getTrade_rate", function (req, res) {
   );
 });
 
+// 기본지표 (기준금리)
 router.get("/getBasemoney_rank", function (req, res) {
   maria.query(
     "SELECT rate FROM basemoney_rate ORDER BY idx DESC LIMIT 1",
@@ -184,6 +188,7 @@ router.get("/getBasemoney_rank", function (req, res) {
   );
 });
 
+// 기본지표 (최저시급)
 router.get("/getMinimunWage", function (req, res) {
   maria.query(
     "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1",
@@ -194,6 +199,7 @@ router.get("/getMinimunWage", function (req, res) {
   );
 });
 
+// 그래프 추가 데이터(최저시급)
 router.get("/getWages", function (req, res) {
   maria.query(
     "SELECT idx, period, wage FROM minimum_wage WHERE period BETWEEN 2015 AND 2021",
@@ -204,9 +210,21 @@ router.get("/getWages", function (req, res) {
   );
 });
 
+// 그래프 추가 데이터(기준금리)
 router.get("/getBasemoney_chart", function (req, res) {
   maria.query(
     "SELECT LEFT (period,4), ROUND(AVG(rate),1) AS avg_rate FROM basemoney_rate WHERE left(period,4) BETWEEN 2015 AND 2021 GROUP BY left(period,4)",
+    function (err, rows, field) {
+      // console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+// 메인 상단 그래프(평균 매매 거래 금액)
+router.get("/getTrade_payment", function (req, res) {
+  maria.query(
+    "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
       console.log(rows);
       res.send(rows);

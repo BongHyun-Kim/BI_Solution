@@ -89,7 +89,7 @@
                   <b-card>
                     <b-row>
                       <b-col cols="11">
-                        <h5 class="chart_title">전국 아파트 매매 가격 지수</h5>
+                        <h5 class="chart_title">전국 아파트 매매 가격</h5>
                       </b-col>
                       <b-col cols="1">
                         <b-dropdown id="dropdown-right" right class="m-2">
@@ -409,8 +409,9 @@ export default {
       minimumWage: { wage: null }, // 기본지표 (최저시급)
       chkDataArr: [], // 그래프설정 체크박스
       clickPeriod: "", // 그래프설정 기간
-      basemoney_list: [], // 메인그래프 기준금리 리스트
-      wage_list: [], //  메인그래프 최저시급 리스트
+      basemoney_list: [], // 메인그래프 기준금리
+      wage_list: [], //  메인그래프 최저시급
+      trade_list: [], // 메인그래프 년도별 평균 매매금액
       rankGraph_l: {
         // 왼쪽 랭크 그래프 데이터 설정
         labels: [],
@@ -442,6 +443,7 @@ export default {
       graph_set: [], // 그래프 설정 버튼
 
       top_chart: {
+        // 메인 상단 그래프
         labels: [
           "2015년",
           "2016년",
@@ -457,11 +459,12 @@ export default {
             label: "매매 가격 지수",
             backgroundColor: "rgb(255, 0, 0)",
             borderColor: "rgb(255, 0, 0)",
-            data: [84.26, 86.28, 87.2, 87.88, 86.44, 89.55, 100.52],
+            data: null,
           },
         ],
       },
       bottom_chart: {
+        // 메인 하단 그래프
         labels: [
           "2015년",
           "2016년",
@@ -480,6 +483,7 @@ export default {
         ],
       },
       chartOptions_top: {
+        // 메인 상단 그래프 옵션
         plugins: {
           legend: {
             display: false,
@@ -494,6 +498,7 @@ export default {
         maintainAspectRatio: false,
       },
       chartOptions_bottom: {
+        // 메인 하단 그래프 옵션
         plugins: {
           legend: {
             display: false,
@@ -510,18 +515,21 @@ export default {
     };
   },
   created() {
-    this.getRegionList();
-    this.getRank_trade();
-    this.getRank_charter();
-    this.getRank_dataL();
-    this.getRank_dataR();
-    this.getBaseMoney_rank();
-    this.getBaseMoney_chart();
-    this.getMinimun_wage();
-    this.getWage();
+    this.getRegionList(); // 지역 리스트
+    this.getRank_trade(); // 랭크(매매)
+    this.getRank_charter(); // 랭크(전,월세)
+    this.getRank_dataL(); // 랭크 좌측 그래프 (매매)
+    this.getRank_dataR(); // 랭크 우측 그래프 (전,월세)
+    this.getBaseMoney_rank(); // 랭크(최저시급)
+    this.getBaseMoney_chart(); // 그래프 데이터 (년도별 기준금리)
+    this.getMinimun_wage(); // 기준금리(최저시급)
+    this.getWage(); // 그래프 데이터 (년도별 최저시급)
+
+    this.getTrade_payment();
   },
   methods: {
     trans_chart() {
+      // 매매 & 전,월세 그래프 전환 토글
       if ($("#graph_switch>div>label>b").text() == "(거래방식: 매매)") {
         $(".chart_title:first").text("전국 아파트 매매 가격 지수");
         $(".chart_title:last").text("전국 아파트 매매 가격 변동률");
@@ -529,7 +537,7 @@ export default {
           {
             label: "매매 가격 지수",
             backgroundColor: "rgb(118, 118, 118)",
-            data: [84.26, 86.28, 87.2, 87.88, 86.44, 89.55, 100.52],
+            data: this.trade_list,
           },
         ]),
           (this.bottom_chart.datasets = [
@@ -561,6 +569,7 @@ export default {
       }
     },
     getRegionList() {
+      // 지역 리스트 가져오기
       axios
         .get("http://localhost:3000/select")
         .then((res) => {
@@ -574,6 +583,7 @@ export default {
     },
 
     getTrade_amount() {
+      // 거래량 가져오기 (보류)
       axios.get("http://localhost:3000/getTotaltrade").then((res) => {
         console.log(res.data);
       });
@@ -682,17 +692,20 @@ export default {
       console.log("temp : " + dong);
     },
     getBaseMoney_rank() {
+      // 기본지표 (기준금리)
       axios.get("http://localhost:3000/getBaseMoney_rank").then((res) => {
         this.baseMoney = res.data[0];
       });
     },
     getMinimun_wage() {
+      // 기본지표 (최저시급)
       axios.get("http://localhost:3000/getMinimunWage").then((res) => {
         this.minimumWage = res.data[0];
       });
     },
 
     getRank_dataL() {
+      // 랭크 그래프(전국 매매가 변동률)
       axios.get("http://localhost:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_l.labels.push(res.data[i].region);
@@ -716,6 +729,7 @@ export default {
     },
 
     getRank_dataR() {
+      // 랭크 그래프(전국 전,월세 변동률)
       axios.get("http://localhost:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_r.labels.push(res.data[i].region);
@@ -738,6 +752,7 @@ export default {
       this.chartOptions_Rank2.maintainAspectRatio = false;
     },
     getRank_trade() {
+      // 랭크 텍스트(전국 매매가 변동률)
       axios.get("http://localhost:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_trade.push(res.data[i]);
@@ -745,6 +760,7 @@ export default {
       });
     },
     getRank_charter() {
+      // 랭크 텍스트(전국 전,월세 변동률)
       axios.get("http://localhost:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_charter.push(res.data[i]);
@@ -752,6 +768,7 @@ export default {
       });
     },
     getWage() {
+      // 년도별 최저시급 리스트(그래프 사용)
       axios.get("http://localhost:3000/getWages").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.wage_list.push(res.data[i].wage);
@@ -759,6 +776,7 @@ export default {
       });
     },
     getBaseMoney_chart() {
+      // 년도별 기준금리 리스트(그래프 사용)
       axios.get("http://localhost:3000/getBasemoney_chart").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.basemoney_list.push(res.data[i].avg_rate);
@@ -777,6 +795,7 @@ export default {
       }
     },
     compare_top_rate() {
+      // 메인 상단 그래프 비교 데이터 {체크박스:(기준금리)}
       if ($("#rate_ck").is(":checked")) {
         this.top_chart.datasets.push({
           yAxisID: "rate",
@@ -832,6 +851,7 @@ export default {
       }
     },
     compare_top_wage() {
+      // 메인 상단 그래프 비교 데이터 {체크박스:(최저시급)}
       if ($("#wage_ck").is(":checked")) {
         this.top_chart.datasets.push({
           yAxisID: "wage",
@@ -887,11 +907,16 @@ export default {
         delete this.chartOptions_top.scales.wage;
       }
     },
+    getTrade_payment() {
+      axios.get("/getTrade_payment").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.trade_list.push(res.data[i].avg_amount);
+        }
+      });
+      this.top_chart.datasets[0].data = this.trade_list;
+    },
   },
 };
-// $("#wage_ck").onchange = function () {
-//   console.log("12342134213");
-// };
 </script>
 
 <style>
