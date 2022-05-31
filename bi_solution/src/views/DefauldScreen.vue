@@ -600,13 +600,7 @@ export default {
       this.regionChk1 = false;
       this.regionChk2 = true;
       axios
-<<<<<<< HEAD
         .get("http://localhost:3000/searchSigungu?" + "regionName=" + region)
-=======
-        .get(
-          "http://localhost:3000/searchSigungu?" + "regionName=" + region
-        )
->>>>>>> 2dae9eec7c41c9ef6c68889095244ac11f3d218d
         .then((res) => {
           for (var i = 1; i < res.data.length; i++) {
             this.sigunguList.push(res.data[i].city_nm);
