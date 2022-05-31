@@ -562,7 +562,7 @@ export default {
     },
     getRegionList() {
       axios
-        .get("http://localhost:3000/select")
+        .get("http://15.164.213.27:3000/select")
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.regionlist.push(res.data[i].sido_nm);
@@ -574,7 +574,7 @@ export default {
     },
 
     getTrade_amount() {
-      axios.get("http://localhost:3000/getTotaltrade").then((res) => {
+      axios.get("http://15.164.213.27:3000/getTotaltrade").then((res) => {
         console.log(res.data);
       });
     },
@@ -600,7 +600,9 @@ export default {
       this.regionChk1 = false;
       this.regionChk2 = true;
       axios
-        .get("http://localhost:3000/searchSigungu?" + "regionName=" + region)
+        .get(
+          "http://15.164.213.27:3000/searchSigungu?" + "regionName=" + region
+        )
         .then((res) => {
           for (var i = 1; i < res.data.length; i++) {
             this.sigunguList.push(res.data[i].city_nm);
@@ -620,7 +622,7 @@ export default {
       this.regionChk3 = true;
       axios
         .get(
-          "http://localhost:3000/searchDong?" +
+          "http://15.164.213.27:3000/searchDong?" +
             "sigunguName=" +
             sigungu +
             "&sidoName=" +
@@ -682,18 +684,18 @@ export default {
       console.log("temp : " + dong);
     },
     getBaseMoney_rank() {
-      axios.get("http://localhost:3000/getBaseMoney_rank").then((res) => {
+      axios.get("http://15.164.213.27:3000/getBaseMoney_rank").then((res) => {
         this.baseMoney = res.data[0];
       });
     },
     getMinimun_wage() {
-      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
+      axios.get("http://15.164.213.27:3000/getMinimunWage").then((res) => {
         this.minimumWage = res.data[0];
       });
     },
 
     getRank_dataL() {
-      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+      axios.get("http://15.164.213.27:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_l.labels.push(res.data[i].region);
           this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
@@ -716,7 +718,7 @@ export default {
     },
 
     getRank_dataR() {
-      axios.get("http://localhost:3000/getRank_charter").then((res) => {
+      axios.get("http://15.164.213.27:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_r.labels.push(res.data[i].region);
           this.rankGraph_r.datasets[0].label = "전국 전,월세 변동률 Top 5";
@@ -738,28 +740,28 @@ export default {
       this.chartOptions_Rank2.maintainAspectRatio = false;
     },
     getRank_trade() {
-      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+      axios.get("http://15.164.213.27:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_trade.push(res.data[i]);
         }
       });
     },
     getRank_charter() {
-      axios.get("http://localhost:3000/getRank_charter").then((res) => {
+      axios.get("http://15.164.213.27:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_charter.push(res.data[i]);
         }
       });
     },
     getWage() {
-      axios.get("http://localhost:3000/getWages").then((res) => {
+      axios.get("http://15.164.213.27:3000/getWages").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.wageList.push(res.data[i]);
         }
       });
     },
     getBaseMoney_chart() {
-      axios.get("http://localhost:3000/getBasemoney_chart").then((res) => {
+      axios.get("http://15.164.213.27:3000/getBasemoney_chart").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.basemoney_list.push(res.data[i]);
         }
