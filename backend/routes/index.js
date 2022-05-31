@@ -206,7 +206,7 @@ router.get("/getWages", function (req, res) {
 
 router.get("/getBasemoney_chart", function (req, res) {
   maria.query(
-    "SELECT YEAR(period), ROUND(AVG(rate),1) FROM basemoney_rate WHERE YEAR(period) BETWEEN 2012 AND 2021 GROUP BY YEAR(period)",
+    "SELECT LEFT (period,4), ROUND(AVG(rate),1) AS avg_rate FROM basemoney_rate WHERE left(period,4) BETWEEN 2015 AND 2021 GROUP BY left(period,4)",
     function (err, rows, field) {
       console.log(rows);
       res.send(rows);

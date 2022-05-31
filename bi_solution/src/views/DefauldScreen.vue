@@ -226,7 +226,7 @@
                       <h6 id="rank_sub_title1">
                         전국 아파트 매매 가격 변동률 Top 5
                       </h6>
-                      <b-col
+                      <!-- <b-col
                         class="rank1_content"
                         v-for="(trade, i) in rankData_trade"
                         v-bind:key="i"
@@ -236,8 +236,8 @@
                           {{ i + 1 }}위 : {{ trade.region }} :
                           {{ trade.avg_rate }}%
                         </p></b-col
-                      >
-                      <!-- <Doughnut
+                      > -->
+                      <Doughnut
                         :chart-options="chartOptions_Rank1"
                         :chart-data="rankGraph_l"
                         :chart-id="chartId"
@@ -247,14 +247,14 @@
                         :styles="styles"
                         :width="300"
                         :height="150"
-                      /> -->
+                      />
                     </b-row>
                     <br />
                     <b-row>
                       <h6 id="rank_sub_title1">
                         전국 아파트 전,월세 변동률 Top 5
                       </h6>
-                      <!-- <Doughnut
+                      <Doughnut
                         :chart-options="chartOptions_Rank2"
                         :chart-data="rankGraph_r"
                         :chart-id="chartId"
@@ -264,8 +264,8 @@
                         :styles="styles"
                         :width="300"
                         :height="150"
-                      /> -->
-                      <b-col
+                      />
+                      <!-- <b-col
                         class="rank1_content"
                         v-for="(charter, i) in rankData_charter"
                         v-bind:key="i"
@@ -275,7 +275,7 @@
                           {{ i + 1 }}위 : {{ charter.region }} :
                           {{ charter.avg_rate }}%
                         </p></b-col
-                      >
+                      > -->
                     </b-row>
                   </b-card>
                 </b-row>
@@ -330,7 +330,7 @@
 import axios from "axios";
 import $ from "jquery";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
-// import { Doughnut } from "vue-chartjs/legacy";
+import { Doughnut } from "vue-chartjs/legacy";
 
 import {
   Chart as ChartJS,
@@ -359,7 +359,7 @@ export default {
   name: "LineChart",
   components: {
     LineChartGenerator,
-    // Doughnut,
+    Doughnut,
   },
   props: {
     chartId: {
@@ -407,10 +407,10 @@ export default {
       rankData_charter: [], // 랭크 데이터 (전,월세)
       baseMoney: { rate: null }, // 기본지표 (기준금리)
       minimumWage: { wage: null }, // 기본지표 (최저시급)
-      wageList: [], // 년도별 시급
       chkDataArr: [], // 그래프설정 체크박스
       clickPeriod: "", // 그래프설정 기간
       basemoney_list: [], // 메인그래프 기준금리 리스트
+      wage_list: [], //  메인그래프 최저시급 리스트
       rankGraph_l: {
         // 왼쪽 랭크 그래프 데이터 설정
         labels: [],
@@ -562,7 +562,7 @@ export default {
     },
     getRegionList() {
       axios
-        .get("http://15.164.213.27:3000/select")
+        .get("http://localhost:3000/select")
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.regionlist.push(res.data[i].sido_nm);
@@ -574,7 +574,7 @@ export default {
     },
 
     getTrade_amount() {
-      axios.get("http://15.164.213.27:3000/getTotaltrade").then((res) => {
+      axios.get("http://localhost:3000/getTotaltrade").then((res) => {
         console.log(res.data);
       });
     },
@@ -600,9 +600,7 @@ export default {
       this.regionChk1 = false;
       this.regionChk2 = true;
       axios
-        .get(
-          "http://15.164.213.27:3000/searchSigungu?" + "regionName=" + region
-        )
+        .get("http://localhost:3000/searchSigungu?" + "regionName=" + region)
         .then((res) => {
           for (var i = 1; i < res.data.length; i++) {
             this.sigunguList.push(res.data[i].city_nm);
@@ -622,7 +620,7 @@ export default {
       this.regionChk3 = true;
       axios
         .get(
-          "http://15.164.213.27:3000/searchDong?" +
+          "http://localhost:3000/searchDong?" +
             "sigunguName=" +
             sigungu +
             "&sidoName=" +
@@ -684,18 +682,18 @@ export default {
       console.log("temp : " + dong);
     },
     getBaseMoney_rank() {
-      axios.get("http://15.164.213.27:3000/getBaseMoney_rank").then((res) => {
+      axios.get("http://localhost:3000/getBaseMoney_rank").then((res) => {
         this.baseMoney = res.data[0];
       });
     },
     getMinimun_wage() {
-      axios.get("http://15.164.213.27:3000/getMinimunWage").then((res) => {
+      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
         this.minimumWage = res.data[0];
       });
     },
 
     getRank_dataL() {
-      axios.get("http://15.164.213.27:3000/getRank_trade").then((res) => {
+      axios.get("http://localhost:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_l.labels.push(res.data[i].region);
           this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
@@ -718,7 +716,7 @@ export default {
     },
 
     getRank_dataR() {
-      axios.get("http://15.164.213.27:3000/getRank_charter").then((res) => {
+      axios.get("http://localhost:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_r.labels.push(res.data[i].region);
           this.rankGraph_r.datasets[0].label = "전국 전,월세 변동률 Top 5";
@@ -740,30 +738,30 @@ export default {
       this.chartOptions_Rank2.maintainAspectRatio = false;
     },
     getRank_trade() {
-      axios.get("http://15.164.213.27:3000/getRank_trade").then((res) => {
+      axios.get("http://localhost:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_trade.push(res.data[i]);
         }
       });
     },
     getRank_charter() {
-      axios.get("http://15.164.213.27:3000/getRank_charter").then((res) => {
+      axios.get("http://localhost:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_charter.push(res.data[i]);
         }
       });
     },
     getWage() {
-      axios.get("http://15.164.213.27:3000/getWages").then((res) => {
+      axios.get("http://localhost:3000/getWages").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
-          this.wageList.push(res.data[i]);
+          this.wage_list.push(res.data[i].wage);
         }
       });
     },
     getBaseMoney_chart() {
-      axios.get("http://15.164.213.27:3000/getBasemoney_chart").then((res) => {
+      axios.get("http://localhost:3000/getBasemoney_chart").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
-          this.basemoney_list.push(res.data[i]);
+          this.basemoney_list.push(res.data[i].avg_rate);
         }
       });
     },
@@ -785,24 +783,52 @@ export default {
           label: "기준금리",
           backgroundColor: "rgb(255, 128, 0)",
           borderColor: "rgb(255, 128, 0)",
-          data: [2.9, 2.5, 2.1, 1.6, 1.2, 1.5, 1.8, 1.4, 0.6, 0.9],
+          data: this.basemoney_list,
         });
-        this.chartOptions_top.scales = {
-          trade: {
-            type: "linear",
-            position: "left",
-          },
-          rate: {
-            type: "linear",
-            position: "right",
-            grid: {
-              drawOnChartArea: false,
+        if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
+          this.chartOptions_top.scales = {
+            trade: {
+              type: "linear",
+              position: "left",
             },
-          },
-        };
+            rate: {
+              type: "linear",
+              position: "right",
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+            wage: {
+              type: "linear",
+              position: "right",
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+          };
+        } else {
+          this.chartOptions_top.scales = {
+            trade: {
+              type: "linear",
+              position: "left",
+            },
+            rate: {
+              type: "linear",
+              position: "right",
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+          };
+        }
       } else {
-        this.top_chart.datasets.pop();
-        delete this.chartOptions_top.scales;
+        for (var i = 0; i < this.top_chart.datasets.length; i++) {
+          if (this.top_chart.datasets[i].yAxisID == "rate") {
+            this.top_chart.datasets.splice(i, 1);
+            break;
+          }
+        }
+        delete this.chartOptions_top.scales.rate;
       }
     },
     compare_top_wage() {
@@ -812,24 +838,53 @@ export default {
           label: "최저시급",
           backgroundColor: "rgb(255, 255, 0)",
           borderColor: "rgb(255, 255, 0)",
-          data: [5580, 6030, 6470, 7530, 8350, 8590, 8720],
+          data: this.wage_list,
         });
-        this.chartOptions_top.scales = {
-          trade: {
-            type: "linear",
-            position: "left",
-          },
-          wage: {
-            type: "linear",
-            position: "right",
-            grid: {
-              drawOnChartArea: false,
+        if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
+          this.chartOptions_top.scales = {
+            trade: {
+              type: "linear",
+              position: "left",
             },
-          },
-        };
+            rate: {
+              type: "linear",
+              position: "right",
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+            wage: {
+              type: "linear",
+              position: "right",
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+          };
+        } else {
+          console.log("test");
+          this.chartOptions_top.scales = {
+            trade: {
+              type: "linear",
+              position: "left",
+            },
+            wage: {
+              type: "linear",
+              position: "right",
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+          };
+        }
       } else {
-        this.top_chart.datasets.pop();
-        delete this.chartOptions_top.scales;
+        for (var i = 0; i < this.top_chart.datasets.length; i++) {
+          if (this.top_chart.datasets[i].yAxisID == "wage") {
+            this.top_chart.datasets.splice(i, 1);
+            break;
+          }
+        }
+        delete this.chartOptions_top.scales.wage;
       }
     },
   },
