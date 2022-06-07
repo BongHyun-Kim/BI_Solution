@@ -70,7 +70,7 @@
           <b-row>
             <div id="graph_switch">
               <b-form-checkbox
-                v-model="method"
+                v-model="changeGraph"
                 name="check-button"
                 value="매매"
                 unchecked-value="전,월세"
@@ -78,7 +78,7 @@
                 id="graph_type"
                 @change="trans_chart()"
               >
-                그래프 전환 <b>(거래방식: {{ method }})</b>
+                그래프 전환 <b>(거래방식: {{ changeGraph }})</b>
               </b-form-checkbox>
             </div>
           </b-row>
@@ -89,7 +89,7 @@
                   <b-card>
                     <b-row>
                       <b-col cols="11">
-                        <h5 class="chart_title">전국 아파트 매매 가격</h5>
+                        <h5 class="chart_title" id="changeGraph1" ref="click_graph1">전국 아파트 매매 가격</h5>
                       </b-col>
                       <b-col cols="1">
                         <b-dropdown id="dropdown-right" right class="m-2">
@@ -158,7 +158,7 @@
                   <b-card>
                     <b-row>
                       <b-col cols="11">
-                        <h5 class="chart_title">
+                        <h5 class="chart_title" id="changeGraph2" ref="click_graph2">
                           전국 아파트 매매 가격 변동률
                         </h5>
                       </b-col>
@@ -422,7 +422,7 @@ export default {
   },
   data() {
     return {
-      method: "매매",
+      changeGraph: "매매",
       regionlist: [], // 시/도 리스트
       sigunguList: [], // 시/군/구 리스트
       dongList: [], // 읍/면/동 리스트
@@ -585,11 +585,9 @@ export default {
   },
   methods: {
     trans_chart() {
-      // 매매 & 전,월세 그래프 전환 토글
-      if ($("#graph_switch>div>label>b").text() == "(거래방식: 매매)") {
-        // 그래프 표시 데이터가 매매일 경우
-        $(".chart_title:first").text("전국 아파트 매매 가격");
-        $(".chart_title:last").text("전국 아파트 매매 가격 변동률");
+      if(this.changeGraph == '매매'){
+        this.$refs.click_graph1.textContent = '전국 아파트 매매 가격';
+        this.$refs.click_graph2.textContent = '전국 아파트 매매 가격 변동률';
         (this.top_chart.datasets = [
           {
             label: "매매 가격 지수",
@@ -604,51 +602,9 @@ export default {
               data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
             },
           ]);
-        if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
-          // 기준금리와 최저시급 모두 체크되어 있을 경우
-          this.top_chart.datasets = [
-            {
-              label: "매매 가격 지수",
-              backgroundColor: "rgba(255, 0, 0, 0.5)",
-              borderColor: "rgba(255, 0, 0, 0.5)",
-              data: this.trade_list,
-            },
-          ];
-          $("#wage_ck").prop("checked", false);
-          $("#rate_ck").prop("checked", false);
-          delete this.chartOptions_top.scales.wage;
-          delete this.chartOptions_top.scales.rate;
-        } else if ($("#rate_ck").is(":checked")) {
-          // 기준금리만 체크되어 있을 경우
-          this.top_chart.datasets = [
-            {
-              label: "매매 가격 지수",
-              backgroundColor: "rgba(255, 0, 0, 0.5)",
-              borderColor: "rgba(255, 0, 0, 0.5)",
-              data: this.trade_list,
-            },
-          ];
-          $("#rate_ck").prop("checked", false);
-          delete this.chartOptions_top.scales.rate;
-        } else {
-          // 최저 시급만 체크되어 있을 경우
-          this.top_chart.datasets = [
-            {
-              label: "매매 가격 지수",
-              backgroundColor: "rgba(255, 0, 0, 0.5)",
-              borderColor: "rgba(255, 0, 0, 0.5)",
-              data: this.trade_list,
-            },
-          ];
-          $("#wage_ck").prop("checked", false);
-          delete this.chartOptions_top.scales.wage;
-        }
-      } else if (
-        // 그래프 표시 데이터가 전,월세일 경우
-        $("#graph_switch>div>label>b").text() == "(거래방식: 전,월세)"
-      ) {
-        $(".chart_title:first").text("전국 아파트 전,월세 통합 지수");
-        $(".chart_title:last").text("전국 아파트 전,월세 통합 변동률");
+      }else if(this.changeGraph == '전,월세'){
+        this.$refs.click_graph1.textContent = '전국 아파트 전,월세 통합 지수';
+        this.$refs.click_graph2.textContent = '전국 아파트 전,월세 통합 변동률';
         (this.top_chart.datasets = [
           {
             label: "전,월세 통합 지수",
@@ -665,49 +621,42 @@ export default {
               data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
             },
           ]);
-        if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
-          // 기준금리, 최저시급 모두 체크되어 있을 경우
-          this.top_chart.datasets = [
-            {
-              label: "매매 가격 지수",
-              backgroundColor: "rgba(255, 0, 0, 0.5)",
-              borderColor: "rgba(255, 0, 0, 0.5)",
-              data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
-            },
-          ];
-          $("#wage_ck").prop("checked", false);
-          $("#rate_ck").prop("checked", false);
-          delete this.chartOptions_top.scales.wage;
-          delete this.chartOptions_top.scales.rate;
-        } else if ($("#rate_ck").is(":checked")) {
-          // 기준금리만 체크되어 있을 경우
-          this.top_chart.datasets = [
-            {
-              label: "매매 가격 지수",
-              backgroundColor: "rgba(255, 0, 0, 0.5)",
-              borderColor: "rgba(255, 0, 0, 0.5)",
-              data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
-            },
-          ];
-          $("#rate_ck").prop("checked", false);
-          delete this.chartOptions_top.scales.rate;
-        } else {
-          // 최저시급만 체크되어 있을 경우
-          this.top_chart.datasets = [
-            {
-              label: "매매 가격 지수",
-              backgroundColor: "rgba(255, 0, 0, 0.5)",
-              borderColor: "rgba(255, 0, 0, 0.5)",
-              data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
-            },
-          ];
-
-          $("#wage_ck").prop("checked", false);
-          $("#rate_ck").prop("checked", false);
-
-          delete this.chartOptions_top.scales.wage;
-        }
       }
+      
+      // 기준금리, 최저시급 체크박스 조건문
+      if(this.graph_set.length > 0){
+        for(var i = 0; i < this.graph_set.length; i++){
+          if(this.graph_set[i] == '기준금리'){
+            this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: this.trade_list,
+            },
+          ];
+          $("#rate_ck").prop("checked", false);
+          console.log(this.chartOptions_top.scales);
+          this.graph_set.splice(i);
+          }else if(this.graph_set[i] == '최저시급'){
+            this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: this.trade_list,
+            },
+          ];
+          $("#wage_ck").prop("checked", false);
+          console.log(this.chartOptions_top.scales);
+          this.graph_set.splice(i);
+          }
+        }
+        delete this.chartOptions_top.scales
+      }
+
+      
+      
     },
     getRegionList() {
       // 지역 리스트 가져오기
