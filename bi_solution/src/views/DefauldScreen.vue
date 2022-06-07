@@ -141,6 +141,18 @@
                     />
                   </b-card>
                 </b-row>
+                <Bar
+                  id="top_graph"
+                  :chart-options="chartOptions_top"
+                  :chart-data="top_chart"
+                  :chart-id="chartId"
+                  :dataset-id-key="datasetIdKey"
+                  :plugins="plugins"
+                  :css-classes="cssClasses"
+                  :styles="styles"
+                  :width="width"
+                  :height="height"
+                />
                 <br />
                 <b-row>
                   <b-card>
@@ -319,16 +331,16 @@
                 </b-row>
               </b-col>
             </b-row>
-            <Bar 
-            :chart-options="chartOptions_Bar1"
-            :chart-data="barGraph_r"
-            :chart-id="chartId"
-            :dataset-id-key="datasetIdKey"
-            :plugins="plugins"
-            :css-classes="cssClasses"
-            :styles="styles"
-            :width="300"
-            :height="150"
+            <Bar
+              :chart-options="chartOptions_Bar1"
+              :chart-data="barGraph_r"
+              :chart-id="chartId"
+              :dataset-id-key="datasetIdKey"
+              :plugins="plugins"
+              :css-classes="cssClasses"
+              :styles="styles"
+              :width="300"
+              :height="150"
             />
           </b-container>
         </b-col>
@@ -344,7 +356,6 @@ import { Line as LineChartGenerator } from "vue-chartjs/legacy";
 import { Doughnut } from "vue-chartjs/legacy";
 import { Bar } from "vue-chartjs/legacy";
 
-
 import {
   Chart as ChartJS,
   Title,
@@ -355,8 +366,8 @@ import {
   LinearScale,
   CategoryScale,
   PointElement,
-  BarElement,         // 막대그래프 추가
-  BarController,      // 막대그래프 추가
+  BarElement, // 막대그래프 추가
+  BarController, // 막대그래프 추가
 } from "chart.js";
 
 ChartJS.register(
@@ -369,7 +380,7 @@ ChartJS.register(
   CategoryScale,
   PointElement,
   BarElement,
-  BarController,
+  BarController
 );
 
 export default {
@@ -458,48 +469,32 @@ export default {
         resposive: null,
         maintainAspectRatio: null,
       },
-      chartOptions_Bar1:{
-        indexAxis: 'y',
+      chartOptions_Bar1: {
+        indexAxis: "y",
         responsive: true,
         title: {
           display: true,
-          text: '막대차트'
+          text: "막대차트",
         },
-        Tooltips:{
-          mode: 'index',
+        Tooltips: {
+          mode: "index",
           intersect: false,
         },
-        hover:{
-          mode: 'nearest',
+        hover: {
+          mode: "nearest",
           intersect: true,
-        },
-        plugins:{
-
-        },
-        scales:{
-          xAxes:[{
-            display: true,
-            scaleLabel: {
-              display : true,
-              labelString: 'X축'
-            },
-          }],
-          yAxes: [{
-            display: true,
-            ticks:{
-              autoSkip: false,
-            },
-            scaleLabel: {
-              display: true,
-              labelString: 'Y축'
-            }
-          }],
         },
       },
       barGraph_r: {
         // 오른쪽 랭크 그래프 데이터 설정
-        labels: ['1', '2', '3', '4', '5'],
-        datasets: [{ label: '테스트 데이터셋', backgroundColor: [], data: [1,2,3,4,5] }],
+        labels: ["1", "2", "3", "4", "5"],
+        datasets: [
+          {
+            label: "테스트 데이터셋",
+            backgroundColor: [],
+            data: [1, 2, 3, 4, 5],
+          },
+        ],
       },
       graph_set: [], // 그래프 설정 버튼
 
@@ -517,9 +512,9 @@ export default {
         datasets: [
           {
             yAxisID: "trade",
-            label: "매매 가격 지수",
-            backgroundColor: "rgb(255, 0, 0)",
-            borderColor: "rgb(255, 0, 0)",
+            label: "매매 가격",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgba(255, 0, 0, 0.5)",
             data: null,
           },
         ],
@@ -552,7 +547,7 @@ export default {
           title: {
             display: true,
             align: "end",
-            text: "기준월(2016.06=100)",
+            text: "(단위 : 천원)",
           },
         },
         responsive: true,
@@ -592,12 +587,13 @@ export default {
     trans_chart() {
       // 매매 & 전,월세 그래프 전환 토글
       if ($("#graph_switch>div>label>b").text() == "(거래방식: 매매)") {
-        $(".chart_title:first").text("전국 아파트 매매 가격 지수");
+        // 그래프 표시 데이터가 매매일 경우
+        $(".chart_title:first").text("전국 아파트 매매 가격");
         $(".chart_title:last").text("전국 아파트 매매 가격 변동률");
         (this.top_chart.datasets = [
           {
             label: "매매 가격 지수",
-            backgroundColor: "rgb(118, 118, 118)",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
             data: this.trade_list,
           },
         ]),
@@ -608,7 +604,47 @@ export default {
               data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
             },
           ]);
+        if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
+          // 기준금리와 최저시급 모두 체크되어 있을 경우
+          this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: this.trade_list,
+            },
+          ];
+          $("#wage_ck").prop("checked", false);
+          $("#rate_ck").prop("checked", false);
+          delete this.chartOptions_top.scales.wage;
+          delete this.chartOptions_top.scales.rate;
+        } else if ($("#rate_ck").is(":checked")) {
+          // 기준금리만 체크되어 있을 경우
+          this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: this.trade_list,
+            },
+          ];
+          $("#rate_ck").prop("checked", false);
+          delete this.chartOptions_top.scales.rate;
+        } else {
+          // 최저 시급만 체크되어 있을 경우
+          this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: this.trade_list,
+            },
+          ];
+          $("#wage_ck").prop("checked", false);
+          delete this.chartOptions_top.scales.wage;
+        }
       } else if (
+        // 그래프 표시 데이터가 전,월세일 경우
         $("#graph_switch>div>label>b").text() == "(거래방식: 전,월세)"
       ) {
         $(".chart_title:first").text("전국 아파트 전,월세 통합 지수");
@@ -617,6 +653,7 @@ export default {
           {
             label: "전,월세 통합 지수",
             backgroundColor: "rgb(118, 118, 118)",
+            borderColor: "rgba(255, 0, 0, 0.5)",
             data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
           },
         ]),
@@ -624,9 +661,52 @@ export default {
             {
               label: "전,월세 통합 변동률",
               backgroundColor: "rgb(118, 118, 118)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
               data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
             },
           ]);
+        if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
+          // 기준금리, 최저시급 모두 체크되어 있을 경우
+          this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
+            },
+          ];
+          $("#wage_ck").prop("checked", false);
+          $("#rate_ck").prop("checked", false);
+          delete this.chartOptions_top.scales.wage;
+          delete this.chartOptions_top.scales.rate;
+        } else if ($("#rate_ck").is(":checked")) {
+          // 기준금리만 체크되어 있을 경우
+          this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
+            },
+          ];
+          $("#rate_ck").prop("checked", false);
+          delete this.chartOptions_top.scales.rate;
+        } else {
+          // 최저시급만 체크되어 있을 경우
+          this.top_chart.datasets = [
+            {
+              label: "매매 가격 지수",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
+              data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
+            },
+          ];
+
+          $("#wage_ck").prop("checked", false);
+          $("#rate_ck").prop("checked", false);
+
+          delete this.chartOptions_top.scales.wage;
+        }
       }
     },
     getRegionList() {
@@ -861,8 +941,9 @@ export default {
         this.top_chart.datasets.push({
           yAxisID: "rate",
           label: "기준금리",
-          backgroundColor: "rgb(255, 128, 0)",
-          borderColor: "rgb(255, 128, 0)",
+          type: "line",
+          backgroundColor: "rgba(255, 128, 0, 0.5)",
+          borderColor: "rgba(255, 128, 0, 0.5)",
           data: this.basemoney_list,
         });
         if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
@@ -917,8 +998,9 @@ export default {
         this.top_chart.datasets.push({
           yAxisID: "wage",
           label: "최저시급",
-          backgroundColor: "rgb(255, 255, 0)",
-          borderColor: "rgb(255, 255, 0)",
+          type: "line",
+          backgroundColor: "rgba(255, 255, 0, 0.5)",
+          borderColor: "rgba(255, 255, 0, 0.5)",
           data: this.wage_list,
         });
         if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
