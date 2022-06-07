@@ -586,24 +586,26 @@ export default {
   methods: {
     trans_chart() {
       // 매매 & 전,월세 그래프 전환 토글
+
+      this.chartOptions_top.plugins.legend = { display: false };
       if ($("#graph_switch>div>label>b").text() == "(거래방식: 매매)") {
         // 그래프 표시 데이터가 매매일 경우
         $(".chart_title:first").text("전국 아파트 매매 가격");
         $(".chart_title:last").text("전국 아파트 매매 가격 변동률");
-        (this.top_chart.datasets = [
+        this.top_chart.datasets = [
           {
             label: "매매 가격 지수",
             backgroundColor: "rgba(255, 0, 0, 0.5)",
             data: this.trade_list,
           },
-        ]),
-          (this.bottom_chart.datasets = [
-            {
-              label: "매매 가격 변동률",
-              backgroundColor: "rgb(118, 118, 118)",
-              data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
-            },
-          ]);
+        ];
+        this.bottom_chart.datasets = [
+          {
+            label: "매매 가격 변동률",
+            backgroundColor: "rgb(118, 118, 118)",
+            data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
+          },
+        ];
         if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
           // 기준금리와 최저시급 모두 체크되어 있을 경우
           this.top_chart.datasets = [
@@ -629,7 +631,15 @@ export default {
             },
           ];
           $("#rate_ck").prop("checked", false);
+          console.log(this.chartOptions_top);
+          console.log(this.chartOptions_top.scales.rate);
+
           delete this.chartOptions_top.scales.rate;
+
+          console.log(this.chartOptions_top.scales.rate);
+          console.log(this.chartOptions_top.scales.wage);
+
+          console.log(this.chartOptions_top.scales);
         } else {
           // 최저 시급만 체크되어 있을 경우
           this.top_chart.datasets = [
@@ -640,6 +650,7 @@ export default {
               data: this.trade_list,
             },
           ];
+
           $("#wage_ck").prop("checked", false);
           delete this.chartOptions_top.scales.wage;
         }
@@ -649,22 +660,22 @@ export default {
       ) {
         $(".chart_title:first").text("전국 아파트 전,월세 통합 지수");
         $(".chart_title:last").text("전국 아파트 전,월세 통합 변동률");
-        (this.top_chart.datasets = [
+        this.top_chart.datasets = [
           {
             label: "전,월세 통합 지수",
             backgroundColor: "rgb(118, 118, 118)",
-            borderColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgba(118, 118, 118, 0.5)",
             data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
           },
-        ]),
-          (this.bottom_chart.datasets = [
-            {
-              label: "전,월세 통합 변동률",
-              backgroundColor: "rgb(118, 118, 118)",
-              borderColor: "rgba(255, 0, 0, 0.5)",
-              data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
-            },
-          ]);
+        ];
+        this.bottom_chart.datasets = [
+          {
+            label: "전,월세 통합 변동률",
+            backgroundColor: "rgb(118, 118, 118)",
+            borderColor: "rgba(118, 118, 118, 0.5)",
+            data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
+          },
+        ];
         if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
           // 기준금리, 최저시급 모두 체크되어 있을 경우
           this.top_chart.datasets = [
@@ -967,6 +978,10 @@ export default {
               },
             },
           };
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         } else {
           this.chartOptions_top.scales = {
             trade: {
@@ -981,6 +996,10 @@ export default {
               },
             },
           };
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         }
       } else {
         for (var i = 0; i < this.top_chart.datasets.length; i++) {
@@ -989,7 +1008,23 @@ export default {
             break;
           }
         }
+
+        this.chartOptions_top.plugins.legend = {
+          display: false,
+        };
+
         delete this.chartOptions_top.scales.rate;
+
+        if ($("#wage_ck").is(":checked")) {
+          // 최저임금을 제외하고 체크된 것이 있을 경우 범례 유지
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
+        } else {
+          // 최저임금만 체크됬을 경우 범례 삭제
+          this.chartOptions_top.plugins.legend = { display: false };
+        }
       }
     },
     compare_top_wage() {
@@ -1024,6 +1059,10 @@ export default {
               },
             },
           };
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         } else {
           console.log("test");
           this.chartOptions_top.scales = {
@@ -1039,6 +1078,10 @@ export default {
               },
             },
           };
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         }
       } else {
         for (var i = 0; i < this.top_chart.datasets.length; i++) {
@@ -1048,6 +1091,17 @@ export default {
           }
         }
         delete this.chartOptions_top.scales.wage;
+
+        if ($("#rate_ck").is(":checked")) {
+          // 최저임금을 제외하고 체크된 것이 있을 경우 범례 유지
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
+        } else {
+          // 최저임금만 체크됬을 경우 범례 삭제
+          this.chartOptions_top.plugins.legend = { display: false };
+        }
       }
     },
     getTrade_payment() {
