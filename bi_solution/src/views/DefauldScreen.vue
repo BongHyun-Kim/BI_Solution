@@ -432,11 +432,12 @@ export default {
   },
   data() {
     return {
-      changeGraph: "매매",
+      changeGraph: "매매", // 그래프 전환 구분
       regionlist: [], // 시/도 리스트
       sigunguList: [], // 시/군/구 리스트
       dongList: [], // 읍/면/동 리스트
-      trade_amount: [],
+      trade_amount: [], // 매매 거래 금액
+      trade_avg: [], // 매매 거래 금액 변동률
       regionChk1: true, // 시/도
       regionChk2: false, // 시/군/구
       regionChk3: false, // 읍/면/동
@@ -544,7 +545,7 @@ export default {
           {
             label: "매매 가격 변동률",
             backgroundColor: "rgb(118, 118, 118)",
-            data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
+            data: null,
           },
         ],
       },
@@ -590,17 +591,18 @@ export default {
     this.getBaseMoney_chart(); // 그래프 데이터 (년도별 기준금리)
     this.getMinimun_wage(); // 기준금리(최저시급)
     this.getWage(); // 그래프 데이터 (년도별 최저시급)
-
-    this.getTrade_payment();
+    this.getTrade_payment(); // 그래프 데이터 (매매 거래 금액)
+    this.getTrade_avg(); // 그래프 데이터 (매매 거래 금액 변동률)
   },
   methods: {
     trans_chart() {
+      // this.chartOptions_top.plugins.legend = { display: false };
       if (this.changeGraph == "매매") {
         this.$refs.click_graph1.textContent = "전국 아파트 매매 가격";
         this.$refs.click_graph2.textContent = "전국 아파트 매매 가격 변동률";
         (this.top_chart.datasets = [
           {
-            label: "매매 가격 지수",
+            label: "매매 가격",
             backgroundColor: "rgba(255, 0, 0, 0.5)",
             data: this.trade_list,
           },
@@ -609,7 +611,7 @@ export default {
             {
               label: "매매 가격 변동률",
               backgroundColor: "rgb(118, 118, 118)",
-              data: [0.4, 0.07, 0.09, 0.01, -0.12, 0.61, 1.11],
+              data: this.trade_avg,
             },
           ]);
       } else if (this.changeGraph == "전,월세") {
@@ -618,52 +620,53 @@ export default {
         (this.top_chart.datasets = [
           {
             label: "전,월세 통합 지수",
-            backgroundColor: "rgb(118, 118, 118)",
-            borderColor: "rgba(118, 118, 118, 0.5)",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgba(255, 0, 0, 0.5)",
             data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
           },
         ]),
           (this.bottom_chart.datasets = [
             {
               label: "전,월세 통합 변동률",
-              backgroundColor: "rgb(118, 118, 118)",
+              backgroundColor: "rgb(255, 0, 0)",
               borderColor: "rgba(255, 0, 0, 0.5)",
               data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
             },
           ]);
       }
-
+      delete this.chartOptions_top.scales;
+      this.graph_set = [];
       // 기준금리, 최저시급 체크박스 조건문
-      if (this.graph_set.length > 0) {
-        for (var i = 0; i < this.graph_set.length; i++) {
-          if (this.graph_set[i] == "기준금리") {
-            this.top_chart.datasets = [
-              {
-                label: "매매 가격 지수",
-                backgroundColor: "rgba(255, 0, 0, 0.5)",
-                borderColor: "rgba(255, 0, 0, 0.5)",
-                data: this.trade_list,
-              },
-            ];
-            $("#rate_ck").prop("checked", false);
-            console.log(this.chartOptions_top.scales);
-            this.graph_set.splice(i);
-          } else if (this.graph_set[i] == "최저시급") {
-            this.top_chart.datasets = [
-              {
-                label: "매매 가격 지수",
-                backgroundColor: "rgba(255, 0, 0, 0.5)",
-                borderColor: "rgba(255, 0, 0, 0.5)",
-                data: this.trade_list,
-              },
-            ];
-            $("#wage_ck").prop("checked", false);
-            console.log(this.chartOptions_top.scales);
-            this.graph_set.splice(i);
-          }
-        }
-        delete this.chartOptions_top.scales;
-      }
+      // if (this.graph_set.length > 0) {
+      //   for (var i = 0; i < this.graph_set.length; i++) {
+      //     if (this.graph_set[i] == "기준금리") {
+      //       this.top_chart.datasets = [
+      //         {
+      //           label: "매매 가격",
+      //           backgroundColor: "rgba(255, 0, 0, 0.5)",
+      //           borderColor: "rgba(255, 0, 0, 0.5)",
+      //           data: this.trade_list,
+      //         },
+      //       ];
+      //       $("#rate_ck").prop("checked", false);
+      //       console.log(this.chartOptions_top.scales);
+      //       this.graph_set.splice(i);
+      //     } else if (this.graph_set[i] == "최저시급") {
+      //       this.top_chart.datasets = [
+      //         {
+      //           label: "매매 가격",
+      //           backgroundColor: "rgba(255, 0, 0, 0.5)",
+      //           borderColor: "rgba(255, 0, 0, 0.5)",
+      //           data: this.trade_list,
+      //         },
+      //       ];
+      //       $("#wage_ck").prop("checked", false);
+      //       console.log(this.chartOptions_top.scales);
+      //       this.graph_set.splice(i);
+      //     }
+      //   }
+      //   delete this.chartOptions_top.scales;
+      // }
     },
     getRegionList() {
       // 지역 리스트 가져오기
@@ -1056,6 +1059,14 @@ export default {
         }
       });
       this.top_chart.datasets[0].data = this.trade_list;
+    },
+    getTrade_avg() {
+      axios.get("/getTrade_avg").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.trade_avg.push(res.data[i].avg_amount);
+        }
+      });
+      this.bottom_chart.datasets[0].data = this.trade_avg;
     },
   },
 };
