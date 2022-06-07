@@ -226,7 +226,7 @@ router.get("/getTrade_payment", function (req, res) {
   maria.query(
     "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
-      console.log(rows);
+      // console.log(rows);
       res.send(rows);
     }
   );
