@@ -147,18 +147,23 @@
                     />
                   </b-card>
                 </b-row>
-                <Bar
-                  id="top_graph"
-                  :chart-options="chartOptions_top"
-                  :chart-data="top_chart"
-                  :chart-id="chartId"
-                  :dataset-id-key="datasetIdKey"
-                  :plugins="plugins"
-                  :css-classes="cssClasses"
-                  :styles="styles"
-                  :width="width"
-                  :height="height"
-                />
+                <br />
+                <b-row>
+                  <b-card>
+                    <Bar
+                      id="top_graph"
+                      :chart-options="chartOptions_top"
+                      :chart-data="top_chart"
+                      :chart-id="chartId"
+                      :dataset-id-key="datasetIdKey"
+                      :plugins="plugins"
+                      :css-classes="cssClasses"
+                      :styles="styles"
+                      :width="width"
+                      :height="height"
+                    />
+                  </b-card>
+                </b-row>
                 <br />
                 <b-row>
                   <b-card>
@@ -438,6 +443,8 @@ export default {
       dongList: [], // 읍/면/동 리스트
       trade_amount: [], // 매매 거래 금액
       trade_avg: [], // 매매 거래 금액 변동률
+      charter_list: [], // 전,월세 평균 거래 금액
+      charter_avg: [], // 전,월세 평균 거래 금액 변동률
       regionChk1: true, // 시/도
       regionChk2: false, // 시/군/구
       regionChk3: false, // 읍/면/동
@@ -593,10 +600,12 @@ export default {
     this.getWage(); // 그래프 데이터 (년도별 최저시급)
     this.getTrade_payment(); // 그래프 데이터 (매매 거래 금액)
     this.getTrade_avg(); // 그래프 데이터 (매매 거래 금액 변동률)
+    this.getCharter_payment(); // 그래프 데이터 (전,월세 평균 거래 금액)
+    this.getCharter_avg(); // 그래프 데이터 (전,월세 평균 거래 금액 변동률)
   },
   methods: {
     trans_chart() {
-      // this.chartOptions_top.plugins.legend = { display: false };
+      this.chartOptions_top.plugins.legend = { display: false };
       if (this.changeGraph == "매매") {
         this.$refs.click_graph1.textContent = "전국 아파트 매매 가격";
         this.$refs.click_graph2.textContent = "전국 아파트 매매 가격 변동률";
@@ -604,25 +613,30 @@ export default {
           {
             label: "매매 가격",
             backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgba(255, 0, 0, 0.5)",
             data: this.trade_list,
+            yAxisID: "trade",
           },
         ]),
           (this.bottom_chart.datasets = [
             {
               label: "매매 가격 변동률",
-              backgroundColor: "rgb(118, 118, 118)",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
+              borderColor: "rgba(255, 0, 0, 0.5)",
               data: this.trade_avg,
             },
           ]);
       } else if (this.changeGraph == "전,월세") {
-        this.$refs.click_graph1.textContent = "전국 아파트 전,월세 통합 지수";
+        this.$refs.click_graph1.textContent =
+          "전국 아파트 전,월세 통합 거래 금액";
         this.$refs.click_graph2.textContent = "전국 아파트 전,월세 통합 변동률";
         (this.top_chart.datasets = [
           {
-            label: "전,월세 통합 지수",
+            label: "전,월세 통합 거래 금액",
             backgroundColor: "rgba(255, 0, 0, 0.5)",
             borderColor: "rgba(255, 0, 0, 0.5)",
-            data: [92.94, 94.46, 95.04, 93.93, 91.65, 93.4, 100.46],
+            data: this.charter_list,
+            yAxisID: "trade",
           },
         ]),
           (this.bottom_chart.datasets = [
@@ -630,7 +644,7 @@ export default {
               label: "전,월세 통합 변동률",
               backgroundColor: "rgb(255, 0, 0)",
               borderColor: "rgba(255, 0, 0, 0.5)",
-              data: [0.34, 0.09, 0.01, -0.18, -0.13, 0.44, 0.6],
+              data: this.charter_avg,
             },
           ]);
       }
@@ -1053,6 +1067,7 @@ export default {
       }
     },
     getTrade_payment() {
+      // 매매 거래 금액
       axios.get("/getTrade_payment").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.trade_list.push(res.data[i].avg_amount);
@@ -1061,12 +1076,27 @@ export default {
       this.top_chart.datasets[0].data = this.trade_list;
     },
     getTrade_avg() {
+      // 매매 거래 금액 변동률
       axios.get("/getTrade_avg").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
-          this.trade_avg.push(res.data[i].avg_amount);
+          this.trade_avg.push(res.data[i].avg_rate);
         }
       });
       this.bottom_chart.datasets[0].data = this.trade_avg;
+    },
+    getCharter_payment() {
+      axios.get("/getCharter_payment").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.charter_list.push(res.data[i].avg_amount);
+        }
+      });
+    },
+    getCharter_avg() {
+      axios.get("/getCharter_avg").then((res) => {
+        for (var i = 0; i < res.data.length; i++) {
+          this.charter_avg.push(res.data[i].avg_rate);
+        }
+      });
     },
   },
 };

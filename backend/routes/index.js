@@ -234,7 +234,27 @@ router.get("/getTrade_payment", function (req, res) {
 
 router.get("/getTrade_avg", function (req, res) {
   maria.query(
-    "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_amount FROM trade_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM trade_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    function (err, rows, field) {
+      // console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+router.get("/getCharter_payment", function (req, res) {
+  maria.query(
+    "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM charter_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    function (err, rows, field) {
+      console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+router.get("/getCharter_avg", function (req, res) {
+  maria.query(
+    "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM charter_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
       console.log(rows);
       res.send(rows);
