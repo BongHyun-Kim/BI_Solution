@@ -319,6 +319,17 @@
                 </b-row>
               </b-col>
             </b-row>
+            <Bar 
+            :chart-options="chartOptions_Bar1"
+            :chart-data="barGraph_r"
+            :chart-id="chartId"
+            :dataset-id-key="datasetIdKey"
+            :plugins="plugins"
+            :css-classes="cssClasses"
+            :styles="styles"
+            :width="300"
+            :height="150"
+            />
           </b-container>
         </b-col>
       </b-row>
@@ -331,6 +342,8 @@ import axios from "axios";
 import $ from "jquery";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
 import { Doughnut } from "vue-chartjs/legacy";
+import { Bar } from "vue-chartjs/legacy";
+
 
 import {
   Chart as ChartJS,
@@ -342,6 +355,8 @@ import {
   LinearScale,
   CategoryScale,
   PointElement,
+  BarElement,         // 막대그래프 추가
+  BarController,      // 막대그래프 추가
 } from "chart.js";
 
 ChartJS.register(
@@ -352,7 +367,9 @@ ChartJS.register(
   LineElement,
   LinearScale,
   CategoryScale,
-  PointElement
+  PointElement,
+  BarElement,
+  BarController,
 );
 
 export default {
@@ -360,6 +377,7 @@ export default {
   components: {
     LineChartGenerator,
     Doughnut,
+    Bar,
   },
   props: {
     chartId: {
@@ -439,6 +457,49 @@ export default {
         },
         resposive: null,
         maintainAspectRatio: null,
+      },
+      chartOptions_Bar1:{
+        indexAxis: 'y',
+        responsive: true,
+        title: {
+          display: true,
+          text: '막대차트'
+        },
+        Tooltips:{
+          mode: 'index',
+          intersect: false,
+        },
+        hover:{
+          mode: 'nearest',
+          intersect: true,
+        },
+        plugins:{
+
+        },
+        scales:{
+          xAxes:[{
+            display: true,
+            scaleLabel: {
+              display : true,
+              labelString: 'X축'
+            },
+          }],
+          yAxes: [{
+            display: true,
+            ticks:{
+              autoSkip: false,
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Y축'
+            }
+          }],
+        },
+      },
+      barGraph_r: {
+        // 오른쪽 랭크 그래프 데이터 설정
+        labels: ['1', '2', '3', '4', '5'],
+        datasets: [{ label: '테스트 데이터셋', backgroundColor: [], data: [1,2,3,4,5] }],
       },
       graph_set: [], // 그래프 설정 버튼
 
