@@ -1026,7 +1026,6 @@ export default {
             position: "bottom",
           };
         } else {
-          console.log("test");
           this.chartOptions_top.scales = {
             trade: {
               type: "linear",
