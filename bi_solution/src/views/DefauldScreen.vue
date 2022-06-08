@@ -346,7 +346,7 @@
                 </b-row>
               </b-col>
             </b-row>
-            <Bar
+            <!-- <Bar
               :chart-options="chartOptions_Bar1"
               :chart-data="barGraph_r"
               :chart-id="chartId"
@@ -356,7 +356,7 @@
               :styles="styles"
               :width="300"
               :height="150"
-            />
+            /> -->
           </b-container>
         </b-col>
       </b-row>
@@ -551,7 +551,8 @@ export default {
         datasets: [
           {
             label: "매매 가격 변동률",
-            backgroundColor: "rgb(118, 118, 118)",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgba(255, 0, 0, 0.5)",
             data: null,
           },
         ],
@@ -642,7 +643,7 @@ export default {
           (this.bottom_chart.datasets = [
             {
               label: "전,월세 통합 변동률",
-              backgroundColor: "rgb(255, 0, 0)",
+              backgroundColor: "rgba(255, 0, 0, 0.5)",
               borderColor: "rgba(255, 0, 0, 0.5)",
               data: this.charter_avg,
             },
@@ -1084,6 +1085,7 @@ export default {
       this.bottom_chart.datasets[0].data = this.trade_avg;
     },
     getCharter_payment() {
+      // 전,월세 거래 금액
       axios.get("/getCharter_payment").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.charter_list.push(res.data[i].avg_amount);
@@ -1091,6 +1093,7 @@ export default {
       });
     },
     getCharter_avg() {
+      // 전,월세 거래 금액 변동률
       axios.get("/getCharter_avg").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.charter_avg.push(res.data[i].avg_rate);

@@ -144,7 +144,7 @@ router.get("/select", function (req, res) {
   );
 });
 
-// 랭크(매매)
+// 랭크 (매매)
 router.get("/getRank_trade", function (req, res) {
   maria.query(
     "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM trade_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
@@ -199,7 +199,7 @@ router.get("/getMinimunWage", function (req, res) {
   );
 });
 
-// 그래프 추가 데이터(최저시급)
+// 그래프 추가 데이터 (최저시급)
 router.get("/getWages", function (req, res) {
   maria.query(
     "SELECT idx, period, wage FROM minimum_wage WHERE period BETWEEN 2015 AND 2021",
@@ -210,7 +210,7 @@ router.get("/getWages", function (req, res) {
   );
 });
 
-// 그래프 추가 데이터(기준금리)
+// 그래프 추가 데이터 (기준금리)
 router.get("/getBasemoney_chart", function (req, res) {
   maria.query(
     "SELECT LEFT (period,4), ROUND(AVG(rate),1) AS avg_rate FROM basemoney_rate WHERE left(period,4) BETWEEN 2015 AND 2021 GROUP BY left(period,4)",
@@ -221,7 +221,7 @@ router.get("/getBasemoney_chart", function (req, res) {
   );
 });
 
-// 메인 상단 그래프(평균 매매 거래 금액)
+// 메인 상단 그래프 (평균 매매 거래 금액)
 router.get("/getTrade_payment", function (req, res) {
   maria.query(
     "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
@@ -232,6 +232,7 @@ router.get("/getTrade_payment", function (req, res) {
   );
 });
 
+// 메인 하단 그래프 (평균 매매 거래 금액 변동률)
 router.get("/getTrade_avg", function (req, res) {
   maria.query(
     "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM trade_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
@@ -242,24 +243,36 @@ router.get("/getTrade_avg", function (req, res) {
   );
 });
 
+// 메인 상단 그래프 (평균 전,월세 거래 금액)
 router.get("/getCharter_payment", function (req, res) {
   maria.query(
     "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM charter_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
-      console.log(rows);
+      // console.log(rows);
       res.send(rows);
     }
   );
 });
 
+// 메인 하단 그래프 (평균 전,월세 거래 금액 변동률)
 router.get("/getCharter_avg", function (req, res) {
   maria.query(
     "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM charter_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    function (err, rows, field) {
+      // console.log(rows);
+      res.send(rows);
+    }
+  );
+});
+
+// 하단 아파트 매매 거래량
+router.get("/getTrade_count", function (req, res) {
+  maria.query(
+    "SELECT COUNT(*) FROM trade_real_apt WHERE trade_year = '2022' AND trade_month = '5'",
     function (err, rows, field) {
       console.log(rows);
       res.send(rows);
     }
   );
 });
-
 module.exports = router;
