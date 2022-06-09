@@ -6,6 +6,11 @@ var router = express.Router();
 
 const maria = require("../mariaConn");
 
+const currDate = new Date();
+const currYear = currDate.getFullYear();
+const currMonth = currDate.getMonth();
+
+
 router.get("/", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
@@ -365,7 +370,8 @@ router.get("/getCharter_avg", function (req, res) {
 // 하단 아파트 매매 거래량
 router.get("/getTrade_count", function (req, res) {
   maria.query(
-    "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = '2022' AND trade_month = '5'",
+    "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = ? AND trade_month = ?",
+    [currYear, currMonth],
     function (err, rows, field) {
       if (!err) {
         // console.log(rows);
@@ -381,7 +387,8 @@ router.get("/getTrade_count", function (req, res) {
 // 하단 아파트 매매 거래량(전 월)
 router.get("/getTrade_compare", function (req, res) {
   maria.query(
-    "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = '2022' AND trade_month = '4'",
+    "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = ? AND trade_month = ?",
+    [currYear, currMonth],
     function (err, rows, field) {
       if (!err) {
         // console.log(rows);
@@ -394,10 +401,11 @@ router.get("/getTrade_compare", function (req, res) {
   );
 });
 
-// 하단 아파트 전,월세 거래량
+// 하단 아파트 전,월세 거래량 (현재 년월 )
 router.get("/getRental_count", function (req, res) {
   maria.query(
-    "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = '2022' AND trade_month = '5') A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = '2022' AND trade_month = '5') B",
+    "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = ? AND trade_month = ?) A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = ? AND trade_month = ?) B",
+    [currYear, currMonth, currYear, currMonth],
     function (err, rows, field) {
       if (!err) {
         console.log(rows);
@@ -413,7 +421,8 @@ router.get("/getRental_count", function (req, res) {
 // 하단 아파트 전,월세 거래량
 router.get("/getRental_compare", function (req, res) {
   maria.query(
-    "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = '2022' AND trade_month = '4') A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = '2022' AND trade_month = '4') B",
+    "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = ? AND trade_month = ?) A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = ? AND trade_month = ?) B",
+    [currYear, currMonth, currYear, currMonth],
     function (err, rows, field) {
       if (!err) {
         console.log(rows);
