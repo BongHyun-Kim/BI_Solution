@@ -322,13 +322,13 @@
                       <span
                         id="trade"
                         :style="[
-                          trade_count > trade_compare
+                          trade_data == 'curr'
                             ? { color: 'red' }
                             : { color: 'blue' },
                         ]"
-                        >{{ trade_count }}
+                        >{{ trade_data.cnt }}
                         <b-icon
-                          v-if="trade_count > trade_compare"
+                          v-if="trade_data == 'curr'"
                           icon="arrow-up"
                         ></b-icon>
                         <b-icon v-else icon="arrow-down"></b-icon>
@@ -341,13 +341,13 @@
                       <span
                         id="charter"
                         :style="[
-                          trade_count > trade_compare
+                           rental_data.whoWin == 'curr'
                             ? { color: 'red' }
                             : { color: 'blue' },
                         ]"
-                        >{{ rental_count }}
+                        >{{ rental_data.cnt }}
                         <b-icon
-                          v-if="rental_count > rental_compare"
+                          v-if="rental_data.whoWin == 'curr'"
                           icon="arrow-up"
                         ></b-icon>
                         <b-icon v-else icon="arrow-down"></b-icon>
@@ -521,10 +521,14 @@ export default {
       baseMoney_compare: null, // 기본지표 (직전 기준금리)
       minimumWage: null, // 기본지표 (최저시급)
       minimumWage_compare: null, // 기본지표 (직전 최저시급)
-      trade_count: null, // 아파트 거래량 (매매)
-      trade_compare: null, // 아파트 거래량 [매매, 1개월 전]
-      rental_count: null, // 아파트 거래량 (전,월세)
-      rental_compare: null, // 아파트 거래량 [전,월세, 1개월 전]
+      rental_data:{       // 아파트 거래량
+        cnt: null,        // 거래 카운트
+        whoWin:''         // before : 전전달의 데이터가 더 높음, curr : 전달의 데이터가 더 높음
+      },
+      trade_data:{        //아파트 거래량(매매)
+        cnt:null,         // 거래 카운트
+        whoWin:''         // before : 전전달의 데이터가 더 높음, curr : 전달의 데이터가 더 높음
+      },
       chkDataArr: [], // 그래프설정 체크박스
 
       // 그래프 설정
@@ -673,15 +677,13 @@ export default {
     this.getBaseMoney_chart(); // 그래프 데이터 (년도별 기준금리)
     this.getMinimun_wage(); // 기본지표(최저시급)
     this.getMinimun_compare(); // 기본지표(직전 최저시급)
-    this.getTrade_count(); // 아파트 거래량 (매매)
-    this.getTrade_compare(); // 아파트 거래량 [매매, 1개월 전]
-    this.getRental_count(); // 아파트 거래량 (전, 월세)
-    this.getRental_compare(); // 아파트 거래량 [전,월세, 1개월 전]
     this.getWage(); // 그래프 데이터 (년도별 최저시급)
     this.getTrade_payment(); // 그래프 데이터 (매매 거래 금액)
     this.getTrade_avg(); // 그래프 데이터 (매매 거래 금액 변동률)
     this.getCharter_payment(); // 그래프 데이터 (전,월세 평균 거래 금액)
     this.getCharter_avg(); // 그래프 데이터 (전,월세 평균 거래 금액 변동률)
+    this.getRental_data();  // 아파트 거래량(전세), rental_data 참조
+    this.getTrade_data();   // 아파트 거래량(매매), 
   },
   methods: {
     trans_chart() {
@@ -777,9 +779,10 @@ export default {
     },
 
     getTrade_amount() {
-      // 거래량 가져오기 (보류)
+      // 거래량 가져오기 (보류) 
+      // eslint-disable-next-line
       axios.get("http://localhost:3000/getTotaltrade").then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
       });
     },
     // eslint-disable-next-line
@@ -863,7 +866,7 @@ export default {
       }
 
       if (step == 1) {
-        console.log("시/도 클릭");
+        //console.log("시/도 클릭");
         this.dongList = [];
         this.sigunguList = [];
         this.regionChk1 = true;
@@ -882,8 +885,9 @@ export default {
         $(".nav-tabs>li:nth-child(3)>a").removeClass("active");
       }
     },
+    // eslint-disable-next-line
     search_tmp(dong) {
-      console.log("temp : " + dong);
+      //console.log("temp : " + dong);
     },
     getBaseMoney_rank() {
       // 기본지표 (기준금리)
@@ -1191,30 +1195,14 @@ export default {
         }
       });
     },
-    getTrade_count() {
-      // 아파트 거래량 (매매)
-      axios.get("/getTrade_count").then((res) => {
-        this.trade_count = res.data[0].deals;
+    getTrade_data(){
+      axios.get("/getTrade_data").then((res) => {
+        this.trade_data = res.data[0];
       });
     },
-    getTrade_compare() {
-      // 아파트 거래량 [매매, 1개월 전]
-      axios.get("/getTrade_compare").then((res) => {
-        this.trade_compare = res.data[0].deals;
-        console.log(this.trade_compare);
-      });
-    },
-    getRental_count() {
-      // 아파트 거래량 (전,월세)
-      axios.get("/getRental_count").then((res) => {
-        this.rental_count = res.data[0].total_count;
-      });
-    },
-    getRental_compare() {
-      // 아파트 거래량 [매매, 1개월 전]
-      axios.get("/getRental_compare").then((res) => {
-        this.rental_compare = res.data[0].total_count;
-        console.log(this.rental_compare);
+    getRental_data() {
+      axios.get("/getRental_data").then((res) => {
+        this.rental_data = res.data[0];
       });
     },
   },

@@ -8,6 +8,7 @@ const maria = require("../mariaConn");
 
 const currDate = new Date();
 const currYear = currDate.getFullYear();
+// .getMonth 로 값을 받아오면 0~11 까지로 받아옴, getMonth + 1 을 해야 현재 달이 된다.
 const currMonth = currDate.getMonth();
 
 
@@ -367,70 +368,48 @@ router.get("/getCharter_avg", function (req, res) {
   );
 });
 
-// 하단 아파트 매매 거래량
-router.get("/getTrade_count", function (req, res) {
+// 매매 카운트, 전전월과 전월의 데이터 비교 후 어디가 더 큰지 반환
+router.get("/getTrade_data", function (req, res) {
   maria.query(
     "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = ? AND trade_month = ?",
-    [currYear, currMonth],
-    function (err, rows, field) {
+    [currYear, currMonth-1],
+    function (err, rows1, field) {
       if (!err) {
-        // console.log(rows);
-        res.send(rows);
-      } else {
-        console.log("err : " + err);
-        res.send(err);
-      }
+        maria.query(
+          "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = ? AND trade_month = ?",
+          [currYear, currMonth],
+          function (err, rows2, field) {
+            if (!err) {
+              if(rows1[0].total_count > rows2[0].total_count){    // 전전달의 데이터가 전달의 데이터보다 큰 경우
+                res.send([{cnt:rows2[0].deals, whoWin:'before'}])
+              }else{ res.send([{cnt:rows2[0].deals, whoWin:'curr'}]); }
+            } 
+          }
+        );
+      } 
     }
   );
 });
 
-// 하단 아파트 매매 거래량(전 월)
-router.get("/getTrade_compare", function (req, res) {
-  maria.query(
-    "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = ? AND trade_month = ?",
-    [currYear, currMonth],
-    function (err, rows, field) {
-      if (!err) {
-        // console.log(rows);
-        res.send(rows);
-      } else {
-        console.log("err : " + err);
-        res.send(err);
-      }
-    }
-  );
-});
-
-// 하단 아파트 전,월세 거래량 (현재 년월 )
-router.get("/getRental_count", function (req, res) {
+// 전월세 카운트, 전전월과 전월의 데이터 비교 후 어디가 더 큰지 반환
+router.get("/getRental_data", function (req, res) {
   maria.query(
     "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = ? AND trade_month = ?) A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = ? AND trade_month = ?) B",
-    [currYear, currMonth, currYear, currMonth],
-    function (err, rows, field) {
+    [currYear, currMonth-1, currYear, currMonth-1],
+    function (err, rows1, field) {
       if (!err) {
-        console.log(rows);
-        res.send(rows);
-      } else {
-        console.log("err : " + err);
-        res.send(err);
-      }
-    }
-  );
-});
-
-// 하단 아파트 전,월세 거래량
-router.get("/getRental_compare", function (req, res) {
-  maria.query(
-    "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = ? AND trade_month = ?) A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = ? AND trade_month = ?) B",
-    [currYear, currMonth, currYear, currMonth],
-    function (err, rows, field) {
-      if (!err) {
-        console.log(rows);
-        res.send(rows);
-      } else {
-        console.log("err : " + err);
-        res.send(err);
-      }
+        maria.query(
+          "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = ? AND trade_month = ?) A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = ? AND trade_month = ?) B",
+          [currYear, currMonth, currYear, currMonth],
+          function (err, rows2, field) {
+            if (!err) {
+              if(rows1[0].total_count > rows2[0].total_count){
+                res.send([{cnt:rows2[0].total_count, whoWin:'before'}]);
+              }else{ res.send([{cnt:rows2[0].total_count, whoWin:'curr'}]); }
+            }
+          }
+        );
+      } 
     }
   );
 });
