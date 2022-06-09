@@ -381,8 +381,8 @@ router.get("/getTrade_data", function (req, res) {
           function (err, rows2, field) {
             if (!err) {
               if(rows1[0].total_count > rows2[0].total_count){    // 전전달의 데이터가 전달의 데이터보다 큰 경우
-                res.send([{cnt:rows2[0].deals, whoWin:'before'}])
-              }else{ res.send([{cnt:rows2[0].deals, whoWin:'curr'}]); }
+                res.send({cnt:rows2[0].deals, whoWin:'before'})
+              }else{ res.send({cnt:rows2[0].deals, whoWin:'curr'}); }
             } 
           }
         );
@@ -404,8 +404,8 @@ router.get("/getRental_data", function (req, res) {
           function (err, rows2, field) {
             if (!err) {
               if(rows1[0].total_count > rows2[0].total_count){
-                res.send([{cnt:rows2[0].total_count, whoWin:'before'}]);
-              }else{ res.send([{cnt:rows2[0].total_count, whoWin:'curr'}]); }
+                res.send({cnt:rows2[0].total_count, whoWin:'before'});
+              }else{ res.send({cnt:rows2[0].total_count, whoWin:'curr'}); }
             }
           }
         );

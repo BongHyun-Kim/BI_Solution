@@ -1197,12 +1197,12 @@ export default {
     },
     getTrade_data(){
       axios.get("/getTrade_data").then((res) => {
-        this.trade_data = res.data[0];
+        this.trade_data = res.data;
       });
     },
     getRental_data() {
       axios.get("/getRental_data").then((res) => {
-        this.rental_data = res.data[0];
+        this.rental_data = res.data;
       });
     },
   },
