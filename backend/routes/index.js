@@ -111,7 +111,12 @@ router.get("/searchDong", function (req, res) {
     "SELECT DISTINCT dong FROM addr_list WHERE city_nm = ? and sido_nm = ? AND detailed IS NULL",
     [req.query.sigunguName, req.query.sidoName],
     function (err, rows, fields) {
-      res.send(rows);
+      if (!err) {
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -123,8 +128,13 @@ router.get("/searchSigungu", function (req, res) {
     "SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ? AND detailed IS NULL",
     req.query.regionName,
     function (err, rows, fields) {
-      console.log("query result : " + rows);
-      res.send(rows);
+      if (!err) {
+        // console.log("query result : " + rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -149,8 +159,13 @@ router.get("/getRank_trade", function (req, res) {
   maria.query(
     "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM trade_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -160,8 +175,13 @@ router.get("/getRank_charter", function (req, res) {
   maria.query(
     "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM charter_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -171,8 +191,13 @@ router.get("/getTrade_rate", function (req, res) {
   maria.query(
     "SELECT region, round(AVG(rate),2) FROM trade_change_rate WHERE region = '전국' GROUP BY region, LEFT(period,4);",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -182,8 +207,29 @@ router.get("/getBasemoney_rank", function (req, res) {
   maria.query(
     "SELECT rate FROM basemoney_rate ORDER BY idx DESC LIMIT 1",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
+// 기본지표 (직전 기준금리)
+router.get("/getBasemoney_compare", function (req, res) {
+  maria.query(
+    "SELECT rate FROM basemoney_rate WHERE YEAR(period) = YEAR(SYSDATE()) ORDER BY period DESC LIMIT 1, 1",
+    function (err, rows, field) {
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -193,8 +239,29 @@ router.get("/getMinimunWage", function (req, res) {
   maria.query(
     "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
+// 기본지표 (직전 최저시급)
+router.get("/getMinimunWage_compare", function (req, res) {
+  maria.query(
+    "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1,1",
+    function (err, rows, field) {
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -204,8 +271,13 @@ router.get("/getWages", function (req, res) {
   maria.query(
     "SELECT idx, period, wage FROM minimum_wage WHERE period BETWEEN 2015 AND 2021",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -215,8 +287,13 @@ router.get("/getBasemoney_chart", function (req, res) {
   maria.query(
     "SELECT LEFT (period,4), ROUND(AVG(rate),1) AS avg_rate FROM basemoney_rate WHERE left(period,4) BETWEEN 2015 AND 2021 GROUP BY left(period,4)",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -226,8 +303,13 @@ router.get("/getTrade_payment", function (req, res) {
   maria.query(
     "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -237,8 +319,13 @@ router.get("/getTrade_avg", function (req, res) {
   maria.query(
     "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM trade_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -248,8 +335,13 @@ router.get("/getCharter_payment", function (req, res) {
   maria.query(
     "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM charter_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -259,8 +351,13 @@ router.get("/getCharter_avg", function (req, res) {
   maria.query(
     "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM charter_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
@@ -268,11 +365,65 @@ router.get("/getCharter_avg", function (req, res) {
 // 하단 아파트 매매 거래량
 router.get("/getTrade_count", function (req, res) {
   maria.query(
-    "SELECT COUNT(*) FROM trade_real_apt WHERE trade_year = '2022' AND trade_month = '5'",
+    "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = '2022' AND trade_month = '5'",
     function (err, rows, field) {
-      console.log(rows);
-      res.send(rows);
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
     }
   );
 });
+
+// 하단 아파트 매매 거래량(전 월)
+router.get("/getTrade_compare", function (req, res) {
+  maria.query(
+    "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = '2022' AND trade_month = '4'",
+    function (err, rows, field) {
+      if (!err) {
+        // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
+// 하단 아파트 전,월세 거래량
+router.get("/getRental_count", function (req, res) {
+  maria.query(
+    "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = '2022' AND trade_month = '5') A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = '2022' AND trade_month = '5') B",
+    function (err, rows, field) {
+      if (!err) {
+        console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
+// 하단 아파트 전,월세 거래량
+router.get("/getRental_compare", function (req, res) {
+  maria.query(
+    "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = '2022' AND trade_month = '4') A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = '2022' AND trade_month = '4') B",
+    function (err, rows, field) {
+      if (!err) {
+        console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
 module.exports = router;

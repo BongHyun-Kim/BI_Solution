@@ -319,16 +319,40 @@
                   <b-col class="etc_content">
                     <span
                       >매매 :
-                      <span id="trade"
-                        >26054 <b-icon icon="arrow-up"></b-icon></span
-                    ></span>
+                      <span
+                        id="trade"
+                        :style="[
+                          trade_count > trade_compare
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ trade_count }}
+                        <b-icon
+                          v-if="trade_count > trade_compare"
+                          icon="arrow-up"
+                        ></b-icon>
+                        <b-icon v-else icon="arrow-down"></b-icon>
+                      </span>
+                    </span>
                   </b-col>
                   <b-col class="etc_content">
                     <span
                       >전세 :
-                      <span id="charter"
-                        >54714 <b-icon icon="arrow-up"></b-icon></span
-                    ></span>
+                      <span
+                        id="charter"
+                        :style="[
+                          trade_count > trade_compare
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ rental_count }}
+                        <b-icon
+                          v-if="rental_count > rental_compare"
+                          icon="arrow-up"
+                        ></b-icon>
+                        <b-icon v-else icon="arrow-down"></b-icon>
+                      </span>
+                    </span>
                   </b-col>
                 </b-row>
               </b-col>
@@ -338,10 +362,41 @@
                 </b-row>
                 <b-row>
                   <b-col class="etc_content">
-                    <span>기준금리 : {{ baseMoney.rate }}%</span>
+                    <span
+                      >기준금리 :
+                      <span
+                        id="trade"
+                        :style="[
+                          baseMoney > baseMoney_compare
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ baseMoney }}%
+                        <b-icon
+                          v-if="baseMoney > baseMoney_compare"
+                          icon="arrow-up"
+                        ></b-icon>
+                        <b-icon v-else icon="arrow-down"></b-icon
+                      ></span>
+                    </span>
                   </b-col>
                   <b-col class="etc_content">
-                    <span>최저시급 : {{ minimumWage.wage }}원</span>
+                    <span
+                      >최저시급 :
+                      <span
+                        id="trade"
+                        :style="[
+                          minimumWage > minimumWage_compare
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ minimumWage }}원<b-icon
+                          v-if="minimumWage > minimumWage_compare"
+                          icon="arrow-up"
+                        ></b-icon>
+                        <b-icon v-else icon="arrow-down"></b-icon
+                      ></span>
+                    </span>
                   </b-col>
                 </b-row>
               </b-col>
@@ -437,28 +492,46 @@ export default {
   },
   data() {
     return {
-      changeGraph: "매매", // 그래프 전환 구분
+      // 지역 선택 리스트
+
       regionlist: [], // 시/도 리스트
       sigunguList: [], // 시/군/구 리스트
       dongList: [], // 읍/면/동 리스트
-      trade_amount: [], // 매매 거래 금액
-      trade_avg: [], // 매매 거래 금액 변동률
-      charter_list: [], // 전,월세 평균 거래 금액
-      charter_avg: [], // 전,월세 평균 거래 금액 변동률
       regionChk1: true, // 시/도
       regionChk2: false, // 시/군/구
       regionChk3: false, // 읍/면/동
       sidoName: "", // 시도 이름 (클릭한)
       sigunguName: "", // 시군구 이름 (클릭한)
+
+      // 메인 그래프 데이터
+
+      trade_amount: [], // 매매 거래 금액
+      trade_avg: [], // 매매 거래 금액 변동률
+      charter_list: [], // 전,월세 평균 거래 금액
+      charter_avg: [], // 전,월세 평균 거래 금액 변동률
       rankData_trade: [], // 랭크 데이터 (매매)
       rankData_charter: [], // 랭크 데이터 (전,월세)
-      baseMoney: { rate: null }, // 기본지표 (기준금리)
-      minimumWage: { wage: null }, // 기본지표 (최저시급)
-      chkDataArr: [], // 그래프설정 체크박스
-      clickPeriod: "", // 그래프설정 기간
       basemoney_list: [], // 메인그래프 기준금리
       wage_list: [], //  메인그래프 최저시급
       trade_list: [], // 메인그래프 년도별 평균 매매금액
+
+      // 하단 거래량 및 기본 지표
+
+      baseMoney: null, // 기본지표 (기준금리)
+      baseMoney_compare: null, // 기본지표 (직전 기준금리)
+      minimumWage: null, // 기본지표 (최저시급)
+      minimumWage_compare: null, // 기본지표 (직전 최저시급)
+      trade_count: null, // 아파트 거래량 (매매)
+      trade_compare: null, // 아파트 거래량 [매매, 1개월 전]
+      rental_count: null, // 아파트 거래량 (전,월세)
+      rental_compare: null, // 아파트 거래량 [전,월세, 1개월 전]
+      chkDataArr: [], // 그래프설정 체크박스
+
+      // 그래프 설정
+
+      clickPeriod: "", // 그래프설정 기간
+      changeGraph: "매매", // 그래프 전환 구분
+
       rankGraph_l: {
         // 왼쪽 랭크 그래프 데이터 설정
         labels: [],
@@ -595,9 +668,15 @@ export default {
     this.getRank_charter(); // 랭크(전,월세)
     this.getRank_dataL(); // 랭크 좌측 그래프 (매매)
     this.getRank_dataR(); // 랭크 우측 그래프 (전,월세)
-    this.getBaseMoney_rank(); // 랭크(최저시급)
+    this.getBaseMoney_rank(); // 기본지표(기준금리)
+    this.getBaseMoney_compare(); // 기본지표(직전 기준금리)
     this.getBaseMoney_chart(); // 그래프 데이터 (년도별 기준금리)
-    this.getMinimun_wage(); // 기준금리(최저시급)
+    this.getMinimun_wage(); // 기본지표(최저시급)
+    this.getMinimun_compare(); // 기본지표(직전 최저시급)
+    this.getTrade_count(); // 아파트 거래량 (매매)
+    this.getTrade_compare(); // 아파트 거래량 [매매, 1개월 전]
+    this.getRental_count(); // 아파트 거래량 (전, 월세)
+    this.getRental_compare(); // 아파트 거래량 [전,월세, 1개월 전]
     this.getWage(); // 그래프 데이터 (년도별 최저시급)
     this.getTrade_payment(); // 그래프 데이터 (매매 거래 금액)
     this.getTrade_avg(); // 그래프 데이터 (매매 거래 금액 변동률)
@@ -809,13 +888,25 @@ export default {
     getBaseMoney_rank() {
       // 기본지표 (기준금리)
       axios.get("http://localhost:3000/getBaseMoney_rank").then((res) => {
-        this.baseMoney = res.data[0];
+        this.baseMoney = res.data[0].rate;
+      });
+    },
+    getBaseMoney_compare() {
+      // 기본지표 (직전 기준금리)
+      axios.get("http://localhost:3000/getBaseMoney_compare").then((res) => {
+        this.baseMoney_compare = res.data[0].rate;
       });
     },
     getMinimun_wage() {
       // 기본지표 (최저시급)
       axios.get("http://localhost:3000/getMinimunWage").then((res) => {
-        this.minimumWage = res.data[0];
+        this.minimumWage = res.data[0].wage;
+      });
+    },
+    getMinimun_compare() {
+      // 기본지표 (직전 최저시급)
+      axios.get("http://localhost:3000/getMinimunWage_compare").then((res) => {
+        this.minimumWage_compare = res.data[0].wage;
       });
     },
 
@@ -1098,6 +1189,32 @@ export default {
         for (var i = 0; i < res.data.length; i++) {
           this.charter_avg.push(res.data[i].avg_rate);
         }
+      });
+    },
+    getTrade_count() {
+      // 아파트 거래량 (매매)
+      axios.get("/getTrade_count").then((res) => {
+        this.trade_count = res.data[0].deals;
+      });
+    },
+    getTrade_compare() {
+      // 아파트 거래량 [매매, 1개월 전]
+      axios.get("/getTrade_compare").then((res) => {
+        this.trade_compare = res.data[0].deals;
+        console.log(this.trade_compare);
+      });
+    },
+    getRental_count() {
+      // 아파트 거래량 (전,월세)
+      axios.get("/getRental_count").then((res) => {
+        this.rental_count = res.data[0].total_count;
+      });
+    },
+    getRental_compare() {
+      // 아파트 거래량 [매매, 1개월 전]
+      axios.get("/getRental_compare").then((res) => {
+        this.rental_compare = res.data[0].total_count;
+        console.log(this.rental_compare);
       });
     },
   },

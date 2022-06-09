@@ -84,14 +84,6 @@
   font-size: 15px;
 }
 
-/* 아파트 거래량 및 기본지표 값 글자 색상 */
-#trade {
-  color: red;
-}
-#charter {
-  color: red;
-}
-
 /* 랭크시스템 */
 #rank_title {
   font-weight: bold;
