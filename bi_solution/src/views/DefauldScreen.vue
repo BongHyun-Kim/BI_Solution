@@ -247,13 +247,17 @@
                 <b-row>
                   <b-card>
                     <b-row>
-                      <h5 id="rank_title">전국 시도별 아파트 랭킹</h5>
+                      <h5 id="rank_title" class="mb-4">
+                        전국 시도별 아파트 랭킹
+                      </h5>
                     </b-row>
                     <b-row>
-                      <h6 id="rank_sub_title1">
-                        전국 아파트 매매 가격 변동률 Top 5
-                      </h6>
-                      <!-- <b-col
+                      <b-col>
+                        <b-row>
+                          <h6 id="rank_sub_title1">
+                            전국 아파트 매매 가격 Top 5 지역
+                          </h6>
+                          <!-- <b-col
                         class="rank1_content"
                         v-for="(trade, i) in rankData_trade"
                         v-bind:key="i"
@@ -264,35 +268,37 @@
                           {{ trade.avg_rate }}%
                         </p></b-col
                       > -->
-                      <Doughnut
-                        :chart-options="chartOptions_Rank1"
-                        :chart-data="rankGraph_l"
-                        :chart-id="chartId"
-                        :dataset-id-key="datasetIdKey"
-                        :plugins="plugins"
-                        :css-classes="cssClasses"
-                        :styles="styles"
-                        :width="300"
-                        :height="150"
-                      />
-                    </b-row>
-                    <br />
-                    <b-row>
-                      <h6 id="rank_sub_title1">
-                        전국 아파트 전,월세 변동률 Top 5
-                      </h6>
-                      <Doughnut
-                        :chart-options="chartOptions_Rank2"
-                        :chart-data="rankGraph_r"
-                        :chart-id="chartId"
-                        :dataset-id-key="datasetIdKey"
-                        :plugins="plugins"
-                        :css-classes="cssClasses"
-                        :styles="styles"
-                        :width="300"
-                        :height="150"
-                      />
-                      <!-- <b-col
+                          <Doughnut
+                            :chart-options="chartOptions_Rank1"
+                            :chart-data="rankGraph_l"
+                            :chart-id="chartId"
+                            :dataset-id-key="datasetIdKey"
+                            :plugins="plugins"
+                            :css-classes="cssClasses"
+                            :styles="rank_style"
+                            :width="300"
+                            :height="150"
+                          />
+                        </b-row>
+                      </b-col>
+                      <br />
+                      <b-col>
+                        <b-row>
+                          <h6 id="rank_sub_title1">
+                            전국 아파트 전,월세 가격 Top 5 지역
+                          </h6>
+                          <Doughnut
+                            :chart-options="chartOptions_Rank2"
+                            :chart-data="rankGraph_r"
+                            :chart-id="chartId"
+                            :dataset-id-key="datasetIdKey"
+                            :plugins="plugins"
+                            :css-classes="cssClasses"
+                            :styles="rank_style"
+                            :width="300"
+                            :height="150"
+                          />
+                          <!-- <b-col
                         class="rank1_content"
                         v-for="(charter, i) in rankData_charter"
                         v-bind:key="i"
@@ -303,6 +309,8 @@
                           {{ charter.avg_rate }}%
                         </p></b-col
                       > -->
+                        </b-row>
+                      </b-col>
                     </b-row>
                   </b-card>
                 </b-row>
@@ -341,7 +349,7 @@
                       <span
                         id="charter"
                         :style="[
-                           rental_data.whoWin == 'curr'
+                          rental_data.whoWin == 'curr'
                             ? { color: 'red' }
                             : { color: 'blue' },
                         ]"
@@ -521,13 +529,15 @@ export default {
       baseMoney_compare: null, // 기본지표 (직전 기준금리)
       minimumWage: null, // 기본지표 (최저시급)
       minimumWage_compare: null, // 기본지표 (직전 최저시급)
-      rental_data:{       // 아파트 거래량
-        cnt: null,        // 거래 카운트
-        whoWin:''         // before : 전전달의 데이터가 더 높음, curr : 전달의 데이터가 더 높음
+      rental_data: {
+        // 아파트 거래량
+        cnt: null, // 거래 카운트
+        whoWin: "", // before : 전전달의 데이터가 더 높음, curr : 전달의 데이터가 더 높음
       },
-      trade_data:{        //아파트 거래량(매매)
-        cnt:null,         // 거래 카운트
-        whoWin:''         // before : 전전달의 데이터가 더 높음, curr : 전달의 데이터가 더 높음
+      trade_data: {
+        //아파트 거래량(매매)
+        cnt: null, // 거래 카운트
+        whoWin: "", // before : 전전달의 데이터가 더 높음, curr : 전달의 데이터가 더 높음
       },
       chkDataArr: [], // 그래프설정 체크박스
 
@@ -535,6 +545,12 @@ export default {
 
       clickPeriod: "", // 그래프설정 기간
       changeGraph: "매매", // 그래프 전환 구분
+
+      rank_style: {
+        // 랭크 그래프 스타일 설정
+        height: "200px",
+        width: "380px",
+      },
 
       rankGraph_l: {
         // 왼쪽 랭크 그래프 데이터 설정
@@ -682,8 +698,8 @@ export default {
     this.getTrade_avg(); // 그래프 데이터 (매매 거래 금액 변동률)
     this.getCharter_payment(); // 그래프 데이터 (전,월세 평균 거래 금액)
     this.getCharter_avg(); // 그래프 데이터 (전,월세 평균 거래 금액 변동률)
-    this.getRental_data();  // 아파트 거래량(전세), rental_data 참조
-    this.getTrade_data();   // 아파트 거래량(매매), 
+    this.getRental_data(); // 아파트 거래량(전세), rental_data 참조
+    this.getTrade_data(); // 아파트 거래량(매매),
   },
   methods: {
     trans_chart() {
@@ -779,7 +795,7 @@ export default {
     },
 
     getTrade_amount() {
-      // 거래량 가져오기 (보류) 
+      // 거래량 가져오기 (보류)
       // eslint-disable-next-line
       axios.get("http://localhost:3000/getTotaltrade").then((res) => {
         //console.log(res.data);
@@ -927,13 +943,13 @@ export default {
             "#586fab",
             "#444c57",
           ];
-          this.rankGraph_l.datasets[0].data.push(res.data[i].avg_rate);
+          this.rankGraph_l.datasets[0].data.push(res.data[i].avg_price);
         }
       });
 
       this.chartOptions_Rank1.plugins.legend.position = "left";
       this.chartOptions_Rank1.plugins.title.align = "end";
-      this.chartOptions_Rank1.plugins.title.text = "기준월(2016.06=100)";
+      this.chartOptions_Rank1.plugins.title.text = "(단위 : 천원)";
       this.chartOptions_Rank1.resposive = true;
       this.chartOptions_Rank1.maintainAspectRatio = false;
     },
@@ -951,13 +967,13 @@ export default {
             "#518d7d",
             "#b6d1d4",
           ];
-          this.rankGraph_r.datasets[0].data.push(res.data[i].avg_rate);
+          this.rankGraph_r.datasets[0].data.push(res.data[i].avg_price);
         }
       });
 
       this.chartOptions_Rank2.plugins.legend.position = "left";
       this.chartOptions_Rank2.plugins.title.align = "end";
-      this.chartOptions_Rank2.plugins.title.text = "기준월(2016.06=100)";
+      this.chartOptions_Rank2.plugins.title.text = "(단위 : 천원)";
       this.chartOptions_Rank2.resposive = true;
       this.chartOptions_Rank2.maintainAspectRatio = false;
     },
@@ -1195,7 +1211,7 @@ export default {
         }
       });
     },
-    getTrade_data(){
+    getTrade_data() {
       axios.get("/getTrade_data").then((res) => {
         this.trade_data = res.data;
       });

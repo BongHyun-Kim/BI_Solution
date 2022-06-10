@@ -163,7 +163,7 @@ router.get("/select", function (req, res) {
 // 랭크 (매매)
 router.get("/getRank_trade", function (req, res) {
   maria.query(
-    "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM trade_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
+    "SELECT CONCAT(sido_nm, ' ', sigungu_nm) AS region, ROUND(AVG(CAST(REPLACE(amount, ',', '') AS UNSIGNED)),0) AS avg_price FROM trade_avg_price GROUP BY sigungu_nm ORDER BY avg_price DESC LIMIT 5",
     function (err, rows, field) {
       if (!err) {
         // console.log(rows);
@@ -179,7 +179,7 @@ router.get("/getRank_trade", function (req, res) {
 // 랭크(전,월세)
 router.get("/getRank_charter", function (req, res) {
   maria.query(
-    "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM charter_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
+    "SELECT CONCAT(sido_nm, ' ', sigungu_nm) AS region, ROUND(AVG(CAST(REPLACE(amount, ',', '') AS UNSIGNED)),0) AS avg_price FROM charter_avg_price GROUP BY sigungu_nm ORDER BY avg_price DESC LIMIT 5",
     function (err, rows, field) {
       if (!err) {
         // console.log(rows);
