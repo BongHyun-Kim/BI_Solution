@@ -11,14 +11,6 @@ const currYear = currDate.getFullYear();
 // .getMonth 로 값을 받아오면 0~11 까지로 받아옴, getMonth + 1 을 해야 현재 달이 된다.
 const currMonth = currDate.getMonth();
 
-var radarData = {
-  avgCharter: { period: "", value: "" }, // 전월세 평균가, 제일 높은 값을 가지는 전월세 평균가의 날짜정보와 평균가
-  avgTrade: { period: "", value: "" }, // 매매 평균가, 제일 높은 값을 가지는 매매 평균가의 날짜정보와 매매가
-  maxCharter: { period: "", value: "" }, // 전세 실거래가, 제일 높은 값을 가지는 전세 실거래의 날짜정보와 보증금
-  maxMonthly: { period: "", deposit: "", payment: "" }, // 월세 실거래가, 제일 높은 값을 가지는 월세 실거래의 날짜정보와 보증금, 월세
-  maxTrade: { period: "", value: "" }, // 매매 실거래가, 제일 높은 값을 가지는 매매 실거래의 날짜정보와 실거래가
-};
-
 router.get("/", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
@@ -300,6 +292,23 @@ router.get("/getTrade_payment", function (req, res) {
   );
 });
 
+router.get("/selected_trade", function async(req, res) {
+  console.log("seleted Sido = " + req.query.regionName);
+  maria.query(
+    "SELECT sido_nm, LEFT(period, 4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    req.query.regionName,
+    function (err, rows, field) {
+      if (!err) {
+        console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
 // 메인 하단 그래프 (평균 매매 거래 금액 변동률)
 router.get("/getTrade_avg", function (req, res) {
   maria.query(
@@ -308,6 +317,23 @@ router.get("/getTrade_avg", function (req, res) {
       if (!err) {
         res.send(rows);
       } else {
+        res.send(err);
+      }
+    }
+  );
+});
+
+router.get("/selected_rate", function async(req, res) {
+  console.log("seleted Sido = " + req.query.regionName);
+  maria.query(
+    "SELECT region, LEFT(period, 4), ROUND(AVG(rate),1) AS avg_rate FROM trade_change_rate WHERE region = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    req.query.regionName,
+    function (err, rows, field) {
+      if (!err) {
+        console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
         res.send(err);
       }
     }

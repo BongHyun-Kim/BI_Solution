@@ -16,6 +16,8 @@
                     <b-row class="city_box" @click="search_Sigungu(region)">
                       <b-col>
                         <p class="city_name">{{ region }}</p></b-col
+                          {{ region }}
+                        </p></b-col
                       >
                       <b-col style="text-align: right">
                         <b-icon icon="chevron-compact-right"></b-icon>
@@ -527,6 +529,7 @@ export default {
       // 메인 그래프 데이터
 
       region: null,
+      selected_rate: [], // 선택한 지역의 매매 가격 변동률
       trade_amount: [], // 매매 거래 금액
       trade_avg: [], // 매매 거래 금액 변동률
       charter_list: [], // 전,월세 평균 거래 금액
@@ -863,7 +866,7 @@ export default {
       // 거래량 가져오기 (보류)
       // eslint-disable-next-line
       axios.get("http://localhost:3000/getTotaltrade").then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
       });
     },
     // eslint-disable-next-line
@@ -887,17 +890,37 @@ export default {
       this.sidoName = region;
       this.regionChk1 = false;
       this.regionChk2 = true;
+
       axios
+        .all([
+          axios.get("/searchSigungu?" + "regionName=" + region),
+          axios.get("/selected_trade?" + "regionName=" + region),
+          axios.get("/selected_rate?" + "regionName=" + region),
+        ])
+        .then(
         .get("http://localhost:3000/searchSigungu?" + "regionName=" + region)
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.sigunguList.push(res.data[i].city_nm);
-          }
-          $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
-          $(".tab-content>div:nth-child(1)").removeClass("active");
-          $(".nav-tabs>li:nth-child(2)>a").addClass("active");
-          $(".tab-content>div:nth-child(2)").addClass("active");
-          $(".tab-content>div:nth-child(2)").css("display", "block");
+            console.log(res1);
+            for (var i = 1; i < res1.data.length; i++) {
+              this.sigunguList.push(res1.data[i].city_nm);
+            }
+            for (var j = 0; j < res2.data.length; j++) {
+              this.seleted_trade.push(res2.data[j].avg_amount);
+            for (var k = 0; k < res3.data.length; k++) {
+              this.selected_rate.push(res3.data[k].avg_rate);
+            }
+            console.log(this.selected_rate);
+          })
+        );
+      this.top_chart.datasets[0].data = this.seleted_trade;
+      this.bottom_chart.datasets[0].data = this.selected_rate;
+      $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
+      $(".tab-content>div:nth-child(1)").removeClass("active");
+      $(".nav-tabs>li:nth-child(2)>a").addClass("active");
+      $(".tab-content>div:nth-child(2)").addClass("active");
+      $(".tab-content>div:nth-child(2)").css("display", "block");
         });
     },
 
@@ -971,25 +994,12 @@ export default {
       axios
         .get("http://localhost:3000/search_tmp?" + "dong=" + dong)
         .then((res) => {
-          //console.log(res.data); // 실거래가표 혹은 최근거래현황에 사용할 거래데이터
           this.trade_data_list = res.data;
-          console.log(this.trade_data_list);
         });
-      // axios
-      //   .all([
-      //     axios.get("/testDong1?" + "dong=" + dong),
-      //     axios.get("/testDong2?" + "dong=" + dong),
-      //   ])
-      //   .then(
-      //     axios.spread(function (acct, perms) {
-      //       console.log(acct);
-      //       console.log(perms);
-      //     })
-      //   );
     },
     getBaseMoney_rank() {
       // 기본지표 (기준금리)
-      axios.get("http://localhost:3000/getBaseMoney_rank").then((res) => {
+      axios.get("/getBaseMoney_rank").then((res) => {
         this.baseMoney = res.data[0].rate;
       });
     },
@@ -1001,7 +1011,7 @@ export default {
     },
     getMinimun_wage() {
       // 기본지표 (최저시급)
-      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
+      axios.get("/getMinimunWage").then((res) => {
         this.minimumWage = res.data[0].wage;
       });
     },
@@ -1061,7 +1071,7 @@ export default {
     },
     getRank_trade() {
       // 랭크 텍스트(전국 매매가 변동률)
-      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+      axios.get("/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_trade.push(res.data[i]);
         }
@@ -1304,7 +1314,7 @@ export default {
       });
     },
     setRegion() {
-      if (this.region == null) {
+      if (this.sidoName == "") {
         this.region = "전국";
       }
     },
