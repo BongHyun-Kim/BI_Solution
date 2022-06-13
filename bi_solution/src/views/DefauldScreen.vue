@@ -798,7 +798,7 @@ export default {
       // 거래량 가져오기 (보류)
       // eslint-disable-next-line
       axios.get("http://54.180.118.99:3000/getTotaltrade").then((res) => {
-        //console.log(res.data);
+        console.log(res.data);
       });
     },
     // eslint-disable-next-line
