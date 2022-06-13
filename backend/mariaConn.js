@@ -2,7 +2,7 @@ var mysql = require("mysql");
 
 //  Connection 객체 생성
 var connection = mysql.createConnection({
-  host: "3.38.180.156",
+  host: "3.35.156.44",
   user: "user",
   password: "1234",
   database: "bi_solution",
