@@ -6,10 +6,6 @@ var connection = mysql.createConnection({
   user: "user",
   password: "1234",
   database: "bi_solution",
-  host: "your ip_address",
-  user: "your user_id",
-  password: "your password",
-  database: "your database name",
 });
 
 // Connect
