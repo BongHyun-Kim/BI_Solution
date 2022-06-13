@@ -11,6 +11,13 @@ const currYear = currDate.getFullYear();
 // .getMonth 로 값을 받아오면 0~11 까지로 받아옴, getMonth + 1 을 해야 현재 달이 된다.
 const currMonth = currDate.getMonth();
 
+var radarData = {
+  avgCharter: { period: "", value: "" }, // 전월세 평균가, 제일 높은 값을 가지는 전월세 평균가의 날짜정보와 평균가
+  avgTrade: { period: "", value: "" }, // 매매 평균가, 제일 높은 값을 가지는 매매 평균가의 날짜정보와 매매가
+  maxCharter: { period: "", value: "" }, // 전세 실거래가, 제일 높은 값을 가지는 전세 실거래의 날짜정보와 보증금
+  maxMonthly: { period: "", deposit: "", payment: "" }, // 월세 실거래가, 제일 높은 값을 가지는 월세 실거래의 날짜정보와 보증금, 월세
+  maxTrade: { period: "", value: "" }, // 매매 실거래가, 제일 높은 값을 가지는 매매 실거래의 날짜정보와 실거래가
+};
 
 router.get("/", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
@@ -23,7 +30,6 @@ router.get("/select", function (req, res) {
       if (!err) {
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -112,7 +118,6 @@ var pushResults = function (rows) {
 
 // 읍/면/동
 router.get("/searchDong", function (req, res) {
-  console.log("backend sidoName : " + req.query.sidoName);
   maria.query(
     "SELECT DISTINCT dong FROM addr_list WHERE city_nm = ? and sido_nm = ? AND detailed IS NULL",
     [req.query.sigunguName, req.query.sidoName],
@@ -120,7 +125,6 @@ router.get("/searchDong", function (req, res) {
       if (!err) {
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -129,16 +133,13 @@ router.get("/searchDong", function (req, res) {
 
 // 시/군/구
 router.get("/searchSigungu", function (req, res) {
-  console.log(req.query.regionName);
   maria.query(
     "SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ? AND detailed IS NULL",
     req.query.regionName,
     function (err, rows, fields) {
       if (!err) {
-        // console.log("query result : " + rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -153,7 +154,6 @@ router.get("/select", function (req, res) {
       if (!err) {
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -163,13 +163,11 @@ router.get("/select", function (req, res) {
 // 랭크 (매매)
 router.get("/getRank_trade", function (req, res) {
   maria.query(
-    "SELECT CONCAT(sido_nm, ' ', sigungu_nm) AS region, ROUND(AVG(CAST(REPLACE(amount, ',', '') AS UNSIGNED)),0) AS avg_price FROM trade_avg_price GROUP BY sigungu_nm ORDER BY avg_price DESC LIMIT 5",
+    "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM trade_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -179,13 +177,11 @@ router.get("/getRank_trade", function (req, res) {
 // 랭크(전,월세)
 router.get("/getRank_charter", function (req, res) {
   maria.query(
-    "SELECT CONCAT(sido_nm, ' ', sigungu_nm) AS region, ROUND(AVG(CAST(REPLACE(amount, ',', '') AS UNSIGNED)),0) AS avg_price FROM charter_avg_price GROUP BY sigungu_nm ORDER BY avg_price DESC LIMIT 5",
+    "SELECT region, ROUND(AVG(rate), 2) * 100 AS avg_rate FROM charter_change_rate WHERE region NOT LIKE  '%전국' AND region !='5대광역시' AND region !='6대광역시' AND region !='수도권' AND region !='8개도' GROUP BY region ORDER BY avg_rate DESC LIMIT 5",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -198,10 +194,8 @@ router.get("/getTrade_rate", function (req, res) {
     "SELECT region, round(AVG(rate),2) FROM trade_change_rate WHERE region = '전국' GROUP BY region, LEFT(period,4);",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -214,10 +208,8 @@ router.get("/getBasemoney_rank", function (req, res) {
     "SELECT rate FROM basemoney_rate ORDER BY idx DESC LIMIT 1",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -230,10 +222,8 @@ router.get("/getBasemoney_compare", function (req, res) {
     "SELECT rate FROM basemoney_rate WHERE YEAR(period) = YEAR(SYSDATE()) ORDER BY period DESC LIMIT 1, 1",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -246,10 +236,8 @@ router.get("/getMinimunWage", function (req, res) {
     "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -262,10 +250,8 @@ router.get("/getMinimunWage_compare", function (req, res) {
     "SELECT wage FROM minimum_wage ORDER BY period DESC LIMIT 1,1",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -278,10 +264,8 @@ router.get("/getWages", function (req, res) {
     "SELECT idx, period, wage FROM minimum_wage WHERE period BETWEEN 2015 AND 2021",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -294,10 +278,8 @@ router.get("/getBasemoney_chart", function (req, res) {
     "SELECT LEFT (period,4), ROUND(AVG(rate),1) AS avg_rate FROM basemoney_rate WHERE left(period,4) BETWEEN 2015 AND 2021 GROUP BY left(period,4)",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -310,10 +292,8 @@ router.get("/getTrade_payment", function (req, res) {
     "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -326,10 +306,8 @@ router.get("/getTrade_avg", function (req, res) {
     "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM trade_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -342,10 +320,8 @@ router.get("/getCharter_payment", function (req, res) {
     "SELECT sido_nm, LEFT(period,4), ROUND(AVG(amount),0) AS avg_amount FROM charter_avg_price WHERE sido_nm = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -358,10 +334,8 @@ router.get("/getCharter_avg", function (req, res) {
     "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM charter_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
       if (!err) {
-        // console.log(rows);
         res.send(rows);
       } else {
-        console.log("err : " + err);
         res.send(err);
       }
     }
@@ -372,7 +346,7 @@ router.get("/getCharter_avg", function (req, res) {
 router.get("/getTrade_data", function (req, res) {
   maria.query(
     "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = ? AND trade_month = ?",
-    [currYear, currMonth-1],
+    [currYear, currMonth - 1],
     function (err, rows1, field) {
       if (!err) {
         maria.query(
@@ -380,13 +354,16 @@ router.get("/getTrade_data", function (req, res) {
           [currYear, currMonth],
           function (err, rows2, field) {
             if (!err) {
-              if(rows1[0].total_count > rows2[0].total_count){    // 전전달의 데이터가 전달의 데이터보다 큰 경우
-                res.send({cnt:rows2[0].deals, whoWin:'before'})
-              }else{ res.send({cnt:rows2[0].deals, whoWin:'curr'}); }
-            } 
+              if (rows1[0].total_count > rows2[0].total_count) {
+                // 전전달의 데이터가 전달의 데이터보다 큰 경우
+                res.send({ cnt: rows2[0].deals, whoWin: "before" });
+              } else {
+                res.send({ cnt: rows2[0].deals, whoWin: "curr" });
+              }
+            }
           }
         );
-      } 
+      }
     }
   );
 });
@@ -395,7 +372,7 @@ router.get("/getTrade_data", function (req, res) {
 router.get("/getRental_data", function (req, res) {
   maria.query(
     "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = ? AND trade_month = ?) A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = ? AND trade_month = ?) B",
-    [currYear, currMonth-1, currYear, currMonth-1],
+    [currYear, currMonth - 1, currYear, currMonth - 1],
     function (err, rows1, field) {
       if (!err) {
         maria.query(
@@ -403,15 +380,63 @@ router.get("/getRental_data", function (req, res) {
           [currYear, currMonth, currYear, currMonth],
           function (err, rows2, field) {
             if (!err) {
-              if(rows1[0].total_count > rows2[0].total_count){
-                res.send({cnt:rows2[0].total_count, whoWin:'before'});
-              }else{ res.send({cnt:rows2[0].total_count, whoWin:'curr'}); }
+              if (rows1[0].total_count > rows2[0].total_count) {
+                res.send({ cnt: rows2[0].total_count, whoWin: "before" });
+              } else {
+                res.send({ cnt: rows2[0].total_count, whoWin: "curr" });
+              }
             }
           }
         );
-      } 
+      }
     }
   );
+});
+
+// getRadar_data 레이더 데이터를 화면에 출력
+router.get("/getRadar_data", function (req, res) {
+  console.log("start getRadar!");
+  // radarData
+  // 전월세 평균가
+  maria.query(
+    "SELECT * FROM (SELECT period AS avgCharterDate , MAX(amount) AS avgCharterVal FROM charter_avg_price GROUP BY period ORDER BY period desc LIMIT 1) A, (SELECT CONCAT(trade_year, '.', trade_month) AS realChaterDate,	max(CAST(REPLACE(deposit, ',', '') AS UNSIGNED)) AS realCharterVal FROM charter_real_apt GROUP BY 1 ORDER BY 1 ASC LIMIT 1) B, (SELECT CONCAT(trade_year, '.', trade_month) AS realMonthlyDate, max(CAST(REPLACE(deposit, ',', '') AS UNSIGNED)) AS realMonthlyVal1, max(CAST(REPLACE(payment, ',', '') AS UNSIGNED)) AS realMonthlyVal2 FROM monthly_real_apt GROUP BY 1 ORDER BY 1 ASC LIMIT 1) C, (SELECT CONCAT(trade_year, '.', trade_month) AS realTradeDate,	max(CAST(REPLACE(payment, ',', '') AS UNSIGNED)) AS realTradeVal FROM trade_real_apt GROUP BY 1 ORDER BY 2 desc LIMIT 1) D, (SELECT period AS avgTradeDate,  MAX(amount) as avgTradeVal FROM trade_avg_price GROUP BY period ORDER BY period, sigungu_nm desc LIMIT 1) E",
+    function (err, rows, field) {
+      if (!err) {
+        res.send(rows);
+      }
+    }
+  );
+});
+
+// getRadar_data 레이더 데이터를 화면에 출력
+router.get("/getRadar_data", function (req, res) {
+  maria.query(
+    "SELECT * FROM (SELECT period AS avgCharterDate , MAX(amount) AS avgCharterVal FROM charter_avg_price GROUP BY period ORDER BY period desc LIMIT 1) A, (SELECT CONCAT(trade_year, '.', trade_month) AS realChaterDate,	max(CAST(REPLACE(deposit, ',', '') AS UNSIGNED)) AS realCharterVal FROM charter_real_apt GROUP BY 1 ORDER BY 1 ASC LIMIT 1) B, (SELECT CONCAT(trade_year, '.', trade_month) AS realMonthlyDate, max(CAST(REPLACE(deposit, ',', '') AS UNSIGNED)) AS realMonthlyVal1, max(CAST(REPLACE(payment, ',', '') AS UNSIGNED)) AS realMonthlyVal2 FROM monthly_real_apt GROUP BY 1 ORDER BY 1 ASC LIMIT 1) C, (SELECT CONCAT(trade_year, '.', trade_month) AS realTradeDate,	max(CAST(REPLACE(payment, ',', '') AS UNSIGNED)) AS realTradeVal FROM trade_real_apt GROUP BY 1 ORDER BY 2 desc LIMIT 1) D, (SELECT period AS avgTradeDate,  MAX(amount) as avgTradeVal FROM trade_avg_price GROUP BY period ORDER BY period, sigungu_nm desc LIMIT 1) E",
+    function (err, rows, field) {
+      if (!err) {
+        res.send(rows);
+      }
+    }
+  );
+});
+
+router.get("/search_tmp", function (req, res) {
+  maria.query(
+    "SELECT apt_nm, layer, 0 AS deposit, payment, built_year, trade_year, trade_month, sigungu_cd,  dong, land_no, land_area FROM trade_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM charter_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM monthly_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5",
+    [req.query.dong, req.query.dong, req.query.dong],
+    function (err, rows, fields) {
+      res.send(rows);
+    }
+  );
+});
+
+router.get("/testDong1", function (req, res) {
+  console.log("testDong1!!!");
+  console.log(req.query.dong);
+});
+router.get("/testDong2", function (req, res) {
+  console.log("testDong2!!!");
+  console.log(req.query.dong);
 });
 
 module.exports = router;
