@@ -94,7 +94,7 @@
                           id="changeGraph1"
                           ref="click_graph1"
                         >
-                          전국 아파트 매매 가격
+                          {{ region }} 아파트 매매 가격
                         </h5>
                       </b-col>
                       <b-col cols="1">
@@ -174,7 +174,7 @@
                           id="changeGraph2"
                           ref="click_graph2"
                         >
-                          전국 아파트 매매 가격 변동률
+                          {{ region }} 아파트 매매 가격 변동률
                         </h5>
                       </b-col>
                       <b-col cols="1">
@@ -513,6 +513,7 @@ export default {
 
       // 메인 그래프 데이터
 
+      region: null,
       trade_amount: [], // 매매 거래 금액
       trade_avg: [], // 매매 거래 금액 변동률
       charter_list: [], // 전,월세 평균 거래 금액
@@ -690,6 +691,7 @@ export default {
     this.getRank_dataR(); // 랭크 우측 그래프 (전,월세)
     this.getBaseMoney_rank(); // 기본지표(기준금리)
     this.getBaseMoney_compare(); // 기본지표(직전 기준금리)
+    this.setRegion(); // 그래프 제목(지역)
     this.getBaseMoney_chart(); // 그래프 데이터 (년도별 기준금리)
     this.getMinimun_wage(); // 기본지표(최저시급)
     this.getMinimun_compare(); // 기본지표(직전 최저시급)
@@ -1226,6 +1228,11 @@ export default {
       axios.get("/getRental_data").then((res) => {
         this.rental_data = res.data;
       });
+    },
+    setRegion() {
+      if (this.region == null) {
+        this.region = "전국";
+      }
     },
   },
 };
