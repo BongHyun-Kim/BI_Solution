@@ -11,7 +11,6 @@ const currYear = currDate.getFullYear();
 // .getMonth 로 값을 받아오면 0~11 까지로 받아옴, getMonth + 1 을 해야 현재 달이 된다.
 const currMonth = currDate.getMonth();
 
-
 router.get("/", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
@@ -129,13 +128,11 @@ router.get("/searchDong", function (req, res) {
 
 // 시/군/구
 router.get("/searchSigungu", function (req, res) {
-  console.log(req.query.regionName);
   maria.query(
     "SELECT DISTINCT city_nm FROM addr_list WHERE sido_nm = ? AND detailed IS NULL",
     req.query.regionName,
     function (err, rows, fields) {
       if (!err) {
-        // console.log("query result : " + rows);
         res.send(rows);
       } else {
         console.log("err : " + err);
@@ -320,6 +317,23 @@ router.get("/getTrade_payment", function (req, res) {
   );
 });
 
+router.get("/selected_trade", function async(req, res) {
+  console.log("seleted Sido = " + req.query.regionName);
+  maria.query(
+    "SELECT sido_nm, LEFT(period, 4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    req.query.regionName,
+    function (err, rows, field) {
+      if (!err) {
+        console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
 // 메인 하단 그래프 (평균 매매 거래 금액 변동률)
 router.get("/getTrade_avg", function (req, res) {
   maria.query(
@@ -327,6 +341,23 @@ router.get("/getTrade_avg", function (req, res) {
     function (err, rows, field) {
       if (!err) {
         // console.log(rows);
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  );
+});
+
+router.get("/selected_rate", function async(req, res) {
+  console.log("seleted Sido = " + req.query.regionName);
+  maria.query(
+    "SELECT region, LEFT(period, 4), ROUND(AVG(rate),1) AS avg_rate FROM trade_change_rate WHERE region = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
+    req.query.regionName,
+    function (err, rows, field) {
+      if (!err) {
+        console.log(rows);
         res.send(rows);
       } else {
         console.log("err : " + err);
@@ -372,7 +403,7 @@ router.get("/getCharter_avg", function (req, res) {
 router.get("/getTrade_data", function (req, res) {
   maria.query(
     "SELECT COUNT(*) as deals FROM trade_real_apt WHERE trade_year = ? AND trade_month = ?",
-    [currYear, currMonth-1],
+    [currYear, currMonth - 1],
     function (err, rows1, field) {
       if (!err) {
         maria.query(
@@ -380,13 +411,16 @@ router.get("/getTrade_data", function (req, res) {
           [currYear, currMonth],
           function (err, rows2, field) {
             if (!err) {
-              if(rows1[0].total_count > rows2[0].total_count){    // 전전달의 데이터가 전달의 데이터보다 큰 경우
-                res.send({cnt:rows2[0].deals, whoWin:'before'})
-              }else{ res.send({cnt:rows2[0].deals, whoWin:'curr'}); }
-            } 
+              if (rows1[0].total_count > rows2[0].total_count) {
+                // 전전달의 데이터가 전달의 데이터보다 큰 경우
+                res.send({ cnt: rows2[0].deals, whoWin: "before" });
+              } else {
+                res.send({ cnt: rows2[0].deals, whoWin: "curr" });
+              }
+            }
           }
         );
-      } 
+      }
     }
   );
 });
@@ -395,7 +429,7 @@ router.get("/getTrade_data", function (req, res) {
 router.get("/getRental_data", function (req, res) {
   maria.query(
     "SELECT charter + monthly as total_count FROM (SELECT COUNT(*) AS charter FROM charter_real_apt WHERE trade_year = ? AND trade_month = ?) A, (SELECT COUNT(*) AS monthly FROM monthly_real_apt WHERE trade_year = ? AND trade_month = ?) B",
-    [currYear, currMonth-1, currYear, currMonth-1],
+    [currYear, currMonth - 1, currYear, currMonth - 1],
     function (err, rows1, field) {
       if (!err) {
         maria.query(
@@ -403,13 +437,15 @@ router.get("/getRental_data", function (req, res) {
           [currYear, currMonth, currYear, currMonth],
           function (err, rows2, field) {
             if (!err) {
-              if(rows1[0].total_count > rows2[0].total_count){
-                res.send({cnt:rows2[0].total_count, whoWin:'before'});
-              }else{ res.send({cnt:rows2[0].total_count, whoWin:'curr'}); }
+              if (rows1[0].total_count > rows2[0].total_count) {
+                res.send({ cnt: rows2[0].total_count, whoWin: "before" });
+              } else {
+                res.send({ cnt: rows2[0].total_count, whoWin: "curr" });
+              }
             }
           }
         );
-      } 
+      }
     }
   );
 });
