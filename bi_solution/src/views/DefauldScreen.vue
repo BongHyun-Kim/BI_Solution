@@ -783,7 +783,7 @@ export default {
     getRegionList() {
       // 지역 리스트 가져오기
       axios
-        .get("http://localhost:3000/select")
+        .get("http://54.180.118.99:3000/select")
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.regionlist.push(res.data[i].sido_nm);
@@ -797,7 +797,7 @@ export default {
     getTrade_amount() {
       // 거래량 가져오기 (보류)
       // eslint-disable-next-line
-      axios.get("http://localhost:3000/getTotaltrade").then((res) => {
+      axios.get("http://54.180.118.99:3000/getTotaltrade").then((res) => {
         //console.log(res.data);
       });
     },
@@ -823,7 +823,9 @@ export default {
       this.regionChk1 = false;
       this.regionChk2 = true;
       axios
-        .get("http://localhost:3000/searchSigungu?" + "regionName=" + region)
+        .get(
+          "http://54.180.118.99:3000/searchSigungu?" + "regionName=" + region
+        )
         .then((res) => {
           for (var i = 1; i < res.data.length; i++) {
             this.sigunguList.push(res.data[i].city_nm);
@@ -843,7 +845,7 @@ export default {
       this.regionChk3 = true;
       axios
         .get(
-          "http://localhost:3000/searchDong?" +
+          "http://54.180.118.99:3000/searchDong?" +
             "sigunguName=" +
             sigungu +
             "&sidoName=" +
@@ -907,32 +909,36 @@ export default {
     },
     getBaseMoney_rank() {
       // 기본지표 (기준금리)
-      axios.get("http://localhost:3000/getBaseMoney_rank").then((res) => {
+      axios.get("http://54.180.118.99:3000/getBaseMoney_rank").then((res) => {
         this.baseMoney = res.data[0].rate;
       });
     },
     getBaseMoney_compare() {
       // 기본지표 (직전 기준금리)
-      axios.get("http://localhost:3000/getBaseMoney_compare").then((res) => {
-        this.baseMoney_compare = res.data[0].rate;
-      });
+      axios
+        .get("http://54.180.118.99:3000/getBaseMoney_compare")
+        .then((res) => {
+          this.baseMoney_compare = res.data[0].rate;
+        });
     },
     getMinimun_wage() {
       // 기본지표 (최저시급)
-      axios.get("http://localhost:3000/getMinimunWage").then((res) => {
+      axios.get("http://54.180.118.99:3000/getMinimunWage").then((res) => {
         this.minimumWage = res.data[0].wage;
       });
     },
     getMinimun_compare() {
       // 기본지표 (직전 최저시급)
-      axios.get("http://localhost:3000/getMinimunWage_compare").then((res) => {
-        this.minimumWage_compare = res.data[0].wage;
-      });
+      axios
+        .get("http://54.180.118.99:3000/getMinimunWage_compare")
+        .then((res) => {
+          this.minimumWage_compare = res.data[0].wage;
+        });
     },
 
     getRank_dataL() {
       // 랭크 그래프(전국 매매가 변동률)
-      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+      axios.get("http://54.180.118.99:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_l.labels.push(res.data[i].region);
           this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
@@ -956,7 +962,7 @@ export default {
 
     getRank_dataR() {
       // 랭크 그래프(전국 전,월세 변동률)
-      axios.get("http://localhost:3000/getRank_charter").then((res) => {
+      axios.get("http://54.180.118.99:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_r.labels.push(res.data[i].region);
           this.rankGraph_r.datasets[0].label = "전국 전,월세 변동률 Top 5";
@@ -979,7 +985,7 @@ export default {
     },
     getRank_trade() {
       // 랭크 텍스트(전국 매매가 변동률)
-      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+      axios.get("http://54.180.118.99:3000/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_trade.push(res.data[i]);
         }
@@ -987,7 +993,7 @@ export default {
     },
     getRank_charter() {
       // 랭크 텍스트(전국 전,월세 변동률)
-      axios.get("http://localhost:3000/getRank_charter").then((res) => {
+      axios.get("http://54.180.118.99:3000/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_charter.push(res.data[i]);
         }
@@ -995,7 +1001,7 @@ export default {
     },
     getWage() {
       // 년도별 최저시급 리스트(그래프 사용)
-      axios.get("http://localhost:3000/getWages").then((res) => {
+      axios.get("http://54.180.118.99:3000/getWages").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.wage_list.push(res.data[i].wage);
         }
@@ -1003,7 +1009,7 @@ export default {
     },
     getBaseMoney_chart() {
       // 년도별 기준금리 리스트(그래프 사용)
-      axios.get("http://localhost:3000/getBasemoney_chart").then((res) => {
+      axios.get("http://54.180.118.99:3000/getBasemoney_chart").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.basemoney_list.push(res.data[i].avg_rate);
         }
