@@ -500,4 +500,12 @@ router.get("/region_rental", function (req, res) {
   );
 });
 
+router.get("/search_tmp", function(req, res){
+  maria.query("SELECT apt_nm, layer, 0 AS deposit, payment, built_year, trade_year, trade_month, sigungu_cd,  dong, land_no, land_area FROM trade_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM charter_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM monthly_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5",
+  [req.query.dong, req.query.dong, req.query.dong], function(err, rows, field){
+    console.log(rows);
+    res.send(rows);
+  })
+});
+
 module.exports = router;
