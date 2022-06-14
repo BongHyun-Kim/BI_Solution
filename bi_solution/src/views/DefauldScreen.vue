@@ -7,19 +7,33 @@
             <div>
               <b-tabs content-class="mt-3" justified>
                 <b-tab title="시 / 도" active @click="moveTabs(1)">
-                  <b-list-group-item button v-for="region in regionlist" v-bind:key="region" v-show="regionChk1">
+                  <b-list-group-item
+                    button
+                    v-for="region in regionlist"
+                    v-bind:key="region"
+                    v-show="regionChk1"
+                  >
                     <b-row class="city_box" @click="search_Sigungu(region)">
                       <b-col>
-                        <p class="city_name"> {{ region }}</p>
+                        <p class="city_name">{{ region }}</p>
                       </b-col>
                       <b-col style="text-align: right">
                         <b-icon icon="chevron-compact-right"></b-icon>
                       </b-col>
-                    </b-row> 
+                    </b-row>
                   </b-list-group-item>
                 </b-tab>
-                <b-tab title="시 / 군 / 구" @click="moveTabs(2)" :disabled="!regionChk2">
-                  <b-list-group-item button v-for="sigungu in sigunguList" v-bind:key="sigungu" v-show="regionChk2">
+                <b-tab
+                  title="시 / 군 / 구"
+                  @click="moveTabs(2)"
+                  :disabled="!regionChk2"
+                >
+                  <b-list-group-item
+                    button
+                    v-for="sigungu in sigunguList"
+                    v-bind:key="sigungu"
+                    v-show="regionChk2"
+                  >
                     <b-row class="city_box" @click="search_dong(sigungu)">
                       <b-col>
                         <p class="city_name">{{ sigungu }}</p>
@@ -31,8 +45,16 @@
                   </b-list-group-item>
                 </b-tab>
                 <b-tab
-                  title="읍 / 면 / 동" @click="moveTabs(3)" :disabled="!regionChk3">
-                  <b-list-group-item button v-for="dong in dongList" v-bind:key="dong" v-show="regionChk3">
+                  title="읍 / 면 / 동"
+                  @click="moveTabs(3)"
+                  :disabled="!regionChk3"
+                >
+                  <b-list-group-item
+                    button
+                    v-for="dong in dongList"
+                    v-bind:key="dong"
+                    v-show="regionChk3"
+                  >
                     <b-row class="city_box">
                       <b-col>
                         <p class="city_name" @click="search_tmp(dong)">
@@ -42,7 +64,7 @@
                       <b-col style="text-align: right">
                         <b-icon icon="chevron-compact-right"></b-icon>
                       </b-col>
-                    </b-row> 
+                    </b-row>
                   </b-list-group-item>
                 </b-tab>
               </b-tabs>
@@ -52,7 +74,15 @@
         <b-col cols="8">
           <b-row>
             <div id="graph_switch">
-              <b-form-checkbox v-model="changeGraph" name="check-button" value="매매" unchecked-value="전,월세" switch id="graph_type" @change="trans_chart()">
+              <b-form-checkbox
+                v-model="changeGraph"
+                name="check-button"
+                value="매매"
+                unchecked-value="전,월세"
+                switch
+                id="graph_type"
+                @change="trans_chart()"
+              >
                 그래프 전환 <b>(거래방식: {{ changeGraph }})</b>
               </b-form-checkbox>
             </div>
@@ -64,7 +94,11 @@
                   <b-card>
                     <b-row>
                       <b-col cols="11">
-                        <h5 class="chart_title" id="changeGraph1" ref="click_graph1">
+                        <h5
+                          class="chart_title"
+                          id="changeGraph1"
+                          ref="click_graph1"
+                        >
                           {{ sidoName }} 아파트 매매 가격
                         </h5>
                       </b-col>
@@ -77,23 +111,69 @@
                               <b-button>3 개월</b-button>
                               <b-button>6 개월</b-button>
                             </b-button-group>
-                            <b-form-checkbox v-model="graph_set" value="기준금리" id="rate_ck" @change="compare_top_rate">기준금리</b-form-checkbox>
-                            <b-form-checkbox v-model="graph_set" value="최저시급" id="wage_ck" @change="compare_top_wage">최저시급</b-form-checkbox>
+                            <b-form-checkbox
+                              v-model="graph_set"
+                              value="기준금리"
+                              id="rate_ck"
+                              @change="compare_top_rate"
+                              >기준금리</b-form-checkbox
+                            >
+                            <b-form-checkbox
+                              v-model="graph_set"
+                              value="최저시급"
+                              id="wage_ck"
+                              @change="compare_top_wage"
+                              >최저시급</b-form-checkbox
+                            >
                             <b-dropdown-divider></b-dropdown-divider>
-                            <b-form-tags id="tags-component-select" v-model="graph_set" size="sm" placeholder="" add-on-change no-outer-focus></b-form-tags>
+                            <b-form-tags
+                              id="tags-component-select"
+                              v-model="graph_set"
+                              size="sm"
+                              placeholder=""
+                              add-on-change
+                              no-outer-focus
+                            ></b-form-tags>
                           </b-dropdown-form>
                         </b-dropdown>
                       </b-col>
                     </b-row>
-                    <LineChartGenerator id="top_graph" :chart-options="chartOptions_top" :chart-data="top_chart" :chart-id="chartId" :dataset-id-key="datasetIdKey"
-                      :plugins="plugins" :css-classes="cssClasses" :styles="styles" :width="width" :height="height"/>
+                    <b-card style="justify-content:center">
+                      <b-form-group label="구 선택" label-cols-lg="2">
+                        <b-form-checkbox-group v-model="selected_sigungu"
+                        :options="sigungu_check" @change="checked" style="text-align:left">
+                        </b-form-checkbox-group>
+                      </b-form-group>
+                    </b-card>
+                    <LineChartGenerator
+                      id="top_graph"
+                      :chart-options="chartOptions_top"
+                      :chart-data="top_chart"
+                      :chart-id="chartId"
+                      :dataset-id-key="datasetIdKey"
+                      :plugins="plugins"
+                      :css-classes="cssClasses"
+                      :styles="styles"
+                      :width="width"
+                      :height="height"
+                    />
                   </b-card>
                 </b-row>
                 <br />
                 <b-row>
                   <b-card>
-                    <Bar id="top_graph" :chart-options="chartOptions_top" :chart-data="top_chart" :chart-id="chartId" :dataset-id-key="datasetIdKey"
-                      :plugins="plugins" :css-classes="cssClasses" :styles="styles" :width="width" :height="height"/>
+                    <Bar
+                      id="top_graph"
+                      :chart-options="chartOptions_top"
+                      :chart-data="top_chart"
+                      :chart-id="chartId"
+                      :dataset-id-key="datasetIdKey"
+                      :plugins="plugins"
+                      :css-classes="cssClasses"
+                      :styles="styles"
+                      :width="width"
+                      :height="height"
+                    />
                   </b-card>
                 </b-row>
                 <br />
@@ -101,7 +181,11 @@
                   <b-card>
                     <b-row>
                       <b-col cols="11">
-                        <h5 class="chart_title" id="changeGraph2" ref="click_graph2">
+                        <h5
+                          class="chart_title"
+                          id="changeGraph2"
+                          ref="click_graph2"
+                        >
                           {{ sidoName }} 아파트 매매 가격 변동률
                         </h5>
                       </b-col>
@@ -109,22 +193,46 @@
                         <div>
                           <b-dropdown id="" text="" class="m-md-2">
                             <b-dropdown-group>
-                              <b-dropdown-item @click="graphPeriod('all')">전체</b-dropdown-item>
-                              <b-dropdown-item @click="graphPeriod('1')">1개월</b-dropdown-item>
-                              <b-dropdown-item @click="graphPeriod('3')">3개월</b-dropdown-item>
-                              <b-dropdown-item @click="graphPeriod('6')">6개월</b-dropdown-item>
+                              <b-dropdown-item @click="graphPeriod('all')"
+                                >전체</b-dropdown-item
+                              >
+                              <b-dropdown-item @click="graphPeriod('1')"
+                                >1개월</b-dropdown-item
+                              >
+                              <b-dropdown-item @click="graphPeriod('3')"
+                                >3개월</b-dropdown-item
+                              >
+                              <b-dropdown-item @click="graphPeriod('6')"
+                                >6개월</b-dropdown-item
+                              >
                             </b-dropdown-group>
                             <b-dropdown-divider></b-dropdown-divider>
                             <b-dropdown-group>
                               <b-check-group>
-                                <b-checkbox v-model="chkDataArr" value="standard">기준금리</b-checkbox>
-                                <b-checkbox v-model="chkDataArr" value="minimum">최저시급</b-checkbox>
+                                <b-checkbox
+                                  v-model="chkDataArr"
+                                  value="standard"
+                                  >기준금리</b-checkbox
+                                >
+                                <b-checkbox v-model="chkDataArr" value="minimum"
+                                  >최저시급</b-checkbox
+                                >
                               </b-check-group>
                               {{ chkDataArr }}
                               {{ clickPeriod }}
-                              <b-card v-for="chkData in chkDataArr" :key="chkData" tag="li" class="mt-1 mr-1" body-class="py-1 pr-2 text-nowrap">
+                              <b-card
+                                v-for="chkData in chkDataArr"
+                                :key="chkData"
+                                tag="li"
+                                class="mt-1 mr-1"
+                                body-class="py-1 pr-2 text-nowrap"
+                              >
                                 <strong>{{ chkData }}</strong>
-                                <b-button @click="removeTag(chkData)" variant="lint" size="sm">
+                                <b-button
+                                  @click="removeTag(chkData)"
+                                  variant="lint"
+                                  size="sm"
+                                >
                                   remove
                                 </b-button>
                               </b-card>
@@ -133,20 +241,34 @@
                         </div>
                       </b-col>
                     </b-row>
-                    <LineChartGenerator id="bottom_graph" :chart-options="chartOptions_bottom" :chart-data="bottom_chart" :chart-id="chartId" :dataset-id-key="datasetIdKey"
-                      :plugins="plugins" :css-classes="cssClasses" :styles="styles" :width="width" :height="height" />
+                    <LineChartGenerator
+                      id="bottom_graph"
+                      :chart-options="chartOptions_bottom"
+                      :chart-data="bottom_chart"
+                      :chart-id="chartId"
+                      :dataset-id-key="datasetIdKey"
+                      :plugins="plugins"
+                      :css-classes="cssClasses"
+                      :styles="styles"
+                      :width="width"
+                      :height="height"
+                    />
                   </b-card>
                 </b-row>
                 <br />
                 <b-row>
                   <b-card>
                     <b-row>
-                      <h5 id="rank_title" class="mb-4">전국 시도별 아파트 랭킹</h5>
+                      <h5 id="rank_title" class="mb-4">
+                        전국 시도별 아파트 랭킹
+                      </h5>
                     </b-row>
                     <b-row>
                       <b-col>
                         <b-row>
-                          <h6 id="rank_sub_title1">전국 아파트 매매 가격 Top 5 지역</h6>
+                          <h6 id="rank_sub_title1">
+                            전국 아파트 매매 가격 Top 5 지역
+                          </h6>
                           <!-- <b-col
                         class="rank1_content"
                         v-for="(trade, i) in rankData_trade"
@@ -158,16 +280,36 @@
                           {{ trade.avg_rate }}%
                         </p></b-col
                       > -->
-                          <Doughnut :chart-options="chartOptions_Rank1" :chart-data="rankGraph_l" :chart-id="chartId" :dataset-id-key="datasetIdKey"
-                            :plugins="plugins" :css-classes="cssClasses" :styles="rank_style" :width="300" :height="150"/>
+                          <Doughnut
+                            :chart-options="chartOptions_Rank1"
+                            :chart-data="rankGraph_l"
+                            :chart-id="chartId"
+                            :dataset-id-key="datasetIdKey"
+                            :plugins="plugins"
+                            :css-classes="cssClasses"
+                            :styles="rank_style"
+                            :width="300"
+                            :height="150"
+                          />
                         </b-row>
                       </b-col>
                       <br />
                       <b-col>
                         <b-row>
-                          <h6 id="rank_sub_title1">전국 아파트 전,월세 가격 Top 5 지역</h6>
-                          <Doughnut :chart-options="chartOptions_Rank2" :chart-data="rankGraph_r" :chart-id="chartId" :dataset-id-key="datasetIdKey"
-                            :plugins="plugins" :css-classes="cssClasses" :styles="rank_style" :width="300" :height="150"/>
+                          <h6 id="rank_sub_title1">
+                            전국 아파트 전,월세 가격 Top 5 지역
+                          </h6>
+                          <Doughnut
+                            :chart-options="chartOptions_Rank2"
+                            :chart-data="rankGraph_r"
+                            :chart-id="chartId"
+                            :dataset-id-key="datasetIdKey"
+                            :plugins="plugins"
+                            :css-classes="cssClasses"
+                            :styles="rank_style"
+                            :width="300"
+                            :height="150"
+                          />
                           <!-- <b-col
                         class="rank1_content"
                         v-for="(charter, i) in rankData_charter"
@@ -195,16 +337,39 @@
                 </b-row>
                 <b-row>
                   <b-col class="etc_content">
-                    <span>매매 : <span id="trade" :style="[trade_data == 'curr' ? { color: 'red' } : { color: 'blue' },]">{{ trade_data.cnt }}
-                        <b-icon v-if="trade_data == 'curr'" icon="arrow-up"></b-icon>
+                    <span
+                      >매매 :
+                      <span
+                        id="trade"
+                        :style="[
+                          trade_data == 'curr'
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ trade_data.cnt }}
+                        <b-icon
+                          v-if="trade_data == 'curr'"
+                          icon="arrow-up"
+                        ></b-icon>
                         <b-icon v-else icon="arrow-down"></b-icon>
                       </span>
                     </span>
                   </b-col>
                   <b-col class="etc_content">
-                    <span>전세 :
-                      <span id="charter" :style="[rental_data.whoWin == 'curr' ? { color: 'red' } : { color: 'blue' },]">{{ rental_data.cnt }}
-                        <b-icon v-if="rental_data.whoWin == 'curr'" icon="arrow-up"></b-icon>
+                    <span
+                      >전세 :
+                      <span
+                        id="charter"
+                        :style="[
+                          rental_data.whoWin == 'curr'
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ rental_data.cnt }}
+                        <b-icon
+                          v-if="rental_data.whoWin == 'curr'"
+                          icon="arrow-up"
+                        ></b-icon>
                         <b-icon v-else icon="arrow-down"></b-icon>
                       </span>
                     </span>
@@ -217,17 +382,39 @@
                 </b-row>
                 <b-row>
                   <b-col class="etc_content">
-                    <span>기준금리 :
-                        <span id="trade" :style="[baseMoney > baseMoney_compare ? { color: 'red' } : { color: 'blue' },]">{{ baseMoney }}%
-                          <b-icon v-if="baseMoney > baseMoney_compare" icon="arrow-up"></b-icon>
-                          <b-icon v-else icon="arrow-down"></b-icon>
-                        </span>
+                    <span
+                      >기준금리 :
+                      <span
+                        id="trade"
+                        :style="[
+                          baseMoney > baseMoney_compare
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ baseMoney }}%
+                        <b-icon
+                          v-if="baseMoney > baseMoney_compare"
+                          icon="arrow-up"
+                        ></b-icon>
+                        <b-icon v-else icon="arrow-down"></b-icon>
+                      </span>
                     </span>
                   </b-col>
                   <b-col class="etc_content">
-                    <span>최저시급 :
-                      <span id="trade" :style="[minimumWage > minimumWage_compare ? { color: 'red' } : { color: 'blue' },]">{{ minimumWage }}원
-                        <b-icon v-if="minimumWage > minimumWage_compare" icon="arrow-up"></b-icon>
+                    <span
+                      >최저시급 :
+                      <span
+                        id="trade"
+                        :style="[
+                          minimumWage > minimumWage_compare
+                            ? { color: 'red' }
+                            : { color: 'blue' },
+                        ]"
+                        >{{ minimumWage }}원
+                        <b-icon
+                          v-if="minimumWage > minimumWage_compare"
+                          icon="arrow-up"
+                        ></b-icon>
                         <b-icon v-else icon="arrow-down"></b-icon>
                       </span>
                     </span>
@@ -248,9 +435,14 @@
             /> -->
             <div v-if="trade_table_list.length > 0">
               <h5>
-                {{ sidoName }} {{ sigunguName }} {{ dongName }} 실거래 데이터 {{ trade_table_list.length }}건
+                {{ sidoName }} {{ sigunguName }} {{ dongName }} 실거래 데이터
+                {{ trade_table_list.length }}건
               </h5>
-              <b-table sticky-header striped :items="trade_table_list"></b-table>
+              <b-table
+                sticky-header
+                striped
+                :items="trade_table_list"
+              ></b-table>
             </div>
           </b-container>
         </b-col>
@@ -266,23 +458,48 @@ import { Line as LineChartGenerator } from "vue-chartjs/legacy";
 import { Doughnut } from "vue-chartjs/legacy";
 import { Bar } from "vue-chartjs/legacy";
 
-import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, LineElement, LinearScale, CategoryScale, PointElement, BarElement, BarController, } from "chart.js";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  BarElement,
+  BarController,
+} from "chart.js";
 
-ChartJS.register( Title, Tooltip, Legend, ArcElement, LineElement, LinearScale, CategoryScale, PointElement, BarElement, BarController);
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  LineElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
+  BarElement,
+  BarController
+);
 
 export default {
   name: "LineChart",
   components: {
-    LineChartGenerator, Doughnut, Bar,
+    LineChartGenerator,
+    Doughnut,
+    Bar,
   },
   props: {
-    chartId: { type: String, default: "data_chart", },
-    datasetIdKey: { type: String, default: "label", },
-    width: { type: Number, default: 400, },
-    height: { type: Number, default: 250, },
-    cssClasses: { default: "", type: String, },
-    styles: { type: Object, default: () => {}, },
-    plugins: { type: Array, default: () => [], },
+    chartId: { type: String, default: "data_chart" },
+    datasetIdKey: { type: String, default: "label" },
+    width: { type: Number, default: 400 },
+    height: { type: Number, default: 250 },
+    cssClasses: { default: "", type: String },
+    styles: { type: Object, default: () => {} },
+    plugins: { type: Array, default: () => [] },
   },
   data() {
     return {
@@ -299,7 +516,10 @@ export default {
 
       // 메인 그래프 데이터
 
-      seleted_trade: [], // 선택한 지역의 평균 매매가격
+      selected_sigungu: [], // 선택한 시/도의 시/군/구
+      
+      sigungu_check: [], // 그래프 지역 데이터 추가 체크박스
+      selected_trade: [], // 선택한 지역의 평균 매매가격
       selected_rate: [], // 선택한 지역의 매매 가격 변동률
       trade_amount: [], // 매매 거래 금액
       trade_avg: [], // 매매 거래 금액 변동률
@@ -310,7 +530,7 @@ export default {
       basemoney_list: [], // 메인그래프 기준금리
       wage_list: [], //  메인그래프 최저시급
       trade_list: [], // 메인그래프 년도별 평균 매매금액
-      trade_table_list:{},  // 테이블(표)에 출력될 데이터 리스트
+      trade_table_list: {}, // 테이블(표)에 출력될 데이터 리스트
 
       // 하단 거래량 및 기본 지표
 
@@ -322,23 +542,28 @@ export default {
        * 아파트 거래량
        * cnt : 거래 카운트, whoWin -before : 전전달의 데이터가 큰 경우, curr : 전달의 데이터가 더 높은 경우
        */
-      rental_data: { cnt: null, whoWin: "", },
+      rental_data: { cnt: null, whoWin: "" },
       /**
        * 아파트 거래량
        * cnt : 거래 카운트, whoWin -before : 전전달의 데이터가 큰 경우, curr : 전달의 데이터가 더 높은 경우
        */
-      trade_data: { cnt: null, whoWin: "", },
+      trade_data: { cnt: null, whoWin: "" },
       chkDataArr: [], // 그래프설정 체크박스
       clickPeriod: "", // 그래프설정 기간
       changeGraph: "매매", // 그래프 전환 구분
-      
-      rank_style: { height: "200px", width: "380px", },   // 랭크 그래프 스타일 설정
 
-      
-      rankGraph_l: { labels: [], datasets: [{ label: null, backgroundColor: [], data: [] }], },     // 왼쪽 랭크 그래프 데이터 설정
-      rankGraph_r: { labels: [], datasets: [{ label: null, backgroundColor: [], data: [] }], },     // 오른쪽 랭크 그래프 데이터 설정
+      rank_style: { height: "200px", width: "380px" }, // 랭크 그래프 스타일 설정
+
+      rankGraph_l: {
+        labels: [],
+        datasets: [{ label: null, backgroundColor: [], data: [] }],
+      }, // 왼쪽 랭크 그래프 데이터 설정
+      rankGraph_r: {
+        labels: [],
+        datasets: [{ label: null, backgroundColor: [], data: [] }],
+      }, // 오른쪽 랭크 그래프 데이터 설정
       // 왼쪽 랭크 옵션 설정
-      chartOptions_Rank1: {       
+      chartOptions_Rank1: {
         plugins: {
           legend: { display: true, position: null },
           title: { display: true, align: "", text: "" },
@@ -358,32 +583,69 @@ export default {
       chartOptions_Bar1: {
         indexAxis: "y",
         responsive: true,
-        title: { display: true, text: "막대차트", },
-        Tooltips: { mode: "index", intersect: false, },
-        hover: { mode: "nearest", intersect: true, },
+        title: { display: true, text: "막대차트" },
+        Tooltips: { mode: "index", intersect: false },
+        hover: { mode: "nearest", intersect: true },
       },
       // 오른쪽 랭크 그래프 데이터 설정
       barGraph_r: {
         labels: ["1", "2", "3", "4", "5"],
-        datasets: [{ label: "테스트 데이터셋", backgroundColor: [], data: [1, 2, 3, 4, 5], }],
+        datasets: [
+          {
+            label: "테스트 데이터셋",
+            backgroundColor: [],
+            data: [1, 2, 3, 4, 5],
+          },
+        ],
       },
       graph_set: [], // 그래프 설정 버튼
 
       top_chart: {
         // 메인 상단 그래프
-        labels: [ "2015년", "2016년", "2017년", "2018년", "2019년", "2020년", "2021년",],
-        datasets: [{ yAxisID: "trade", label: "매매 가격", backgroundColor: "rgba(255, 0, 0, 0.5)", borderColor: "rgba(255, 0, 0, 0.5)", data: null, }],
+        labels: [
+          "2015년",
+          "2016년",
+          "2017년",
+          "2018년",
+          "2019년",
+          "2020년",
+          "2021년",
+        ],
+        datasets: [
+          {
+            yAxisID: "trade",
+            label: "매매 가격",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgba(255, 0, 0, 0.5)",
+            data: null,
+          },
+        ],
       },
       bottom_chart: {
         // 메인 하단 그래프
-        labels: [ "2015년", "2016년", "2017년", "2018년", "2019년", "2020년", "2021년",],
-        datasets: [{ label: "매매 가격 변동률", backgroundColor: "rgba(255, 0, 0, 0.5)", borderColor: "rgba(255, 0, 0, 0.5)", data: null, }],
+        labels: [
+          "2015년",
+          "2016년",
+          "2017년",
+          "2018년",
+          "2019년",
+          "2020년",
+          "2021년",
+        ],
+        datasets: [
+          {
+            label: "매매 가격 변동률",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+            borderColor: "rgba(255, 0, 0, 0.5)",
+            data: null,
+          },
+        ],
       },
       chartOptions_top: {
         // 메인 상단 그래프 옵션
         plugins: {
-          legend: { display: false, },
-          title: { display: true, align: "end", text: "(단위 : 천원)", },
+          legend: { display: false },
+          title: { display: true, align: "end", text: "(단위 : 천원)" },
         },
         responsive: true,
         maintainAspectRatio: false,
@@ -391,8 +653,8 @@ export default {
       chartOptions_bottom: {
         // 메인 하단 그래프 옵션
         plugins: {
-          legend: { display: false, },
-          title: { display: true, align: "end", text: "기준월(2016.06=100)", },
+          legend: { display: false },
+          title: { display: true, align: "end", text: "기준월(2016.06=100)" },
         },
         responsive: true,
         maintainAspectRatio: false,
@@ -403,17 +665,17 @@ export default {
        *  해당 속성을 사용해서 아래와같이 사용시, 추가하지 않은 컬럼은 화면에 출력되지 않는다
        */
       table_fields: [
-        { key: "apt_nm", sortable: true, },
-        { key: "deposit", sortable: true, },
-        { key: "payment", sortable: true, },
-        { key: "built_year", sortable: true, },
-        { key: "trade_year", sortable: true, },
-        { key: "trade_month", sortable: true, },
-        { key: "sigungu_cd",  sortable: false, },
-        { key: "dong", sortable: false, },
-        { key: "land_no", sortable: true, },
-        { key: "land_area", sortable: true, },
-        { key: "apt_nm", sortable: true, },
+        { key: "apt_nm", sortable: true },
+        { key: "deposit", sortable: true },
+        { key: "payment", sortable: true },
+        { key: "built_year", sortable: true },
+        { key: "trade_year", sortable: true },
+        { key: "trade_month", sortable: true },
+        { key: "sigungu_cd", sortable: false },
+        { key: "dong", sortable: false },
+        { key: "land_no", sortable: true },
+        { key: "land_area", sortable: true },
+        { key: "apt_nm", sortable: true },
       ],
     };
   },
@@ -441,8 +703,8 @@ export default {
     trans_chart() {
       this.chartOptions_top.plugins.legend = { display: false };
       if (this.changeGraph == "매매") {
-        this.$refs.click_graph1.textContent = "전국 아파트 매매 가격";
-        this.$refs.click_graph2.textContent = "전국 아파트 매매 가격 변동률";
+        this.$refs.click_graph1.textContent = this.sidoName + " 아파트 매매 가격";
+        this.$refs.click_graph2.textContent = this.sidoName + " 아파트 매매 가격 변동률";
         (this.top_chart.datasets = [
           {
             label: "매매 가격",
@@ -461,9 +723,8 @@ export default {
             },
           ]);
       } else if (this.changeGraph == "전,월세") {
-        this.$refs.click_graph1.textContent =
-          "전국 아파트 전,월세 통합 거래 금액";
-        this.$refs.click_graph2.textContent = "전국 아파트 전,월세 통합 변동률";
+        this.$refs.click_graph1.textContent = this.sidoName + " 아파트 전,월세 통합 거래 금액";
+        this.$refs.click_graph2.textContent = this.sidoName + " 아파트 전,월세 통합 변동률";
         (this.top_chart.datasets = [
           {
             label: "전,월세 통합 거래 금액",
@@ -518,7 +779,9 @@ export default {
     },
     getRegionList() {
       // 지역 리스트 가져오기
-      axios.get("/select").then((res) => {
+      axios
+        .get("/select")
+        .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.regionlist.push(res.data[i].sido_nm);
           }
@@ -545,6 +808,7 @@ export default {
       } else if (this.regionChk2) {
         // 시/군/구
         this.sigunguList = []; // 시/군/구 리스트 초기화
+        this.sigungu_check = [];
         this.regionChk3 = false; // 읍/면/동 false로 disabled
       } else if (this.regionChk3) {
         // 읍/면/동
@@ -552,39 +816,32 @@ export default {
       }
     },
     search_Sigungu(region) {
-      this.sigunguList = [];
       this.sidoName = region;
+      this.sigunguList = [];
+      this.sigungu_check = [];
       this.regionChk1 = false;
       this.regionChk2 = true;
+      axios.get("/searchSigungu?" + "regionName=" + region).then((res) => {
+        for (var i = 1; i < res.data.length; i++) {
+          this.sigunguList.push(res.data[i].city_nm);
+          this.sigungu_check.push(res.data[i].city_nm);
+          }
+      $(".nav-tabs>li:nth-child(1)>a").text(region);
+      $(".nav-tabs>li:nth-child(1)>a").css('color','black');
+      $(".nav-tabs>li:nth-child(1)>a").css('font-weight','bold');
+      $(".nav-tabs>li:nth-child(1)>a").css('text-decoration','underline');
 
-      axios.all([
-          axios.get("/searchSigungu?" + "regionName=" + region),
-          axios.get("/selected_trade?" + "regionName=" + region),
-          axios.get("/selected_rate?" + "regionName=" + region),
-          axios.get("/region_trade?" + "regionName=" + region),
-          axios.get("/region_rental?" + "regionName=" + region),
-        ]).then(axios.spread((res1, res2, res3, res4, res5) => {
-            for (var i = 1; i < res1.data.length; i++) {
-              this.sigunguList.push(res1.data[i].city_nm);
-            }
-            for (var j = 0; j < res2.data.length; j++) {
-              this.seleted_trade.push(res2.data[j].avg_amount);
-            }
-            for (var k = 0; k < res3.data.length; k++) {
-              this.selected_rate.push(res3.data[k].avg_rate);
-            }
-            this.trade_data = res4.data;
-            this.rental_data = res5.data;
-          })
-        );
-      this.top_chart.datasets[0].data = this.seleted_trade;
-      this.bottom_chart.datasets[0].data = this.selected_rate;
       $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
       $(".tab-content>div:nth-child(1)").removeClass("active");
       $(".nav-tabs>li:nth-child(2)>a").addClass("active");
       $(".tab-content>div:nth-child(2)").addClass("active");
       $(".tab-content>div:nth-child(2)").css("display", "block");
-      //
+      }),
+
+      this.getSelected_trade(region);
+      this.getSelected_rate(region);
+      this.getRegion_trade(region);
+      this.getRegion_rental(region);
     },
 
     search_dong(sigungu) {
@@ -592,10 +849,24 @@ export default {
       this.regionChk1 = true;
       this.regionChk2 = true;
       this.regionChk3 = true;
-      axios.get("/searchDong?" + "sigunguName=" + sigungu + "&sidoName=" + this.sidoName).then((res) => {
+      axios
+        .get(
+          "/searchDong?" +
+            "sigunguName=" +
+            sigungu +
+            "&sidoName=" +
+            this.sidoName
+        )
+        .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.dongList.push(res.data[i].dong);
           }
+
+          $(".nav-tabs>li:nth-child(2)>a").text(sigungu);
+          $(".nav-tabs>li:nth-child(2)>a").css('color','black');
+          $(".nav-tabs>li:nth-child(2)>a").css('font-weight','bold');
+          $(".nav-tabs>li:nth-child(2)>a").css('text-decoration','underline');
+
           $(".nav-tabs>li:nth-child(2)>a").removeClass("active");
           $(".tab-content>div:nth-child(2)").removeClass("active");
           $(".tab-content>div:nth-child(2)").css("display", "none");
@@ -648,8 +919,8 @@ export default {
     search_tmp(dong) {
       this.dongName = dong;
       axios.get("/search_tmp?" + "dong=" + dong).then((res) => {
-          this.trade_table_list = res.data;
-        });
+        this.trade_table_list = res.data;
+      });
     },
     getBaseMoney_rank() {
       // 기본지표 (기준금리)
@@ -779,29 +1050,35 @@ export default {
         });
         if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
           this.chartOptions_top.scales = {
-            trade: { type: "linear", position: "left", },
+            trade: { type: "linear", position: "left" },
             rate: {
               type: "linear",
               position: "right",
-              grid: { drawOnChartArea: false, },
+              grid: { drawOnChartArea: false },
             },
             wage: {
               type: "linear",
               position: "right",
-              grid: { drawOnChartArea: false, },
+              grid: { drawOnChartArea: false },
             },
           };
-          this.chartOptions_top.plugins.legend = { display: true, position: "bottom",};
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         } else {
           this.chartOptions_top.scales = {
-            trade: { type: "linear", position: "left", },
+            trade: { type: "linear", position: "left" },
             rate: {
               type: "linear",
               position: "right",
-              grid: { drawOnChartArea: false, },
+              grid: { drawOnChartArea: false },
             },
           };
-          this.chartOptions_top.plugins.legend = { display: true, position: "bottom",};
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         }
       } else {
         for (var i = 0; i < this.top_chart.datasets.length; i++) {
@@ -811,13 +1088,16 @@ export default {
           }
         }
 
-        this.chartOptions_top.plugins.legend = { display: false,};
+        this.chartOptions_top.plugins.legend = { display: false };
 
         delete this.chartOptions_top.scales.rate;
 
         if ($("#wage_ck").is(":checked")) {
           // 최저임금을 제외하고 체크된 것이 있을 경우 범례 유지
-          this.chartOptions_top.plugins.legend = { display: true, position: "bottom",};
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         } else {
           // 최저임금만 체크됬을 경우 범례 삭제
           this.chartOptions_top.plugins.legend = { display: false };
@@ -837,16 +1117,16 @@ export default {
         });
         if ($("#rate_ck").is(":checked") && $("#wage_ck").is(":checked")) {
           this.chartOptions_top.scales = {
-            trade: { type: "linear", position: "left", },
+            trade: { type: "linear", position: "left" },
             rate: {
               type: "linear",
               position: "right",
-              grid: { drawOnChartArea: false, },
+              grid: { drawOnChartArea: false },
             },
             wage: {
               type: "linear",
               position: "right",
-              grid: { drawOnChartArea: false,},
+              grid: { drawOnChartArea: false },
             },
           };
           this.chartOptions_top.plugins.legend = {
@@ -855,15 +1135,17 @@ export default {
           };
         } else {
           this.chartOptions_top.scales = {
-            trade: { type: "linear", position: "left",
-            },
+            trade: { type: "linear", position: "left" },
             wage: {
               type: "linear",
               position: "right",
-              grid: { drawOnChartArea: false, },
+              grid: { drawOnChartArea: false },
             },
           };
-          this.chartOptions_top.plugins.legend = { display: true, position: "bottom",};
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         }
       } else {
         for (var i = 0; i < this.top_chart.datasets.length; i++) {
@@ -876,7 +1158,10 @@ export default {
 
         if ($("#rate_ck").is(":checked")) {
           // 최저임금을 제외하고 체크된 것이 있을 경우 범례 유지
-          this.chartOptions_top.plugins.legend = { display: true, position: "bottom",};
+          this.chartOptions_top.plugins.legend = {
+            display: true,
+            position: "bottom",
+          };
         } else {
           // 최저임금만 체크됬을 경우 범례 삭제
           this.chartOptions_top.plugins.legend = { display: false };
@@ -917,9 +1202,54 @@ export default {
         }
       });
     },
-    getTrade_data() { axios.get("/getTrade_data").then((res) => { this.trade_data = res.data; }); },
-    getRental_data() { axios.get("/getRental_data").then((res) => { this.rental_data = res.data; }); },
-    setRegion() { if (this.sidoName == "") { this.sidoName = "전국"; } },
+    getTrade_data() {
+      axios.get("/getTrade_data").then((res) => {
+        this.trade_data = res.data;
+      });
+    },
+    getRental_data() {
+      axios.get("/getRental_data").then((res) => {
+        this.rental_data = res.data;
+      });
+    },
+    setRegion() {
+      if (this.sidoName == "") {
+        this.sidoName = "전국";
+      }
+    },
+
+    getSelected_trade(region){
+      axios.get("/selected_trade?" + "regionName=" + region).then((res) => {
+        for (var i = 0; i < res.data.length; i++){
+          this.selected_trade.push(res.data[i].avg_amount);
+        }
+        this.top_chart.datasets[0].data = this.selected_trade;
+      });
+    },
+    
+    getSelected_rate(region){
+      axios.get("/selected_rate?" + "regionName=" + region).then((res) => {
+        for (var i = 0; i < res.data.length; i++){
+          this.selected_rate.push(res.data[i].avg_rate);
+        }
+        this.bottom_chart.datasets[0].data = this.selected_rate;
+      });
+    },
+
+    getRegion_trade(region){
+      axios.get("/region_trade?" + "regionName=" + region).then((res) => {
+        this.trade_data = res.data;
+      });
+    },
+    
+    getRegion_rental(region){
+      axios.get("/region_rental?" + "regionName=" + region).then((res) => {
+        this.rental_data = res.data;
+      });
+    },
+    checked(){
+      console.log(this.selected_sigungu)
+    }
   },
 };
 </script>
@@ -927,3 +1257,4 @@ export default {
 <style>
 @import "../assets/css/common.css";
 </style>
+

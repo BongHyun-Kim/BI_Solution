@@ -111,7 +111,7 @@ var pushResults = function (rows) {
 
 // 읍/면/동
 router.get("/searchDong", function (req, res) {
-  console.log("backend sidoName : " + req.query.sidoName);
+  // console.log("backend sidoName : " + req.query.sidoName);
   maria.query(
     "SELECT DISTINCT dong FROM addr_list WHERE city_nm = ? and sido_nm = ? AND detailed IS NULL",
     [req.query.sigunguName, req.query.sidoName],
@@ -319,7 +319,7 @@ router.get("/getTrade_payment", function (req, res) {
 
 // 지역 선택 시 해당 지역 상단 그래프 (평균 매매 거래 금액)
 router.get("/selected_trade", function async(req, res) {
-  console.log("seleted Sido = " + req.query.regionName);
+  // console.log("selected Sido = " + req.query.regionName);
   maria.query(
     "SELECT sido_nm, LEFT(period, 4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     req.query.regionName,
@@ -352,7 +352,7 @@ router.get("/getTrade_avg", function (req, res) {
 
 // 지역 선택 시 해당 지역 하단 그래프 (평균 매매 거래 금액 변동률)
 router.get("/selected_rate", function async(req, res) {
-  console.log("seleted Sido = " + req.query.regionName);
+  // console.log("selected Sido = " + req.query.regionName);
   maria.query(
     "SELECT region, LEFT(period, 4), ROUND(AVG(rate),1) AS avg_rate FROM trade_change_rate WHERE region = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     req.query.regionName,
@@ -500,12 +500,15 @@ router.get("/region_rental", function (req, res) {
   );
 });
 
-router.get("/search_tmp", function(req, res){
-  maria.query("SELECT apt_nm, layer, 0 AS deposit, payment, built_year, trade_year, trade_month, sigungu_cd,  dong, land_no, land_area FROM trade_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM charter_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM monthly_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5",
-  [req.query.dong, req.query.dong, req.query.dong], function(err, rows, field){
-    console.log(rows);
-    res.send(rows);
-  })
+router.get("/search_tmp", function (req, res) {
+  maria.query(
+    "SELECT apt_nm, layer, 0 AS deposit, payment, built_year, trade_year, trade_month, sigungu_cd,  dong, land_no, land_area FROM trade_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM charter_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM monthly_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5",
+    [req.query.dong, req.query.dong, req.query.dong],
+    function (err, rows, field) {
+      // console.log(rows);
+      res.send(rows);
+    }
+  );
 });
 
 module.exports = router;
