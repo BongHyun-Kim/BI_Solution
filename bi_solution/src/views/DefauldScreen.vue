@@ -15,7 +15,7 @@
                   >
                     <b-row class="city_box" @click="search_Sigungu(region)">
                       <b-col>
-                        <p class="city_name">{{ region }}</p></b-col
+                        <p class="city_name">
                           {{ region }}
                         </p></b-col
                       >
@@ -96,7 +96,7 @@
                           id="changeGraph1"
                           ref="click_graph1"
                         >
-                          {{ region }} 아파트 매매 가격
+                          {{ sidoName }} 아파트 매매 가격
                         </h5>
                       </b-col>
                       <b-col cols="1">
@@ -176,7 +176,7 @@
                           id="changeGraph2"
                           ref="click_graph2"
                         >
-                          {{ region }} 아파트 매매 가격 변동률
+                          {{ sidoName }} 아파트 매매 가격 변동률
                         </h5>
                       </b-col>
                       <b-col cols="1">
@@ -323,7 +323,7 @@
             <b-row>
               <b-col>
                 <b-row>
-                  <h6 class="etc_title">전국 아파트 거래량</h6>
+                  <h6 class="etc_title">{{ sidoName }} 아파트 거래량</h6>
                 </b-row>
                 <b-row>
                   <b-col class="etc_content">
@@ -422,18 +422,6 @@
               :width="300"
               :height="150"
             /> -->
-            <div v-if="trade_data_list.length > 0">
-              <h5>
-                {{ sidoName }} {{ sigunguName }} {{ dongName }} 실거래 데이터
-                {{ trade_data_list.length }}건
-              </h5>
-              <b-table
-                :fields="table_fields"
-                sticky-header
-                striped
-                :items="trade_data_list"
-              ></b-table>
-            </div>
           </b-container>
         </b-col>
       </b-row>
@@ -524,11 +512,10 @@ export default {
       regionChk3: false, // 읍/면/동
       sidoName: "", // 시도 이름 (클릭한)
       sigunguName: "", // 시군구 이름 (클릭한)
-      dongName: "", // 동 이름(클릭한)
 
       // 메인 그래프 데이터
 
-      region: null,
+      seleted_trade: [], // 선택한 지역의 평균 매매가격
       selected_rate: [], // 선택한 지역의 매매 가격 변동률
       trade_amount: [], // 매매 거래 금액
       trade_avg: [], // 매매 거래 금액 변동률
@@ -539,8 +526,9 @@ export default {
       basemoney_list: [], // 메인그래프 기준금리
       wage_list: [], //  메인그래프 최저시급
       trade_list: [], // 메인그래프 년도별 평균 매매금액
-      trade_data_list: {}, // 테이블(표)에 출력될 데이터 리스트.
+
       // 하단 거래량 및 기본 지표
+
       baseMoney: null, // 기본지표 (기준금리)
       baseMoney_compare: null, // 기본지표 (직전 기준금리)
       minimumWage: null, // 기본지표 (최저시급)
@@ -696,57 +684,6 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
       },
-      /**
-       * 테이블(표)의 필드명.
-       * 해당 속성이 아예 없으면 화면에 그냥 다 출력이 되고,
-       *  해당 속성을 사용해서 아래와같이 사용시, 추가하지 않은 컬럼은 화면에 출력되지 않는다
-       */
-      table_fields: [
-        {
-          key: "apt_nm",
-          sortable: true,
-        },
-        {
-          key: "deposit",
-          sortable: true,
-        },
-        {
-          key: "payment",
-          sortable: true,
-        },
-        {
-          key: "built_year",
-          sortable: true,
-        },
-        {
-          key: "trade_year",
-          sortable: true,
-        },
-        {
-          key: "trade_month",
-          sortable: true,
-        },
-        {
-          key: "sigungu_cd",
-          sortable: false,
-        },
-        {
-          key: "dong",
-          sortable: false,
-        },
-        {
-          key: "land_no",
-          sortable: true,
-        },
-        {
-          key: "land_area",
-          sortable: true,
-        },
-        {
-          key: "apt_nm",
-          sortable: true,
-        },
-      ],
     };
   },
   created() {
@@ -851,7 +788,7 @@ export default {
     getRegionList() {
       // 지역 리스트 가져오기
       axios
-        .get("http://localhost:3000/select")
+        .get("/select")
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
             this.regionlist.push(res.data[i].sido_nm);
@@ -865,7 +802,7 @@ export default {
     getTrade_amount() {
       // 거래량 가져오기 (보류)
       // eslint-disable-next-line
-      axios.get("http://localhost:3000/getTotaltrade").then((res) => {
+      axios.get("/getTotaltrade").then((res) => {
         //console.log(res.data);
       });
     },
@@ -896,10 +833,11 @@ export default {
           axios.get("/searchSigungu?" + "regionName=" + region),
           axios.get("/selected_trade?" + "regionName=" + region),
           axios.get("/selected_rate?" + "regionName=" + region),
-          axios.get("/trade_amount?" + "regionName=" + region),
+          axios.get("/region_trade?" + "regionName=" + region),
+          axios.get("/region_rental?" + "regionName=" + region),
         ])
         .then(
-          axios.spread((res1, res2, res3) => {
+          axios.spread((res1, res2, res3, res4, res5) => {
             for (var i = 1; i < res1.data.length; i++) {
               this.sigunguList.push(res1.data[i].city_nm);
             }
@@ -909,7 +847,8 @@ export default {
             for (var k = 0; k < res3.data.length; k++) {
               this.selected_rate.push(res3.data[k].avg_rate);
             }
-            this.trade_data = res3.data;
+            this.trade_data = res4.data;
+            this.rental_data = res5.data;
           })
         );
       this.top_chart.datasets[0].data = this.seleted_trade;
@@ -919,7 +858,9 @@ export default {
       $(".nav-tabs>li:nth-child(2)>a").addClass("active");
       $(".tab-content>div:nth-child(2)").addClass("active");
       $(".tab-content>div:nth-child(2)").css("display", "block");
+      //
     },
+
     search_dong(sigungu) {
       this.dongList = [];
       this.regionChk1 = true;
@@ -927,7 +868,7 @@ export default {
       this.regionChk3 = true;
       axios
         .get(
-          "http://localhost:3000/searchDong?" +
+          "/searchDong?" +
             "sigunguName=" +
             sigungu +
             "&sidoName=" +
@@ -985,13 +926,9 @@ export default {
         $(".nav-tabs>li:nth-child(3)>a").removeClass("active");
       }
     },
+    // eslint-disable-next-line
     search_tmp(dong) {
-      this.dongName = dong;
-      axios
-        .get("http://localhost:3000/search_tmp?" + "dong=" + dong)
-        .then((res) => {
-          this.trade_data_list = res.data;
-        });
+      //console.log("temp : " + dong);
     },
     getBaseMoney_rank() {
       // 기본지표 (기준금리)
@@ -1001,7 +938,7 @@ export default {
     },
     getBaseMoney_compare() {
       // 기본지표 (직전 기준금리)
-      axios.get("http://localhost:3000/getBaseMoney_compare").then((res) => {
+      axios.get("/getBaseMoney_compare").then((res) => {
         this.baseMoney_compare = res.data[0].rate;
       });
     },
@@ -1013,14 +950,14 @@ export default {
     },
     getMinimun_compare() {
       // 기본지표 (직전 최저시급)
-      axios.get("http://localhost:3000/getMinimunWage_compare").then((res) => {
+      axios.get("/getMinimunWage_compare").then((res) => {
         this.minimumWage_compare = res.data[0].wage;
       });
     },
 
     getRank_dataL() {
       // 랭크 그래프(전국 매매가 변동률)
-      axios.get("http://localhost:3000/getRank_trade").then((res) => {
+      axios.get("/getRank_trade").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_l.labels.push(res.data[i].region);
           this.rankGraph_l.datasets[0].label = "전국 매매가 변동률 Top 5";
@@ -1044,7 +981,7 @@ export default {
 
     getRank_dataR() {
       // 랭크 그래프(전국 전,월세 변동률)
-      axios.get("http://localhost:3000/getRank_charter").then((res) => {
+      axios.get("/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankGraph_r.labels.push(res.data[i].region);
           this.rankGraph_r.datasets[0].label = "전국 전,월세 변동률 Top 5";
@@ -1075,7 +1012,7 @@ export default {
     },
     getRank_charter() {
       // 랭크 텍스트(전국 전,월세 변동률)
-      axios.get("http://localhost:3000/getRank_charter").then((res) => {
+      axios.get("/getRank_charter").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.rankData_charter.push(res.data[i]);
         }
@@ -1083,7 +1020,7 @@ export default {
     },
     getWage() {
       // 년도별 최저시급 리스트(그래프 사용)
-      axios.get("http://localhost:3000/getWages").then((res) => {
+      axios.get("/getWages").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.wage_list.push(res.data[i].wage);
         }
@@ -1091,7 +1028,7 @@ export default {
     },
     getBaseMoney_chart() {
       // 년도별 기준금리 리스트(그래프 사용)
-      axios.get("http://localhost:3000/getBasemoney_chart").then((res) => {
+      axios.get("/getBasemoney_chart").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
           this.basemoney_list.push(res.data[i].avg_rate);
         }
@@ -1311,7 +1248,7 @@ export default {
     },
     setRegion() {
       if (this.sidoName == "") {
-        this.region = "전국";
+        this.sidoName = "전국";
       }
     },
   },
