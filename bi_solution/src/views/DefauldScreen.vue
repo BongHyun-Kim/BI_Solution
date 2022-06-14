@@ -896,22 +896,20 @@ export default {
           axios.get("/searchSigungu?" + "regionName=" + region),
           axios.get("/selected_trade?" + "regionName=" + region),
           axios.get("/selected_rate?" + "regionName=" + region),
+          axios.get("/trade_amount?" + "regionName=" + region),
         ])
         .then(
-        .get("http://localhost:3000/searchSigungu?" + "regionName=" + region)
-        .then((res) => {
-          for (var i = 0; i < res.data.length; i++) {
-            this.sigunguList.push(res.data[i].city_nm);
-            console.log(res1);
+          axios.spread((res1, res2, res3) => {
             for (var i = 1; i < res1.data.length; i++) {
               this.sigunguList.push(res1.data[i].city_nm);
             }
             for (var j = 0; j < res2.data.length; j++) {
               this.seleted_trade.push(res2.data[j].avg_amount);
+            }
             for (var k = 0; k < res3.data.length; k++) {
               this.selected_rate.push(res3.data[k].avg_rate);
             }
-            console.log(this.selected_rate);
+            this.trade_data = res3.data;
           })
         );
       this.top_chart.datasets[0].data = this.seleted_trade;
@@ -921,9 +919,7 @@ export default {
       $(".nav-tabs>li:nth-child(2)>a").addClass("active");
       $(".tab-content>div:nth-child(2)").addClass("active");
       $(".tab-content>div:nth-child(2)").css("display", "block");
-        });
     },
-
     search_dong(sigungu) {
       this.dongList = [];
       this.regionChk1 = true;

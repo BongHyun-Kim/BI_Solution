@@ -456,13 +456,4 @@ router.get("/search_tmp", function (req, res) {
   );
 });
 
-router.get("/testDong1", function (req, res) {
-  console.log("testDong1!!!");
-  console.log(req.query.dong);
-});
-router.get("/testDong2", function (req, res) {
-  console.log("testDong2!!!");
-  console.log(req.query.dong);
-});
-
 module.exports = router;
