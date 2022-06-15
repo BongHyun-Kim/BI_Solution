@@ -1021,7 +1021,7 @@ export default {
       // 년도별 기준금리 리스트(그래프 사용)
       axios.get("/getBasemoney_chart").then((res) => {
         for (var i = 0; i < res.data.length; i++) {
-          this.basemoney_list.push(res.data[i]);
+          this.basemoney_list.push(res.data[i].avg_rate);
         }
         // console.log(this.basemoney_list)
       });
