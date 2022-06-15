@@ -512,22 +512,4 @@ router.get("/search_tmp", function (req, res) {
   );
 });
 
-router.get("/checked_sigungu", function(req,res){
-  region = req.query.list.split(',')
-  console.log(region[region.length - 1])
-  maria.query(
-    "SELECT sigungu_nm, ROUND(AVG(amount),0) as avg_price  FROM trade_avg_price WHERE sigungu_nm = ? AND period BETWEEN 2015 AND 2022 GROUP BY sigungu_nm, LEFT(period,4) order by period",
-    region[region.length - 1],
-    function (err, rows, field){
-      if(!err){
-        console.log(rows)
-        res.send(rows);
-      } else {
-        console.log("err : " + err);
-        res.send(err);
-      }
-    }
-  )
-})
-
 module.exports = router;

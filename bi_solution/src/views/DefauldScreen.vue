@@ -138,17 +138,6 @@
                         </b-dropdown>
                       </b-col>
                     </b-row>
-                    <b-card style="display:none" id="add_data">
-                      <b-form-group label="구 선택" label-cols-lg="2">
-                        <!-- <b-form-checkbox-group :options="sigungu_check" @change="checked" style="text-align:left">
-                        </b-form-checkbox-group> -->
-                        <b-form-checkbox-group>
-                        <b-form-checkbox v-for="check in sigungu_check"
-                        v-bind:key="check" :value="check" @change="checked_sigungu(check)"
-                        :class="check">{{check}}</b-form-checkbox>
-                        </b-form-checkbox-group>
-                      </b-form-group>
-                    </b-card>
                     <LineChartGenerator
                       id="top_graph"
                       :chart-options="chartOptions_top"
@@ -508,11 +497,6 @@ export default {
   data() {
     return {
 
-      // 기타
-      color_r: null,
-      color_g: null,
-      color_b: null,
-
       // 지역 선택 리스트
 
       regionlist: [], // 시/도 리스트
@@ -527,9 +511,6 @@ export default {
       // 메인 그래프 데이터
 
       // selected_sigungu: [], // 선택한 시/도의 시/군/구
-      
-      selected_sigungu: null, // 상단 메인 그래프 추가 시/군/구 이름
-      sigungu_trade: [], // 상단 메인 그래프 추가 데이터
 
       checked_list: [], // 시도별 그래프 시/군/구 체크박스 체크 리스트
       sigungu_check: [], // 그래프 지역 데이터 추가 체크박스
@@ -850,7 +831,7 @@ export default {
       $(".nav-tabs>li:nth-child(2)>a").addClass("active");
       $(".tab-content>div:nth-child(2)").addClass("active");
       $(".tab-content>div:nth-child(2)").css("display", "block");
-      $("#add_data").css("display","block")
+    
       }),
 
       this.getSelected_trade(region);
@@ -1263,46 +1244,6 @@ export default {
         this.rental_data = res.data;
       });
     },
-    checked_sigungu(value){
-      this.checked_list.push(value)
-      this.selected_sigungu = null;
-      this.sigungu_trade = [];
-      this.makeColor();
-      if($("." + this.checked_list[this.checked_list.length - 1] + ">input").is(":checked")){
-        axios.get("/checked_sigungu?" + "list=" + this.checked_list).then((res) => {
-          this.selected_sigungu = res.data[0].sigungu_nm;
-          for(var i = 0; i < res.data.length; i++){
-            this.sigungu_trade.push(res.data[i].avg_price)
-          }
-          // console.log(this.selected_sigungu);
-          // console.log(this.sigungu_trade);
-          this.top_chart.datasets.push({
-            label: this.selected_sigungu,
-            type: "line",
-            backgroundColor: "rgba(" + this.color_r + "," + this.color_g + "," + this.color_b + ", 0.5)",
-            borderColor: "rgba(" + this.color_r + "," + this.color_g + "," + this.color_b + ", 0.5)",
-            data: this.sigungu_trade,
-          });
-
-          this.chartOptions_top.plugins.legend = {
-            display: true,
-            position: "bottom",
-          };
-        });
-      } else {
-        for(var j = 0; j < this.top_chart.datasets.length; j++){
-          if(this.top_chart.datasets[j].label == this.checked_list[this.checked_list.length - 1]){
-            this.top_chart.datasets.splice(j, 1)
-          }
-        }
-      }
-    },
-
-    makeColor(){
-      this.color_r = Math.floor(Math.random() * 256);
-      this.color_g = Math.floor(Math.random() * 256);
-      this.color_b = Math.floor(Math.random() * 256);
-    }
   },
 };
 </script>
