@@ -389,9 +389,7 @@ router.get("/getCharter_avg", function (req, res) {
     "SELECT region, LEFT(period,4), ROUND(AVG(rate),2) AS avg_rate FROM charter_change_rate WHERE region = '전국' AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     function (err, rows, field) {
       if (!err) {
-        console.log(rows);
-        console.log("321321321321321321321")
-        console.log("13246579813")
+        // console.log(rows);
         res.send(rows);
       } else {
         console.log("err : " + err);
