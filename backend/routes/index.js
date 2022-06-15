@@ -319,7 +319,7 @@ router.get("/getTrade_payment", function (req, res) {
 
 // 지역 선택 시 해당 지역 상단 그래프 (평균 매매 거래 금액)
 router.get("/selected_trade", function async(req, res) {
-  // console.log("selected Sido = " + req.query.regionName);
+  console.log("selected Sido = " + req.query.regionName);
   maria.query(
     "SELECT sido_nm, LEFT(period, 4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
     req.query.regionName,
