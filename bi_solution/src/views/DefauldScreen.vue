@@ -1216,7 +1216,7 @@ export default {
     },
 
     getSelected_trade(region){
-      axios.get("/selected_trade?" + "regionName=" + region).then((res) => {
+      axios.get("http://54.180.118.99:3000/selected_trade?" + "regionName=" + region).then((res) => {
         for (var i = 0; i < res.data.length; i++){
           this.selected_trade.push(res.data[i].avg_amount);
         }
@@ -1225,7 +1225,7 @@ export default {
     },
     
     getSelected_rate(region){
-      axios.get("/selected_rate?" + "regionName=" + region).then((res) => {
+      axios.get("http://54.180.118.99:3000/selected_rate?" + "regionName=" + region).then((res) => {
         for (var i = 0; i < res.data.length; i++){
           this.selected_rate.push(res.data[i].avg_rate);
         }
