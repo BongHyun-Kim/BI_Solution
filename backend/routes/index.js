@@ -505,10 +505,29 @@ router.get("/search_tmp", function (req, res) {
     "SELECT apt_nm, layer, 0 AS deposit, payment, built_year, trade_year, trade_month, sigungu_cd,  dong, land_no, land_area FROM trade_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM charter_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5 UNION ALL SELECT apt_nm, layer, deposit, payment, built_year, trade_year, trade_month, sigungu_cd, dong, land_no, land_area FROM monthly_real_apt WHERE dong = ? and trade_year = 2022 AND trade_month = 5",
     [req.query.dong, req.query.dong, req.query.dong],
     function (err, rows, field) {
-      // console.log(rows);
-      res.send(rows);
+      if(!err){
+        res.send(rows);
+      }
     }
   );
 });
+
+router.get("/checked_sigungu", function(req,res){
+  region = req.query.list.split(',')
+  console.log(region[region.length - 1])
+  maria.query(
+    "SELECT sigungu_nm, ROUND(AVG(amount),0) as avg_price  FROM trade_avg_price WHERE sigungu_nm = ? AND period BETWEEN 2015 AND 2022 GROUP BY sigungu_nm, LEFT(period,4) order by period",
+    region[region.length - 1],
+    function (err, rows, field){
+      if(!err){
+        console.log(rows)
+        res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
+      }
+    }
+  )
+})
 
 module.exports = router;
