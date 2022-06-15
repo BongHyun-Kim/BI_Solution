@@ -1080,6 +1080,7 @@ export default {
             position: "bottom",
           };
         }
+        cnosole.log(this.basemoney_list)
       } else {
         for (var i = 0; i < this.top_chart.datasets.length; i++) {
           if (this.top_chart.datasets[i].yAxisID == "rate") {
