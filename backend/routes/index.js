@@ -392,6 +392,8 @@ router.get("/getCharter_avg", function (req, res) {
         console.log(rows);
         console.log("12341234")
         console.log("13246579813")
+        console.log("13246579813")
+        console.log("13246579813")
         res.send(rows);
       } else {
         console.log("err : " + err);
