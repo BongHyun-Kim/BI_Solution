@@ -318,7 +318,7 @@ router.get("/getTrade_payment", function (req, res) {
 });
 
 // 지역 선택 시 해당 지역 상단 그래프 (평균 매매 거래 금액)
-router.get("/selectedTrade", function async(req, res) {
+router.get("/selected_trade", function async(req, res) {
   console.log("selected Sido = " + req.query.regionName);
   maria.query(
     "SELECT sido_nm, LEFT(period, 4), ROUND(AVG(amount),0) AS avg_amount FROM trade_avg_price WHERE sido_nm = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
@@ -351,7 +351,7 @@ router.get("/getTrade_avg", function (req, res) {
 });
 
 // 지역 선택 시 해당 지역 하단 그래프 (평균 매매 거래 금액 변동률)
-router.get("/selectedRate", function async(req, res) {
+router.get("/selected_rate", function async(req, res) {
   // console.log("selected Sido = " + req.query.regionName);
   maria.query(
     "SELECT region, LEFT(period, 4), ROUND(AVG(rate),1) AS avg_rate FROM trade_change_rate WHERE region = ? AND LEFT(period,4) BETWEEN 2015 AND 2021 GROUP BY LEFT(period,4)",
