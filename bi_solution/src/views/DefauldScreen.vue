@@ -1216,7 +1216,9 @@ export default {
     },
 
     getSelected_trade(region){
+      console.log("before")
       axios.get("http://54.180.118.99:3000/selected_trade?" + "regionName=" + region).then((res) => {
+        console.log("after")
         for (var i = 0; i < res.data.length; i++){
           this.selected_trade.push(res.data[i].avg_amount);
         }
