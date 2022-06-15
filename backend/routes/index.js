@@ -417,6 +417,9 @@ router.get("/getTrade_data", function (req, res) {
               } else {
                 res.send({ cnt: rows2[0].deals, whoWin: "curr" });
               }
+            } else {
+              console.log("err : " + err);
+              res.send(err);
             }
           }
         );
@@ -442,6 +445,9 @@ router.get("/region_trade", function (req, res) {
               } else {
                 res.send({ cnt: rows2[0].deals, whoWin: "curr" });
               }
+            } else {
+              console.log("err : " + err);
+              res.send(err);
             }
           }
         );
@@ -467,6 +473,9 @@ router.get("/getRental_data", function (req, res) {
               } else {
                 res.send({ cnt: rows2[0].total_count, whoWin: "curr" });
               }
+            } else {
+              console.log("err : " + err);
+              res.send(err);
             }
           }
         );
@@ -492,6 +501,9 @@ router.get("/region_rental", function (req, res) {
               } else {
                 res.send({ cnt: rows2[0].total_count, whoWin: "curr" });
               }
+            } else {
+              console.log("err : " + err);
+              res.send(err);
             }
           }
         );
@@ -507,6 +519,9 @@ router.get("/search_tmp", function (req, res) {
     function (err, rows, field) {
       if(!err){
         res.send(rows);
+      } else {
+        console.log("err : " + err);
+        res.send(err);
       }
     }
   );
