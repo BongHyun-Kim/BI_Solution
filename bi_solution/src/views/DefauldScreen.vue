@@ -1220,7 +1220,7 @@ export default {
 
     getSelected_trade(region){
       console.log("before")
-      axios.get("/selected_trade?" + "regionName=" + region).then((res) => {
+      axios.get("/selectedTrade?" + "regionName=" + region).then((res) => {
         console.log("after")
         for (var i = 0; i < res.data.length; i++){
           this.selected_trade.push(res.data[i].avg_amount);
@@ -1230,7 +1230,7 @@ export default {
     },
     
     getSelected_rate(region){
-      axios.get("/selected_rate?" + "regionName=" + region).then((res) => {
+      axios.get("/selectedRate?" + "regionName=" + region).then((res) => {
         for (var i = 0; i < res.data.length; i++){
           this.selected_rate.push(res.data[i].avg_rate);
         }
