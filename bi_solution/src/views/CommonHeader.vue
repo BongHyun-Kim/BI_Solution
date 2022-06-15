@@ -3,7 +3,7 @@
     <b-container id="head_container">
       <b-row id="row_box">
         <b-col>
-          <a href="#"><img id="header_img" src="../assets/img/title.png" /></a>
+          <a href="/"><img id="header_img" src="../assets/img/title.png" /></a>
         </b-col>
         <b-col>
           <b-input-group id="search_area">
