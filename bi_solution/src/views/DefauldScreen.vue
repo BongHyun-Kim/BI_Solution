@@ -1080,7 +1080,7 @@ export default {
             position: "bottom",
           };
         }
-        console.log(this.basemoney_list)
+        console.log(this.top_chart.datasets)
       } else {
         for (var i = 0; i < this.top_chart.datasets.length; i++) {
           if (this.top_chart.datasets[i].yAxisID == "rate") {
