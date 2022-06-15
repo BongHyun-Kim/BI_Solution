@@ -832,7 +832,6 @@ export default {
       $(".tab-content>div:nth-child(2)").addClass("active");
       $(".tab-content>div:nth-child(2)").css("display", "block");
     
-      }),
       console.log("first")
       this.getSelected_trade(region);
       console.log("second")
@@ -841,6 +840,7 @@ export default {
       this.getRegion_trade(region);
       console.log("fourth")
       this.getRegion_rental(region);
+      }),
     },
 
     search_dong(sigungu) {
