@@ -111,30 +111,27 @@
                               <b-button>3 개월</b-button>
                               <b-button>6 개월</b-button>
                             </b-button-group>
+                            <b-dropdown-divider></b-dropdown-divider>
                             <b-form-checkbox
-                              v-model="graph_set"
                               value="기준금리"
                               id="rate_ck"
                               @change="compare_top_rate"
-                              >기준금리</b-form-checkbox
-                            >
+                              >기준금리</b-form-checkbox> <!-- 다른 방식으로 체크조건 줄 경우 v-model="graph_set" 추가 -->
                             <b-form-checkbox
-                              v-model="graph_set"
                               value="최저시급"
                               id="wage_ck"
                               @change="compare_top_wage"
-                              >최저시급</b-form-checkbox
-                            >
-                            <b-dropdown-divider></b-dropdown-divider>
+                              >최저시급</b-form-checkbox> <!-- 다른 방식으로 체크조건 줄 경우 v-model="graph_set" 추가 -->
+                            </b-dropdown-form>
+                            <!-- <b-dropdown-divider></b-dropdown-divider>
                             <b-form-tags
                               id="tags-component-select"
                               v-model="graph_set"
                               size="sm"
                               placeholder=""
                               add-on-change
-                              no-outer-focus
-                            ></b-form-tags>
-                          </b-dropdown-form>
+                              no-outer-focus>
+                            </b-form-tags> -->
                         </b-dropdown>
                       </b-col>
                     </b-row>
@@ -593,7 +590,7 @@ export default {
           },
         ],
       },
-      graph_set: [], // 그래프 설정 버튼
+      // graph_set: [], // 그래프 설정 버튼
 
       top_chart: {
         // 메인 상단 그래프
@@ -739,7 +736,7 @@ export default {
           ]);
       }
       delete this.chartOptions_top.scales;
-      this.graph_set = [];
+      // this.graph_set = [];
       // 기준금리, 최저시급 체크박스 조건문
       // if (this.graph_set.length > 0) {
       //   for (var i = 0; i < this.graph_set.length; i++) {
@@ -1080,7 +1077,6 @@ export default {
             position: "bottom",
           };
         }
-        console.log(this.top_chart.datasets)
       } else {
         for (var i = 0; i < this.top_chart.datasets.length; i++) {
           if (this.top_chart.datasets[i].yAxisID == "rate") {
