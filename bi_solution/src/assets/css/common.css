@@ -14,7 +14,7 @@
 /* 지역 선택 버튼 */
 .region_select:active {
   font-weight: bold;
-  text-decoration: underline;
+  text-decoration: underline; 
 }
 
 /* 그래프 전환 버튼 */
