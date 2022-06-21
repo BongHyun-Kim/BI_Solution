@@ -116,14 +116,18 @@
                               value="기준금리"
                               id="rate_ck"
                               @change="compare_top_rate"
-                              >기준금리</b-form-checkbox> <!-- 다른 방식으로 체크조건 줄 경우 v-model="graph_set" 추가 -->
+                              >기준금리</b-form-checkbox
+                            >
+                            <!-- 다른 방식으로 체크조건 줄 경우 v-model="graph_set" 추가 -->
                             <b-form-checkbox
                               value="최저시급"
                               id="wage_ck"
                               @change="compare_top_wage"
-                              >최저시급</b-form-checkbox> <!-- 다른 방식으로 체크조건 줄 경우 v-model="graph_set" 추가 -->
-                            </b-dropdown-form>
-                            <!-- <b-dropdown-divider></b-dropdown-divider>
+                              >최저시급</b-form-checkbox
+                            >
+                            <!-- 다른 방식으로 체크조건 줄 경우 v-model="graph_set" 추가 -->
+                          </b-dropdown-form>
+                          <!-- <b-dropdown-divider></b-dropdown-divider>
                             <b-form-tags
                               id="tags-component-select"
                               v-model="graph_set"
@@ -166,6 +170,17 @@
                     />
                   </b-card>
                 </b-row>
+                <br />
+                <b-card>
+                  <b-row>
+                    <vueApexchart
+                      width="500"
+                      type="bar"
+                      :options="apexoptions"
+                      :series="apexseries"
+                    ></vueApexchart>
+                  </b-row>
+                </b-card>
                 <br />
                 <b-row>
                   <b-card>
@@ -493,7 +508,6 @@ export default {
   },
   data() {
     return {
-
       // 지역 선택 리스트
 
       regionlist: [], // 시/도 리스트
@@ -523,6 +537,21 @@ export default {
       wage_list: [], //  메인그래프 최저시급
       trade_list: [], // 메인그래프 년도별 평균 매매금액
       trade_table_list: {}, // 테이블(표)에 출력될 데이터 리스트
+
+      apexoptions: {
+        chart: {
+          id: "vuechart-example",
+        },
+        xaxis: {
+          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
+        },
+      },
+      apexseries: [
+        {
+          name: "series-1",
+          data: [30, 40, 45, 50, 49, 60, 70, 91],
+        },
+      ],
 
       // 하단 거래량 및 기본 지표
 
@@ -695,8 +724,10 @@ export default {
     trans_chart() {
       this.chartOptions_top.plugins.legend = { display: false };
       if (this.changeGraph == "매매") {
-        this.$refs.click_graph1.textContent = this.sidoName + " 아파트 매매 가격";
-        this.$refs.click_graph2.textContent = this.sidoName + " 아파트 매매 가격 변동률";
+        this.$refs.click_graph1.textContent =
+          this.sidoName + " 아파트 매매 가격";
+        this.$refs.click_graph2.textContent =
+          this.sidoName + " 아파트 매매 가격 변동률";
         (this.top_chart.datasets = [
           {
             label: "매매 가격",
@@ -715,8 +746,10 @@ export default {
             },
           ]);
       } else if (this.changeGraph == "전,월세") {
-        this.$refs.click_graph1.textContent = this.sidoName + " 아파트 전,월세 통합 거래 금액";
-        this.$refs.click_graph2.textContent = this.sidoName + " 아파트 전,월세 통합 변동률";
+        this.$refs.click_graph1.textContent =
+          this.sidoName + " 아파트 전,월세 통합 거래 금액";
+        this.$refs.click_graph2.textContent =
+          this.sidoName + " 아파트 전,월세 통합 변동률";
         (this.top_chart.datasets = [
           {
             label: "전,월세 통합 거래 금액",
@@ -817,26 +850,26 @@ export default {
         for (var i = 1; i < res.data.length; i++) {
           this.sigunguList.push(res.data[i].city_nm);
           this.sigungu_check.push(res.data[i].city_nm);
-          }
-      $(".nav-tabs>li:nth-child(1)>a").text(region);
-      $(".nav-tabs>li:nth-child(1)>a").css('color','black');
-      $(".nav-tabs>li:nth-child(1)>a").css('font-weight','bold');
-      $(".nav-tabs>li:nth-child(1)>a").css('text-decoration','underline');
+        }
+        $(".nav-tabs>li:nth-child(1)>a").text(region);
+        $(".nav-tabs>li:nth-child(1)>a").css("color", "black");
+        $(".nav-tabs>li:nth-child(1)>a").css("font-weight", "bold");
+        $(".nav-tabs>li:nth-child(1)>a").css("text-decoration", "underline");
 
-      $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
-      $(".tab-content>div:nth-child(1)").removeClass("active");
-      $(".nav-tabs>li:nth-child(2)>a").addClass("active");
-      $(".tab-content>div:nth-child(2)").addClass("active");
-      $(".tab-content>div:nth-child(2)").css("display", "block");
+        $(".nav-tabs>li:nth-child(1)>a").removeClass("active");
+        $(".tab-content>div:nth-child(1)").removeClass("active");
+        $(".nav-tabs>li:nth-child(2)>a").addClass("active");
+        $(".tab-content>div:nth-child(2)").addClass("active");
+        $(".tab-content>div:nth-child(2)").css("display", "block");
       });
 
-      console.log("first")
+      console.log("first");
       this.getSelected_trade(region);
-      console.log("second")
+      console.log("second");
       this.getSelected_rate(region);
-      console.log("third")
+      console.log("third");
       this.getRegion_trade(region);
-      console.log("fourth")
+      console.log("fourth");
       this.getRegion_rental(region);
     },
 
@@ -859,9 +892,9 @@ export default {
           }
 
           $(".nav-tabs>li:nth-child(2)>a").text(sigungu);
-          $(".nav-tabs>li:nth-child(2)>a").css('color','black');
-          $(".nav-tabs>li:nth-child(2)>a").css('font-weight','bold');
-          $(".nav-tabs>li:nth-child(2)>a").css('text-decoration','underline');
+          $(".nav-tabs>li:nth-child(2)>a").css("color", "black");
+          $(".nav-tabs>li:nth-child(2)>a").css("font-weight", "bold");
+          $(".nav-tabs>li:nth-child(2)>a").css("text-decoration", "underline");
 
           $(".nav-tabs>li:nth-child(2)>a").removeClass("active");
           $(".tab-content>div:nth-child(2)").removeClass("active");
@@ -1215,33 +1248,33 @@ export default {
       }
     },
 
-    getSelected_trade(region){
-      console.log("before")
+    getSelected_trade(region) {
+      console.log("before");
       axios.get("/selected_trade?" + "regionName=" + region).then((res) => {
-        console.log("after")
-        for (var i = 0; i < res.data.length; i++){
+        console.log("after");
+        for (var i = 0; i < res.data.length; i++) {
           this.selected_trade.push(res.data[i].avg_amount);
         }
         this.top_chart.datasets[0].data = this.selected_trade;
       });
     },
-    
-    getSelected_rate(region){
+
+    getSelected_rate(region) {
       axios.get("/selected_rate?" + "regionName=" + region).then((res) => {
-        for (var i = 0; i < res.data.length; i++){
+        for (var i = 0; i < res.data.length; i++) {
           this.selected_rate.push(res.data[i].avg_rate);
         }
         this.bottom_chart.datasets[0].data = this.selected_rate;
       });
     },
 
-    getRegion_trade(region){
+    getRegion_trade(region) {
       axios.get("/region_trade?" + "regionName=" + region).then((res) => {
         this.trade_data = res.data;
       });
     },
-    
-    getRegion_rental(region){
+
+    getRegion_rental(region) {
       axios.get("/region_rental?" + "regionName=" + region).then((res) => {
         this.rental_data = res.data;
       });
@@ -1253,4 +1286,3 @@ export default {
 <style>
 @import "../assets/css/common.css";
 </style>
-
