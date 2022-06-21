@@ -73,6 +73,12 @@
         </b-col>
         <b-col cols="8">
           <b-row>
+            <div class="mt-3">
+              <b-button-group size="sm">
+                <b-button>vueChart</b-button>
+                <b-button>eChart</b-button>
+              </b-button-group>
+            </div>
             <div id="graph_switch">
               <b-form-checkbox
                 v-model="changeGraph"
@@ -87,6 +93,7 @@
               </b-form-checkbox>
             </div>
           </b-row>
+          <div><echartComponent /></div>
           <div>
             <b-card>
               <b-container>
@@ -462,6 +469,7 @@ import $ from "jquery";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
 import { Doughnut } from "vue-chartjs/legacy";
 import { Bar } from "vue-chartjs/legacy";
+import echartComponent from "./EchartsView.vue";
 
 import {
   Chart as ChartJS,
@@ -496,6 +504,7 @@ export default {
     LineChartGenerator,
     Doughnut,
     Bar,
+    echartComponent,
   },
   props: {
     chartId: { type: String, default: "data_chart" },
