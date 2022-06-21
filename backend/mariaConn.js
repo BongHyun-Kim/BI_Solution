@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
   user: "user",
   password: "1234",
   database: "bi_solution",
-}); 
+});
 
 // Connect
 connection.connect(function (err) {

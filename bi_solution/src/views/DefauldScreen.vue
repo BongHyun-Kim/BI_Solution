@@ -214,6 +214,17 @@
                   </b-card>
                 </b-row>
                 <br />
+                <b-card>
+                  <b-row>
+                    <vueApexchart
+                      width="500"
+                      type="bar"
+                      :options="apexoptions"
+                      :series="apexseries"
+                    ></vueApexchart>
+                  </b-row>
+                </b-card>
+                <br />
                 <b-row>
                   <b-card>
                     <b-row>
@@ -572,6 +583,21 @@ export default {
       wage_list: [], //  메인그래프 최저시급
       trade_list: [], // 메인그래프 년도별 평균 매매금액
       trade_table_list: {}, // 테이블(표)에 출력될 데이터 리스트
+
+      apexoptions: {
+        chart: {
+          id: "vuechart-example",
+        },
+        xaxis: {
+          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
+        },
+      },
+      apexseries: [
+        {
+          name: "series-1",
+          data: [30, 40, 45, 50, 49, 60, 70, 91],
+        },
+      ],
 
       // 하단 거래량 및 기본 지표
 
