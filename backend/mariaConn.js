@@ -2,11 +2,11 @@ var mysql = require("mysql");
 
 //  Connection 객체 생성
 var connection = mysql.createConnection({
-  host: "14.49.44.142",
-  port: "3308",
-  user: "tera_bi",
-  password: "tera202206",
-  database: "bi_solution",
+  host: "ip_address",
+  port: "port",
+  user: "userid",
+  password: "password",
+  database: "db_name",
 });
 
 // Connect
