@@ -75,8 +75,32 @@
           <b-row>
             <div class="mt-3">
               <b-button-group size="sm">
-                <b-button>vueChart</b-button>
-                <b-button>eChart</b-button>
+                <b-button
+                  variant="outline-dark"
+                  :class="{ active: currentTab === 0 }"
+                  v-on:click="currentTab = 0"
+                  id="tab001"
+                  data-bs-toggle="tab"
+                  data-bs-target="#tabBody001"
+                  role="tab"
+                  aria-controls="tabBody001"
+                  aria-selected="true"
+                  value="vueChart"
+                  >vueChart</b-button
+                >
+                <b-button
+                  variant="outline-dark"
+                  :class="{ active: currentTab === 1 }"
+                  v-on:click="currentTab = 1"
+                  id="tab002"
+                  data-bs-toggle="tab"
+                  data-bs-target="#tabBody002"
+                  role="tab"
+                  aria-controls="tabBody002"
+                  aria-selected="true"
+                  value="eChart"
+                  >eChart</b-button
+                >
               </b-button-group>
             </div>
             <div id="graph_switch">
@@ -93,12 +117,17 @@
               </b-form-checkbox>
             </div>
           </b-row>
-          <div><echartComponent /></div>
           <div>
             <b-card>
               <b-container>
                 <b-row>
-                  <b-card>
+                  <b-card
+                    class="tab-pane"
+                    id="tabBody002"
+                    role="tabpanel"
+                    aria-labelledby="tab002"
+                    v-show="currentTab == 1"
+                  >
                     <b-row>
                       <b-col cols="11">
                         <h5
@@ -146,6 +175,13 @@
                         </b-dropdown>
                       </b-col>
                     </b-row>
+                    <!-- 업무 리스트 -->
+                    <EchartComponent
+                      :css-classes="cssClasses"
+                      :styles="styles"
+                      :width="width"
+                      :height="height"
+                    />
                     <LineChartGenerator
                       id="top_graph"
                       :chart-options="chartOptions_top"
@@ -469,7 +505,7 @@ import $ from "jquery";
 import { Line as LineChartGenerator } from "vue-chartjs/legacy";
 import { Doughnut } from "vue-chartjs/legacy";
 import { Bar } from "vue-chartjs/legacy";
-import echartComponent from "./EchartsView.vue";
+import EchartComponent from "./EchartsView.vue";
 
 import {
   Chart as ChartJS,
@@ -504,7 +540,7 @@ export default {
     LineChartGenerator,
     Doughnut,
     Bar,
-    echartComponent,
+    EchartComponent,
   },
   props: {
     chartId: { type: String, default: "data_chart" },
@@ -517,6 +553,7 @@ export default {
   },
   data() {
     return {
+      currentTab: 0,
       // 지역 선택 리스트
 
       regionlist: [], // 시/도 리스트
